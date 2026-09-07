@@ -174,8 +174,8 @@ export default function AssetList() {
         .map((row) => row.map(escapeCSV).join(','))
         .join('\r\n');
 
-      // BOM (﻿) para que Excel detecte UTF-8 y no rompa acentos/ñ
-      const blob = new Blob(['﻿' + csvContent], { type: 'text/csv;charset=utf-8;' });
+      // BOM (\uFEFF) para que Excel detecte UTF-8 y no rompa acentos/ñ
+      const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
       downloadBlob(blob, `inventario-equipos-${todayStr()}.csv`);
     } catch (err) {
       alert('Error al exportar CSV: ' + err.message);
@@ -184,21 +184,43 @@ export default function AssetList() {
     }
   };
 
+  // EXPORTACIÓN A PDF MEJORADA CON DISEÑO PROFESIONAL
   const handleExportPDF = () => {
     try {
       setExporting(true);
 
-      const doc = new jsPDF({ orientation: 'landscape' });
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const totalPagesExp = '{total_pages_count_string}';
+      const nowStr = new Date().toLocaleString('es-MX');
 
-      doc.setFontSize(14);
-      doc.text('Gestión de Equipos Treggo', 14, 15);
+      // --- Banner Superior de Encabezado ---
+      doc.setFillColor(30, 41, 59); // Slate 800
+      doc.rect(0, 0, 297, 24, 'F');
+
+      doc.setFillColor(37, 99, 235); // Accent Blue 600
+      doc.rect(0, 24, 297, 2, 'F');
+
+      // Título Principal
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(16);
+      doc.setTextColor(255, 255, 255);
+      doc.text('TREGGO', 14, 14);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(12);
+      doc.setTextColor(203, 213, 225);
+      doc.text('|  Reporte Oficial de Inventario de Equipos', 42, 14);
+
+      // Sub-encabezado con metadatos
       doc.setFontSize(9);
-      doc.setTextColor(100);
-      doc.text(`Generado: ${new Date().toLocaleString('es-MX')} — Total de equipos: ${assets.length}`, 14, 21);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Fecha de emisión: ${nowStr}`, 14, 32);
+      doc.text(`Total de equipos registrados: ${assets.length}`, 14, 37);
 
+      // --- Generación de la Tabla con autoTable ---
       autoTable(doc, {
-        startY: 26,
-        head: [['Etiqueta', 'Tipo', 'Marca / Modelo', 'SN', 'Ubicación / Área', 'Estado']],
+        startY: 42,
+        head: [['Etiqueta', 'Tipo', 'Marca / Modelo', 'Nº Serie (SN)', 'Ubicación / Área', 'Estado / Asignación']],
         body: assets.map((item) => [
           item.asset_tag || item.asset_code || '—',
           item.asset_type || '—',
@@ -207,9 +229,56 @@ export default function AssetList() {
           getLocationLabel(item.location),
           renderStatus(item),
         ]),
-        styles: { fontSize: 8 },
-        headStyles: { fillColor: [37, 99, 235] },
+        theme: 'grid',
+        styles: {
+          font: 'helvetica',
+          fontSize: 8.5,
+          cellPadding: 3,
+          textColor: [51, 65, 85], // Slate 700
+          lineColor: [226, 232, 240], // Light Gray Border
+          lineWidth: 0.1,
+        },
+        headStyles: {
+          fillColor: [30, 41, 59], // Dark Slate Header
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 9,
+          halign: 'left',
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252], // Subtle Zebra Striping
+        },
+        columnStyles: {
+          0: { fontStyle: 'bold', textColor: [37, 99, 235], cellWidth: 28 }, // Etiqueta azul
+          1: { cellWidth: 35 },
+          2: { cellWidth: 55 },
+          3: { fontStyle: 'normal', cellWidth: 42 },
+          4: { cellWidth: 45 },
+          5: { cellWidth: 'auto' },
+        },
+        margin: { top: 42, right: 14, bottom: 18, left: 14 },
+        didDrawPage: (data) => {
+          // --- Pie de página en cada hoja ---
+          const pageCount = doc.internal.getNumberOfPages();
+          doc.setFontSize(8);
+          doc.setTextColor(148, 163, 184); // Slate 400
+
+          // Línea separadora superior del footer
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.2);
+          doc.line(14, 200, 283, 200);
+
+          doc.text('Treggo IT Asset Management System — Documento Confidencial', 14, 205);
+          
+          const pageStr = `Página ${pageCount} de ${totalPagesExp}`;
+          doc.text(pageStr, 283 - doc.getTextWidth(pageStr), 205);
+        },
       });
+
+      // Reemplaza el marcador de páginas totales acumuladas
+      if (typeof doc.putTotalPages === 'function') {
+        doc.putTotalPages(totalPagesExp);
+      }
 
       doc.save(`inventario-equipos-${todayStr()}.pdf`);
     } catch (err) {
@@ -319,7 +388,7 @@ export default function AssetList() {
               assets.map((item) => (
                 <tr key={item.id} className="hover:bg-gray-50">
                   {/* 1. Etiqueta de equipo */}
-                  <td className="py-3 px-4 font-semibold text-gray-900">
+                  <td className="py-3 px-4 font-semibold text-blue-600">
                     {item.asset_tag || item.asset_code || '—'}
                   </td>
 
@@ -343,7 +412,7 @@ export default function AssetList() {
                     {getLocationLabel(item.location)}
                   </td>
 
-                  {/* 6. Estado (ej. Asignado - Juan Pérez) */}
+                  {/* 6. Estado */}
                   <td className="py-3 px-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
                       {renderStatus(item)}
