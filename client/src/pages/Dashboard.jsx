@@ -90,8 +90,6 @@ export default function Dashboard() {
           {[
             { to:"/assets/new",      label:"Nuevo Equipo",   icon:Monitor,   color:"bg-brand-50 text-brand-600 hover:bg-brand-100" },
             { to:"/phones/new",      label:"Nuevo Telefono", icon:Smartphone, color:"bg-sky-50 text-sky-600 hover:bg-sky-100" },
-            { to:"/tickets/new",     label:"Nuevo Ticket",   icon:Ticket,     color:"bg-violet-50 text-violet-600 hover:bg-violet-100" },
-            { to:"/responsivas/new", label:"Responsiva",     icon:FileText,   color:"bg-amber-50 text-amber-600 hover:bg-amber-100" },
             { to:"/licenses/new",    label:"Licencia",       icon:Shield,     color:"bg-emerald-50 text-emerald-600 hover:bg-emerald-100" },
             { to:"/network",         label:"Red / IPs",      icon:Network,    color:"bg-gray-50 text-gray-600 hover:bg-gray-100" },
           ].map(({ to, label, icon: Icon, color }) => (
