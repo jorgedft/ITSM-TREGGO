@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Network, Search, RefreshCw, Save, HardDriveDownload } from 'lucide-react';
+import { Network, Search, RefreshCw, Save, HardDriveDownload, Globe, Plus, Trash2, X } from 'lucide-react';
 import { supabase } from '../../services/supabase';
 
 export default function IpManagement() {
@@ -10,14 +10,32 @@ export default function IpManagement() {
   const [loading, setLoading] = useState(false);
   const [savingGlobal, setSavingGlobal] = useState(false);
 
+  // Estados para Modal y Dominios
+  const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
+  const [domains, setDomains] = useState([]);
+  const [loadingDomains, setLoadingDomains] = useState(false);
+  const [newDomain, setNewDomain] = useState({
+    domain_name: '',
+    provider: '',
+    dns_provider: '',
+    ip_address: '',
+    expiration_date: '',
+    notes: ''
+  });
+
   useEffect(() => {
     generateSegmentTemplate(segment);
   }, []);
 
+  // Cargar dominios al abrir el modal
+  useEffect(() => {
+    if (isDomainModalOpen) {
+      fetchDomains();
+    }
+  }, [isDomainModalOpen]);
+
   const generateSegmentTemplate = async (prefix) => {
     setLoading(true);
-    
-    // 1. Plantilla local base
     const template = [];
     for (let i = 1; i <= 254; i++) {
       template.push({
@@ -30,7 +48,6 @@ export default function IpManagement() {
       });
     }
 
-    // 2. Consulta y mapeo desde Supabase
     try {
       const { data, error } = await supabase
         .from('ip_addresses')
@@ -56,10 +73,70 @@ export default function IpManagement() {
         setIpList(template);
       }
     } catch (err) {
-      console.error('Error al cargar datos:', err);
+      console.error('Error al cargar datos de IP:', err);
       setIpList(template);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // --- Funciones CRUD Dominios ---
+  const fetchDomains = async () => {
+    setLoadingDomains(true);
+    try {
+      const { data, error } = await supabase
+        .from('domains')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setDomains(data || []);
+    } catch (err) {
+      alert(`Error al cargar dominios: ${err.message}`);
+    } finally {
+      setLoadingDomains(false);
+    }
+  };
+
+  const handleAddDomain = async (e) => {
+    e.preventDefault();
+    if (!newDomain.domain_name.trim()) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('domains')
+        .insert([newDomain])
+        .select();
+
+      if (error) throw error;
+
+      setDomains([data[0], ...domains]);
+      setNewDomain({
+        domain_name: '',
+        provider: '',
+        dns_provider: '',
+        ip_address: '',
+        expiration_date: '',
+        notes: ''
+      });
+    } catch (err) {
+      alert(`Error al guardar dominio: ${err.message}`);
+    }
+  };
+
+  const handleDeleteDomain = async (id) => {
+    if (!confirm('¿Estás seguro de eliminar este dominio?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('domains')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      setDomains(domains.filter(d => d.id !== id));
+    } catch (err) {
+      alert(`Error al eliminar dominio: ${err.message}`);
     }
   };
 
@@ -83,7 +160,6 @@ export default function IpManagement() {
     }));
   };
 
-  // Guardado individual
   const saveSingleRow = async (row) => {
     try {
       const { error } = await supabase
@@ -104,7 +180,6 @@ export default function IpManagement() {
     }
   };
 
-  // Guardado global / masivo
   const saveAllRows = async () => {
     setSavingGlobal(true);
     try {
@@ -141,23 +216,33 @@ export default function IpManagement() {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Encabezado con Botón Guardar Global */}
+      {/* Encabezado con Botones Principales */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Network className="text-blue-600" /> Mapa de Red Local - Asignacion de IP's
+            <Network className="text-blue-600" /> Mapa de Red Local - Asignación de IP's
           </h1>
           <p className="text-sm text-gray-500">Plantilla dinámica de direccionamiento por segmento (1.1 al 1.254).</p>
         </div>
 
-        <button
-          onClick={saveAllRows}
-          disabled={savingGlobal || loading}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
-        >
-          <HardDriveDownload size={18} />
-          {savingGlobal ? 'Guardando Segmento...' : 'Guardar Todo el Segmento'}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsDomainModalOpen(true)}
+            className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-colors"
+          >
+            <Globe size={18} />
+            Gestionar Dominios Web
+          </button>
+
+          <button
+            onClick={saveAllRows}
+            disabled={savingGlobal || loading}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
+          >
+            <HardDriveDownload size={18} />
+            {savingGlobal ? 'Guardando Segmento...' : 'Guardar Todo el Segmento'}
+          </button>
+        </div>
       </div>
 
       {/* Selector de Segmento y Filtros */}
@@ -206,7 +291,7 @@ export default function IpManagement() {
         />
       </div>
 
-      {/* Tabla Interactiva */}
+      {/* Tabla Interactiva de IPs */}
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Generando plantilla del segmento {segment}.X...</div>
@@ -296,6 +381,170 @@ export default function IpManagement() {
           </div>
         )}
       </div>
+
+      {/* Modal de Gestión de Dominios */}
+      {isDomainModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
+            
+            {/* Header Modal */}
+            <div className="px-6 py-4 bg-indigo-600 text-white flex justify-between items-center">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <Globe size={20} /> Gestión de Dominios y Hosting
+              </h2>
+              <button 
+                onClick={() => setIsDomainModalOpen(false)}
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-6">
+              {/* Formulario de Registro */}
+              <form onSubmit={handleAddDomain} className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
+                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+                  <Plus size={16} className="text-indigo-600" /> Registrar Nuevo Dominio
+                </h3>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-600 font-medium">Dominio / URL *</label>
+                    <input
+                      type="text"
+                      placeholder="ejemplo.com"
+                      required
+                      value={newDomain.domain_name}
+                      onChange={(e) => setNewDomain({ ...newDomain, domain_name: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-600 font-medium">Proveedor Host</label>
+                    <input
+                      type="text"
+                      placeholder="AWS, Hostinger, Vercel..."
+                      value={newDomain.provider}
+                      onChange={(e) => setNewDomain({ ...newDomain, provider: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-600 font-medium">DNS Provider</label>
+                    <input
+                      type="text"
+                      placeholder="Cloudflare, Route53..."
+                      value={newDomain.dns_provider}
+                      onChange={(e) => setNewDomain({ ...newDomain, dns_provider: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-600 font-medium">IP del Servidor / Apuntamineto</label>
+                    <input
+                      type="text"
+                      placeholder="192.0.2.1"
+                      value={newDomain.ip_address}
+                      onChange={(e) => setNewDomain({ ...newDomain, ip_address: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs font-mono focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-600 font-medium">Fecha Vencimiento</label>
+                    <input
+                      type="date"
+                      value={newDomain.expiration_date}
+                      onChange={(e) => setNewDomain({ ...newDomain, expiration_date: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs text-gray-600 font-medium">Notas</label>
+                    <input
+                      type="text"
+                      placeholder="Credenciales, SSL, etc."
+                      value={newDomain.notes}
+                      onChange={(e) => setNewDomain({ ...newDomain, notes: e.target.value })}
+                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-xs font-semibold flex items-center gap-1 transition-colors"
+                  >
+                    <Plus size={14} /> Guardar Dominio
+                  </button>
+                </div>
+              </form>
+
+              {/* Tabla de Dominios */}
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                {loadingDomains ? (
+                  <div className="p-6 text-center text-xs text-gray-500">Cargando dominios...</div>
+                ) : domains.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-gray-500">No hay dominios registrados actualmente.</div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse text-xs">
+                      <thead className="bg-gray-100 border-b border-gray-200 font-semibold text-gray-600">
+                        <tr>
+                          <th className="py-2.5 px-3">Dominio</th>
+                          <th className="py-2.5 px-3">Proveedor Host</th>
+                          <th className="py-2.5 px-3">DNS</th>
+                          <th className="py-2.5 px-3">IP Apuntada</th>
+                          <th className="py-2.5 px-3">Vencimiento</th>
+                          <th className="py-2.5 px-3">Notas</th>
+                          <th className="py-2.5 px-3 text-center">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-200">
+                        {domains.map((d) => (
+                          <tr key={d.id} className="hover:bg-gray-50">
+                            <td className="py-2 px-3 font-semibold text-indigo-600">{d.domain_name}</td>
+                            <td className="py-2 px-3">{d.provider || '-'}</td>
+                            <td className="py-2 px-3">{d.dns_provider || '-'}</td>
+                            <td className="py-2 px-3 font-mono">{d.ip_address || '-'}</td>
+                            <td className="py-2 px-3">{d.expiration_date || '-'}</td>
+                            <td className="py-2 px-3 text-gray-500 max-w-xs truncate">{d.notes || '-'}</td>
+                            <td className="py-2 px-3 text-center">
+                              <button
+                                onClick={() => handleDeleteDomain(d.id)}
+                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                                title="Eliminar Dominio"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Footer Modal */}
+            <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
+              <button
+                onClick={() => setIsDomainModalOpen(false)}
+                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md text-xs font-semibold transition-colors"
+              >
+                Cerrar
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
