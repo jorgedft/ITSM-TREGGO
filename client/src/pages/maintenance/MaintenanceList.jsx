@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "../../services/supabase";
 import {
   Plus, Wrench, ShieldCheck, AlertTriangle, BookOpen,
-  Search, Trash2, X, CheckCircle, Cpu, Filter, Paperclip, FileDown, Eye
+  Search, Trash2, X, CheckCircle, Cpu, Filter, Paperclip, FileDown, Eye, Edit, Download
 } from "lucide-react";
 import { renderAsync as renderDocx } from "docx-preview";
 import * as XLSX from "xlsx";
@@ -26,7 +26,8 @@ export default function MaintenanceList() {
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Estado Form Mantenimiento
+  // Estado Form Mantenimiento (Soporta Edición)
+  const [editingMaintenanceId, setEditingMaintenanceId] = useState(null);
   const [formMaintenance, setFormMaintenance] = useState({
     asset_id: "",
     type: "Preventivo",
@@ -34,12 +35,10 @@ export default function MaintenanceList() {
     description: ""
   });
 
-  // Estado Form Workflow
+  // Estado Form Workflow (Sin etiquetas ni instrucciones; Categoría libre)
   const [formWorkflow, setFormWorkflow] = useState({
     title: "",
-    category: "Software",
-    tags: "",
-    steps: ""
+    category: ""
   });
   const [workflowFile, setWorkflowFile] = useState(null);
   const [savingWorkflow, setSavingWorkflow] = useState(false);
@@ -86,31 +85,104 @@ export default function MaintenanceList() {
     fetchData();
   }, [fetchData]);
 
-  // Guardar Mantenimiento
-  const handleCreateMaintenance = async (e) => {
+  // Guardar o Actualizar Mantenimiento
+  const handleSaveMaintenance = async (e) => {
     e.preventDefault();
     if (!formMaintenance.asset_id || !formMaintenance.description) return;
 
     try {
-      const { error } = await supabase
-        .from("maintenance_logs")
-        .insert([{
-          asset_id: formMaintenance.asset_id,
-          maintenance_type: formMaintenance.type,
-          technician_name: formMaintenance.technician,
-          description: formMaintenance.description,
-        }]);
+      if (editingMaintenanceId) {
+        // Modo Actualizar
+        const { error } = await supabase
+          .from("maintenance_logs")
+          .update({
+            asset_id: formMaintenance.asset_id,
+            maintenance_type: formMaintenance.type,
+            technician_name: formMaintenance.technician,
+            description: formMaintenance.description,
+          })
+          .eq("id", editingMaintenanceId);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // Modo Crear
+        const { error } = await supabase
+          .from("maintenance_logs")
+          .insert([{
+            asset_id: formMaintenance.asset_id,
+            maintenance_type: formMaintenance.type,
+            technician_name: formMaintenance.technician,
+            description: formMaintenance.description,
+          }]);
+
+        if (error) throw error;
+      }
 
       setFormMaintenance({ asset_id: "", type: "Preventivo", technician: "", description: "" });
+      setEditingMaintenanceId(null);
       fetchData();
     } catch (err) {
       alert("Error al guardar mantenimiento: " + err.message);
     }
   };
 
-  // Seleccionar archivo adjunto para la guía (valida tipo y tamaño antes de aceptarlo)
+  // Cargar Mantenimiento para Editar
+  const handleEditMaintenance = (item) => {
+    setEditingMaintenanceId(item.id);
+    setFormMaintenance({
+      asset_id: item.asset_id || "",
+      type: item.maintenance_type || "Preventivo",
+      technician: item.technician_name || "",
+      description: item.description || ""
+    });
+  };
+
+  // Cancelar Edición de Mantenimiento
+  const handleCancelEditMaintenance = () => {
+    setEditingMaintenanceId(null);
+    setFormMaintenance({ asset_id: "", type: "Preventivo", technician: "", description: "" });
+  };
+
+  // Eliminar Mantenimiento
+  const handleDeleteMaintenance = async (id) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este registro de mantenimiento?")) return;
+    try {
+      const { error } = await supabase
+        .from("maintenance_logs")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      fetchData();
+    } catch (err) {
+      alert("Error al eliminar mantenimiento: " + err.message);
+    }
+  };
+
+  // Exportar Mantenimientos a Excel (.xlsx)
+  const handleExportToExcel = () => {
+    if (filteredMaintenances.length === 0) {
+      alert("No hay registros para exportar.");
+      return;
+    }
+
+    const dataToExport = filteredMaintenances.map((m) => ({
+      Fecha: new Date(m.created_at).toLocaleDateString(),
+      "Código Equipo": m.asset?.asset_code || "N/A",
+      Marca: m.asset?.brand || "",
+      Modelo: m.asset?.model || "",
+      "Tipo de Servicio": m.maintenance_type || "",
+      Técnico: m.technician_name || "N/A",
+      Descripción: m.description || ""
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Mantenimientos");
+    XLSX.writeFile(workbook, `Reporte_Mantenimientos_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  // Seleccionar archivo adjunto para la guía
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) {
@@ -136,10 +208,10 @@ export default function MaintenanceList() {
     setWorkflowFile(file);
   };
 
-  // Guardar Workflow / Guía (sube el archivo adjunto a Storage antes de insertar el registro)
+  // Guardar Workflow / Guía
   const handleCreateWorkflow = async (e) => {
     e.preventDefault();
-    if (!formWorkflow.title || !formWorkflow.steps) return;
+    if (!formWorkflow.title) return;
 
     setSavingWorkflow(true);
     try {
@@ -164,16 +236,14 @@ export default function MaintenanceList() {
         .from("maintenance_workflows")
         .insert([{
           title: formWorkflow.title,
-          category: formWorkflow.category,
-          tags: formWorkflow.tags.trim(),
-          steps: formWorkflow.steps,
+          category: formWorkflow.category.trim() || "General",
           file_path: filePath,
           file_name: fileName
         }]);
 
       if (error) throw error;
 
-      setFormWorkflow({ title: "", category: "Software", tags: "", steps: "" });
+      setFormWorkflow({ title: "", category: "" });
       setWorkflowFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
       fetchData();
@@ -184,7 +254,29 @@ export default function MaintenanceList() {
     }
   };
 
-  // Descargar archivo adjunto de una guía (trae el blob y lo guarda localmente)
+  // Eliminar Workflow / Guía de la Bóveda
+  const handleDeleteWorkflow = async (id, filePath) => {
+    if (!window.confirm("¿Estás seguro de que deseas eliminar este documento/workflow?")) return;
+
+    try {
+      if (filePath) {
+        await supabase.storage.from(WORKFLOW_BUCKET).remove([filePath]);
+      }
+
+      const { error } = await supabase
+        .from("maintenance_workflows")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+
+      fetchData();
+    } catch (err) {
+      alert("Error al eliminar el workflow: " + err.message);
+    }
+  };
+
+  // Descargar archivo adjunto de una guía
   const handleDownloadFile = async (filePath, fileName) => {
     try {
       const { data: blob, error } = await supabase.storage
@@ -206,7 +298,7 @@ export default function MaintenanceList() {
     }
   };
 
-  // Abrir el visor interno para un archivo adjunto (PDF/TXT se muestran directo, DOCX/XLSX se convierten a HTML en el navegador)
+  // Abrir visor interno para archivo adjunto
   const handleViewFile = async (filePath, fileName) => {
     const ext = getFileExtension(fileName);
     setXlsxHtml("");
@@ -243,7 +335,6 @@ export default function MaintenanceList() {
     }
   };
 
-  // Renderiza el .docx dentro del contenedor una vez que el modal y el blob están listos
   useEffect(() => {
     if (viewer.open && viewer.type === ".docx" && docxBlob && docxContainerRef.current) {
       docxContainerRef.current.innerHTML = "";
@@ -311,12 +402,24 @@ export default function MaintenanceList() {
       {/* Grid Principal: Formulario + Tabla */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-        {/* Formulario de Registro */}
+        {/* Formulario de Registro / Edición */}
         <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl h-fit">
-          <h2 className="text-lg font-semibold text-slate-200 mb-4 flex items-center gap-2">
-            <Plus className="w-5 h-5 text-sky-400" /> Registrar Nuevo Mantenimiento
-          </h2>
-          <form onSubmit={handleCreateMaintenance} className="space-y-4">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
+              {editingMaintenanceId ? <Edit className="w-5 h-5 text-amber-400" /> : <Plus className="w-5 h-5 text-sky-400" />}
+              {editingMaintenanceId ? "Editar Mantenimiento" : "Registrar Nuevo Mantenimiento"}
+            </h2>
+            {editingMaintenanceId && (
+              <button
+                onClick={handleCancelEditMaintenance}
+                className="text-xs text-slate-400 hover:text-white underline"
+              >
+                Cancelar
+              </button>
+            )}
+          </div>
+
+          <form onSubmit={handleSaveMaintenance} className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-slate-400 mb-1">Equipo / Activo (*)</label>
               <select
@@ -343,6 +446,7 @@ export default function MaintenanceList() {
               >
                 <option value="Preventivo">Preventivo</option>
                 <option value="Correctivo">Correctivo</option>
+                <option value="Limpieza">Limpieza</option>
                 <option value="Actualización">Actualización</option>
               </select>
             </div>
@@ -372,26 +476,41 @@ export default function MaintenanceList() {
 
             <button
               type="submit"
-              className="w-full bg-sky-600 hover:bg-sky-500 text-white font-medium py-2.5 rounded-lg transition-all"
+              className={`w-full font-medium py-2.5 rounded-lg transition-all text-white ${
+                editingMaintenanceId ? "bg-amber-600 hover:bg-amber-500" : "bg-sky-600 hover:bg-sky-500"
+              }`}
             >
-              Guardar Mantenimiento
+              {editingMaintenanceId ? "Actualizar Mantenimiento" : "Guardar Mantenimiento"}
             </button>
           </form>
         </div>
 
         {/* Tabla de Registros */}
         <div className="lg:col-span-2 bg-slate-800 border border-slate-700 p-5 rounded-xl">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
             <h2 className="text-lg font-semibold text-slate-200">Historial de Intervenciones</h2>
-            <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
-              <input
-                type="text"
-                placeholder="Buscar por equipo o descripción..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-sm text-slate-200 focus:border-sky-500 outline-none"
-              />
+            
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              {/* Botón Exportar */}
+              <button
+                onClick={handleExportToExcel}
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition-all"
+                title="Exportar mantenimientos a Excel"
+              >
+                <Download className="w-3.5 h-3.5" /> Exportar Excel
+              </button>
+
+              {/* Buscador */}
+              <div className="relative flex-1 sm:flex-none">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  placeholder="Buscar por equipo o descripción..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full sm:w-auto bg-slate-900 border border-slate-700 rounded-lg pl-9 pr-3 py-1.5 text-sm text-slate-200 focus:border-sky-500 outline-none"
+                />
+              </div>
             </div>
           </div>
 
@@ -403,12 +522,13 @@ export default function MaintenanceList() {
                   <th className="py-3 px-3">Equipo</th>
                   <th className="py-3 px-3">Tipo</th>
                   <th className="py-3 px-3">Descripción</th>
+                  <th className="py-3 px-3 text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700 text-slate-300">
                 {filteredMaintenances.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="py-8 text-center text-slate-500">
+                    <td colSpan={5} className="py-8 text-center text-slate-500">
                       No hay registros de mantenimiento almacenados.
                     </td>
                   </tr>
@@ -426,6 +546,7 @@ export default function MaintenanceList() {
                         <span className={`px-2 py-1 rounded text-xs font-semibold ${
                           item.maintenance_type === "Preventivo" ? "bg-sky-950 text-sky-400 border border-sky-800" :
                           item.maintenance_type === "Correctivo" ? "bg-amber-950 text-amber-400 border border-amber-800" :
+                          item.maintenance_type === "Limpieza" ? "bg-emerald-950 text-emerald-400 border border-emerald-800" :
                           "bg-purple-950 text-purple-400 border border-purple-800"
                         }`}>
                           {item.maintenance_type}
@@ -433,6 +554,22 @@ export default function MaintenanceList() {
                       </td>
                       <td className="py-3 px-3 text-slate-300 max-w-xs truncate">
                         {item.description}
+                      </td>
+                      <td className="py-3 px-3 text-right whitespace-nowrap space-x-1">
+                        <button
+                          onClick={() => handleEditMaintenance(item)}
+                          className="p-1 text-slate-400 hover:text-amber-400 transition-colors"
+                          title="Editar"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteMaintenance(item.id)}
+                          className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                          title="Eliminar"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </td>
                     </tr>
                   ))
@@ -475,37 +612,13 @@ export default function MaintenanceList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-slate-400 mb-1">Categoría</label>
-                  <select
+                  <label className="block text-xs text-slate-400 mb-1">Categoría (Escribir libremente)</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. Software, Redes, Servidores..."
                     className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200 outline-none"
                     value={formWorkflow.category}
                     onChange={(e) => setFormWorkflow({ ...formWorkflow, category: e.target.value })}
-                  >
-                    <option value="Software">Software</option>
-                    <option value="Redes">Redes / VPN</option>
-                    <option value="Sistema Operativo">Sistema Operativo</option>
-                    <option value="Seguridad">Seguridad</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">Etiquetas (separadas por coma)</label>
-                  <input
-                    type="text"
-                    placeholder="Linux, VPN, Tailscale"
-                    className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200 outline-none"
-                    value={formWorkflow.tags}
-                    onChange={(e) => setFormWorkflow({ ...formWorkflow, tags: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-slate-400 mb-1">Pasos / Instrucciones</label>
-                  <textarea
-                    required
-                    rows={4}
-                    placeholder="Paso 1: Ejecutar script..."
-                    className="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-200 outline-none"
-                    value={formWorkflow.steps}
-                    onChange={(e) => setFormWorkflow({ ...formWorkflow, steps: e.target.value })}
                   />
                 </div>
                 <div>
@@ -547,15 +660,22 @@ export default function MaintenanceList() {
                     <div key={wf.id} className="bg-slate-900 p-3 rounded-lg border border-slate-700 space-y-2">
                       <div className="flex justify-between items-start">
                         <span className="font-semibold text-sky-400 text-xs">{wf.title}</span>
-                        <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-medium border border-slate-700">
-                          {wf.category}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-medium border border-slate-700">
+                            {wf.category || "General"}
+                          </span>
+                          <button
+                            onClick={() => handleDeleteWorkflow(wf.id, wf.file_path)}
+                            className="text-slate-400 hover:text-red-400 transition-colors"
+                            title="Eliminar guía"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      <p className="text-xs text-slate-300 whitespace-pre-line bg-slate-950 p-2 rounded border border-slate-800">
-                        {wf.steps}
-                      </p>
+
                       {wf.file_path && (
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 pt-1">
                           <button
                             onClick={() => handleViewFile(wf.file_path, wf.file_name)}
                             className="flex items-center gap-1 text-[10px] text-sky-400 hover:text-sky-300 underline"
@@ -570,15 +690,6 @@ export default function MaintenanceList() {
                           </button>
                         </div>
                       )}
-                      {wf.tags && wf.tags.trim() !== "" && (
-                        <div className="flex flex-wrap gap-1">
-                          {wf.tags.split(",").map(t => t.trim()).filter(Boolean).map((t, idx) => (
-                            <span key={idx} className="bg-purple-950 text-purple-300 text-[10px] px-1.5 py-0.5 rounded border border-purple-800">
-                              #{t}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   ))
                 )}
@@ -588,7 +699,7 @@ export default function MaintenanceList() {
         </div>
       )}
 
-      {/* Visor interno de archivos adjuntos (PDF/TXT nativo, DOCX/XLSX renderizados en el navegador) */}
+      {/* Visor interno de archivos adjuntos */}
       {viewer.open && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-[60] p-4">
           <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl">
