@@ -99,30 +99,42 @@ export default function IpManagement() {
   };
 
   const handleAddDomain = async (e) => {
-    e.preventDefault();
-    if (!newDomain.domain_name.trim()) return;
+  e.preventDefault();
+  if (!newDomain.domain_name.trim()) return;
 
-    try {
-      const { data, error } = await supabase
-        .from('domains')
-        .insert([newDomain])
-        .select();
-
-      if (error) throw error;
-
-      setDomains([data[0], ...domains]);
-      setNewDomain({
-        domain_name: '',
-        provider: '',
-        dns_provider: '',
-        ip_address: '',
-        expiration_date: '',
-        notes: ''
-      });
-    } catch (err) {
-      alert(`Error al guardar dominio: ${err.message}`);
-    }
+  // Sanitizar el objeto: convierte los campos vacíos "" a null
+  const payload = {
+    domain_name: newDomain.domain_name.trim(),
+    provider: newDomain.provider.trim() || null,
+    dns_provider: newDomain.dns_provider.trim() || null,
+    ip_address: newDomain.ip_address.trim() || null,
+    expiration_date: newDomain.expiration_date || null, // Importante para evitar error de sintaxis en fechas
+    notes: newDomain.notes.trim() || null
   };
+
+  try {
+    const { data, error } = await supabase
+      .from('domains')
+      .insert([payload])
+      .select();
+
+    if (error) throw error;
+
+    setDomains([data[0], ...domains]);
+    
+    // Limpiar el formulario
+    setNewDomain({
+      domain_name: '',
+      provider: '',
+      dns_provider: '',
+      ip_address: '',
+      expiration_date: '',
+      notes: ''
+    });
+  } catch (err) {
+    alert(`Error al guardar dominio: ${err.message}`);
+  }
+};
 
   const handleDeleteDomain = async (id) => {
     if (!confirm('¿Estás seguro de eliminar este dominio?')) return;
