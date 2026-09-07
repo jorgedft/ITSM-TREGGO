@@ -47,6 +47,7 @@ export default function PhoneList() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      console.log('Datos traídos de Supabase:', data); // Log de depuración
       setPhones(data || []);
     } catch (err) {
       console.error('Error al cargar la telefonía:', err.message);
@@ -258,9 +259,127 @@ export default function PhoneList() {
   };
 
   return (
-    // ... Tu JSX permanece igual
     <div className="p-6 space-y-6">
-      {/* Tu componente actual */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Control de Telefonía</h1>
+          <p className="text-sm text-gray-500">Gestión de dispositivos móviles, líneas corporativas y SIM cards.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={handleExportCSV}
+            disabled={exporting || loading || phones.length === 0}
+            className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            <FileSpreadsheet size={16} /> Exportar CSV
+          </button>
+          <button
+            onClick={handleExportPDF}
+            disabled={exporting || loading || phones.length === 0}
+            className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            <FileText size={16} /> Exportar PDF
+          </button>
+          <button
+            onClick={() => navigate('/phones/new')}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <Plus size={16} /> Nuevo Teléfono
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-gray-500">Cargando inventario de teléfonos...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">
+                  <th className="py-3 px-4">Dispositivo</th>
+                  <th className="py-3 px-4">Número / SIM</th>
+                  <th className="py-3 px-4">IMEI</th>
+                  <th className="py-3 px-4">Asignado a</th>
+                  <th className="py-3 px-4">Dpto.</th>
+                  <th className="py-3 px-4">Plan Contrato</th>
+                  <th className="py-3 px-4">eSIM</th>
+                  <th className="py-3 px-4">Inicio Serv.</th>
+                  <th className="py-3 px-4">Fin Serv.</th>
+                  <th className="py-3 px-4 text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 text-sm whitespace-nowrap">
+                {phones.length === 0 ? (
+                  <tr>
+                    <td colSpan={10} className="py-8 text-center text-gray-400">
+                      No hay teléfonos registrados.
+                    </td>
+                  </tr>
+                ) : (
+                  phones.map((phone) => {
+                    const deviceName = `${phone.brand || ''} ${phone.model || ''}`.trim();
+                    const contractPlan = phone.contract_plan || phone.plan || null;
+                    const imeiVal = phone.imei || phone.imei1 || null;
+
+                    return (
+                      <tr key={phone.id} className="hover:bg-gray-50">
+                        <td className="py-3 px-4 font-semibold text-gray-800">
+                          {deviceName || <span className="text-gray-400 italic font-normal">Sin especificar</span>}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-xs text-blue-600">
+                          {phone.phone_number || <span className="text-gray-400 font-sans">Sin Línea</span>}
+                        </td>
+                        <td className="py-3 px-4 font-mono text-xs text-gray-600">
+                          {imeiVal || <span className="text-gray-400 font-sans">-</span>}
+                        </td>
+                        <td className="py-3 px-4 text-gray-700">
+                          {phone.assigned_to || <span className="text-gray-400 italic">Sin asignar</span>}
+                        </td>
+                        <td className="py-3 px-4 text-gray-700">
+                          {phone.department || <span className="text-gray-400">-</span>}
+                        </td>
+                        <td className="py-3 px-4 text-gray-700">
+                          {contractPlan || <span className="text-gray-400">-</span>}
+                        </td>
+                        <td className="py-3 px-4">
+                          {(phone.esim === true || phone.esim === 'true') && (
+                            <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
+                              eSIM
+                            </span>
+                          )}
+                          {(phone.esim === false || phone.esim === 'false') && (
+                            <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                              Física
+                            </span>
+                          )}
+                          {(phone.esim === null || phone.esim === undefined || phone.esim === '') && (
+                            <span className="text-gray-400">-</span>
+                          )}
+                        </td>
+                        <td className="py-3 px-4 text-xs text-gray-600">
+                          {phone.service_start_date || <span className="text-gray-400">-</span>}
+                        </td>
+                        <td className="py-3 px-4 text-xs text-gray-600">
+                          {phone.service_end_date || <span className="text-gray-400">-</span>}
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <button
+                            onClick={() => navigate(`/phones/${phone.id}/edit`)}
+                            className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
+                          >
+                            Editar
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
