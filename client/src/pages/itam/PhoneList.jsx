@@ -129,12 +129,12 @@ export default function PhoneList() {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(16);
       doc.setTextColor(255, 255, 255);
-      doc.text('CONTROL DE TELEFONÍA CORPORATIVA', 14, 12);
+      doc.text('GESTION DE EQUIPOS DE TELEFONIA', 14, 12);
 
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(203, 213, 225);
-      doc.text('Reporte General de Dispositivos, Líneas y Asignaciones', 14, 18);
+      doc.text('Reporte General de Dispositivos, Numeros y Asignaciones', 14, 18);
 
       // Metadata (Derecha del Banner)
       const dateStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
