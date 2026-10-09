@@ -5,6 +5,7 @@ Corre los scripts **en orden** en el SQL Editor de Supabase (dashboard → SQL E
 1. `001_roles_y_rls.sql` — crea la función `current_user_role()` y las políticas RLS base.
 2. `002_ajustar_check_de_role.sql` — amplía el CHECK de `profiles.role` para aceptar `admin`/`ti`/`rh` (solo hace falta una vez, ya corrido).
 3. `003_tabla_employees.sql` — agrega los campos del módulo Colaboradores a la tabla `employees`.
+4. `004_tabla_hr_attendance.sql` — crea las tablas del módulo Incidencias y Asistencia (`hr_attendance` y `hr_checador_map`).
 
 Cada script es idempotente: puedes volver a correrlo sin duplicar nada.
 
@@ -29,4 +30,4 @@ La UI bloquea la navegación (no se puede ni entrar), y las políticas RLS bloqu
 
 ## Pendiente cuando se diseñen más módulos de RH
 
-Cuando crees las tablas de Incidencias/Asistencia, Vacaciones, Nómina o Reclutamiento, agrégalas al arreglo `rh_tables` en `001_roles_y_rls.sql` (están comentadas como ejemplo) y vuelve a correrlo.
+Cuando crees las tablas de Vacaciones, Nómina o Reclutamiento, agrégalas al arreglo `rh_tables` en `001_roles_y_rls.sql` (están comentadas como ejemplo) y vuelve a correrlo, o dales su propio script de RLS como se hizo en `004_tabla_hr_attendance.sql`.
