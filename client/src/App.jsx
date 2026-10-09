@@ -58,29 +58,29 @@ export default function App() {
               <Route path="rh/nominas" element={<Nominas />} />
               <Route path="rh/reclutamiento" element={<Reclutamiento />} />
 
-              <Route path="assets" element={<AssetList />} />
-              <Route path="assets/new" element={<RoleRoute roles={['admin', 'ti']}><AssetForm /></RoleRoute>} />
-              <Route path="assets/:id" element={<AssetDetail />} />
-              <Route path="assets/:id/edit" element={<RoleRoute roles={['admin', 'ti']}><AssetForm /></RoleRoute>} />
+              <Route path="assets" element={<RoleRoute><AssetList /></RoleRoute>} />
+              <Route path="assets/new" element={<RoleRoute><AssetForm /></RoleRoute>} />
+              <Route path="assets/:id" element={<RoleRoute><AssetDetail /></RoleRoute>} />
+              <Route path="assets/:id/edit" element={<RoleRoute><AssetForm /></RoleRoute>} />
 
-              <Route path="phones" element={<PhoneList />} />
-              <Route path="phones/new" element={<RoleRoute roles={['admin', 'ti']}><PhoneForm /></RoleRoute>} />
-              <Route path="phones/:id/edit" element={<RoleRoute roles={['admin', 'ti']}><PhoneForm /></RoleRoute>} />
+              <Route path="phones" element={<RoleRoute><PhoneList /></RoleRoute>} />
+              <Route path="phones/new" element={<RoleRoute><PhoneForm /></RoleRoute>} />
+              <Route path="phones/:id/edit" element={<RoleRoute><PhoneForm /></RoleRoute>} />
 
               <Route path="tickets" element={<TicketList />} />
               <Route path="tickets/new" element={<TicketForm />} />
               <Route path="tickets/:id" element={<TicketDetail />} />
 
-              <Route path="responsivas" element={<ResponsivaList />} />
-              <Route path="responsivas/new" element={<RoleRoute roles={['admin', 'ti']}><ResponsivaForm /></RoleRoute>} />
+              <Route path="responsivas" element={<RoleRoute><ResponsivaList /></RoleRoute>} />
+              <Route path="responsivas/new" element={<RoleRoute><ResponsivaForm /></RoleRoute>} />
 
-              <Route path="licenses" element={<LicenseList />} />
-<Route path="licenses/new" element={<RoleRoute roles={['admin', 'ti']}><LicenseForm /></RoleRoute>} />
-<Route path="network" element={<IpManagement />} />
-<Route path="vault" element={<CredentialList />} />
-<Route path="maintenance" element={<MaintenanceList />} />
+              <Route path="licenses" element={<RoleRoute><LicenseList /></RoleRoute>} />
+<Route path="licenses/new" element={<RoleRoute><LicenseForm /></RoleRoute>} />
+<Route path="network" element={<RoleRoute><IpManagement /></RoleRoute>} />
+<Route path="vault" element={<RoleRoute><CredentialList /></RoleRoute>} />
+<Route path="maintenance" element={<RoleRoute><MaintenanceList /></RoleRoute>} />
 
-              <Route path="admin" element={<RoleRoute roles={['admin', 'ti']}><Administracion /></RoleRoute>} />
+              <Route path="admin" element={<RoleRoute><Administracion /></RoleRoute>} />
             </Route>
           </Route>
 
