@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Network, Search, RefreshCw, Save, HardDriveDownload, Globe, Plus, Trash2, X } from 'lucide-react';
 import { supabase } from '../../services/supabase';
+import { useRole } from '../../hooks/useRole';
 
 export default function IpManagement() {
+  const { canManageTI } = useRole();
   const [segment, setSegment] = useState('192.168.1');
   const [ipList, setIpList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -246,14 +248,16 @@ export default function IpManagement() {
             Gestionar Dominios Web
           </button>
 
-          <button
-            onClick={saveAllRows}
-            disabled={savingGlobal || loading}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
-          >
-            <HardDriveDownload size={18} />
-            {savingGlobal ? 'Guardando Segmento...' : 'Guardar Todo el Segmento'}
-          </button>
+          {canManageTI && (
+            <button
+              onClick={saveAllRows}
+              disabled={savingGlobal || loading}
+              className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-colors disabled:opacity-50"
+            >
+              <HardDriveDownload size={18} />
+              {savingGlobal ? 'Guardando Segmento...' : 'Guardar Todo el Segmento'}
+            </button>
+          )}
         </div>
       </div>
 
@@ -329,7 +333,8 @@ export default function IpManagement() {
                       <select
                         value={row.device_type}
                         onChange={(e) => updateIpRow(row.ip_address, 'device_type', e.target.value)}
-                        className="px-2 py-1 border rounded text-xs bg-white"
+                        disabled={!canManageTI}
+                        className="px-2 py-1 border rounded text-xs bg-white disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         <option value="PC">PC / Laptop</option>
                         <option value="SWITCH">Switch</option>
@@ -346,7 +351,8 @@ export default function IpManagement() {
                       <select
                         value={row.status}
                         onChange={(e) => updateIpRow(row.ip_address, 'status', e.target.value)}
-                        className={`px-2 py-1 rounded text-xs font-bold border ${
+                        disabled={!canManageTI}
+                        className={`px-2 py-1 rounded text-xs font-bold border disabled:opacity-60 disabled:cursor-not-allowed ${
                           row.status === 'AVAILABLE' ? 'bg-green-50 text-green-700 border-green-200' :
                           row.status === 'ASSIGNED' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'
                         }`}
@@ -363,7 +369,8 @@ export default function IpManagement() {
                         placeholder="00:1A:2B:3C:4D:5E"
                         value={row.mac_address || ''}
                         onChange={(e) => updateIpRow(row.ip_address, 'mac_address', e.target.value)}
-                        className="px-2 py-1 border rounded text-xs font-mono w-32 focus:ring-1 focus:ring-blue-500"
+                        disabled={!canManageTI}
+                        className="px-2 py-1 border rounded text-xs font-mono w-32 focus:ring-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       />
                     </td>
 
@@ -373,18 +380,21 @@ export default function IpManagement() {
                         placeholder="Escribe Usuario o Nombre de PC..."
                         value={row.assigned_to_text || ''}
                         onChange={(e) => updateIpRow(row.ip_address, 'assigned_to_text', e.target.value)}
-                        className="px-2 py-1 border rounded text-xs w-full max-w-xs focus:ring-1 focus:ring-blue-500"
+                        disabled={!canManageTI}
+                        className="px-2 py-1 border rounded text-xs w-full max-w-xs focus:ring-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       />
                     </td>
 
                     <td className="py-2 px-4 text-center">
-                      <button
-                        onClick={() => saveSingleRow(row)}
-                        className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
-                        title="Guardar este registro"
-                      >
-                        <Save size={16} />
-                      </button>
+                      {canManageTI && (
+                        <button
+                          onClick={() => saveSingleRow(row)}
+                          className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                          title="Guardar este registro"
+                        >
+                          <Save size={16} />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -414,6 +424,7 @@ export default function IpManagement() {
 
             <div className="p-6 overflow-y-auto space-y-6">
               {/* Formulario de Registro */}
+              {canManageTI && (
               <form onSubmit={handleAddDomain} className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
                 <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
                   <Plus size={16} className="text-indigo-600" /> Registrar Nuevo Dominio
@@ -496,6 +507,7 @@ export default function IpManagement() {
                   </button>
                 </div>
               </form>
+              )}
 
               {/* Tabla de Dominios */}
               <div className="border border-gray-200 rounded-lg overflow-hidden">
@@ -527,6 +539,7 @@ export default function IpManagement() {
                             <td className="py-2 px-3">{d.expiration_date || '-'}</td>
                             <td className="py-2 px-3 text-gray-500 max-w-xs truncate">{d.notes || '-'}</td>
                             <td className="py-2 px-3 text-center">
+                              {canManageTI && (
                               <button
                                 onClick={() => handleDeleteDomain(d.id)}
                                 className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
@@ -534,6 +547,7 @@ export default function IpManagement() {
                               >
                                 <Trash2 size={14} />
                               </button>
+                              )}
                             </td>
                           </tr>
                         ))}

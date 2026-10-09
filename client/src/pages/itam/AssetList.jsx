@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/services/supabase';
 import { ASSET_TYPES, LOCATIONS } from '@/utils/constants';
+import { useRole } from '@/hooks/useRole';
 import AssetForm from './AssetForm';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -61,6 +62,7 @@ function getLocationLabel(value) {
 }
 
 export default function AssetList() {
+  const { canManageTI } = useRole();
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -310,9 +312,11 @@ export default function AssetList() {
           >
             {exporting ? 'Exportando...' : 'Exportar PDF'}
           </button>
-          <button onClick={handleCreateNew} className="btn-primary">
-            + Nuevo Equipo
-          </button>
+          {canManageTI && (
+            <button onClick={handleCreateNew} className="btn-primary">
+              + Nuevo Equipo
+            </button>
+          )}
         </div>
       </div>
 
@@ -421,18 +425,24 @@ export default function AssetList() {
 
                   {/* Acciones */}
                   <td className="py-3 px-4 text-right space-x-2">
-                    <button
-                      onClick={() => handleEdit(item)}
-                      className="text-blue-600 hover:text-blue-800 text-xs font-medium"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="text-red-600 hover:text-red-800 text-xs font-medium"
-                    >
-                      Eliminar
-                    </button>
+                    {canManageTI ? (
+                      <>
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(item.id)}
+                          className="text-red-600 hover:text-red-800 text-xs font-medium"
+                        >
+                          Eliminar
+                        </button>
+                      </>
+                    ) : (
+                      <span className="text-gray-300 text-xs">—</span>
+                    )}
                   </td>
                 </tr>
               ))

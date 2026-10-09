@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
 import { Plus, FileText } from 'lucide-react';
+import { useRole } from '../../hooks/useRole';
 
 export default function ResponsivaList() {
+  const { canManageTI } = useRole();
   const navigate = useNavigate();
   const [responsivas, setResponsivas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,12 +38,14 @@ export default function ResponsivaList() {
           <h1 className="text-2xl font-bold text-gray-900">Cartas Responsivas</h1>
           <p className="text-sm text-gray-500">Gestión de resguardos y asignación formal de activos al personal.</p>
         </div>
-        <button
-          onClick={() => navigate('/responsivas/new')}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          <Plus size={16} /> Nueva Responsiva
-        </button>
+        {canManageTI && (
+          <button
+            onClick={() => navigate('/responsivas/new')}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <Plus size={16} /> Nueva Responsiva
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">

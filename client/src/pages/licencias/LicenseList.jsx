@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
 import { Plus, Pencil, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { useRole } from '../../hooks/useRole';
 import { EditLicenseModal } from '../../components/licencias/EditLicenseModal';
 
 export default function LicenseList() {
+  const { canManageTI } = useRole();
   const navigate = useNavigate();
   const [licenses, setLicenses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -98,12 +100,14 @@ export default function LicenseList() {
           <h1 className="text-2xl font-bold text-gray-900">Gestión de Licencias de Software</h1>
           <p className="text-sm text-gray-500">Control de suscripciones, llaves de activación y vencimientos.</p>
         </div>
-        <button
-          onClick={() => navigate('/licenses/new')}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          <Plus size={16} /> Nueva Licencia
-        </button>
+        {canManageTI && (
+          <button
+            onClick={() => navigate('/licenses/new')}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <Plus size={16} /> Nueva Licencia
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -131,12 +135,16 @@ export default function LicenseList() {
                       {getExpirationBadge(lic.expiration_date)}
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <button
-                        onClick={() => handleEditClick(lic)}
-                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-xs font-semibold hover:bg-blue-50 px-2 py-1 rounded transition-colors"
-                      >
-                        <Pencil size={14} /> Editar
-                      </button>
+                      {canManageTI ? (
+                        <button
+                          onClick={() => handleEditClick(lic)}
+                          className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-xs font-semibold hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+                        >
+                          <Pencil size={14} /> Editar
+                        </button>
+                      ) : (
+                        <span className="text-gray-300 text-xs">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}

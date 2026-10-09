@@ -4,12 +4,14 @@ import {
   ExternalLink, Trash2, Edit, ShieldCheck, RefreshCw 
 } from "lucide-react";
 import { supabase } from "../../services/supabase";
+import { useRole } from "../../hooks/useRole";
 import { Spinner } from "../../components/ui/Spinner";
 import { EmptyState } from "../../components/ui/EmptyState";
 
 const CATEGORIES = ["Todas", "Servidores", "Cuentas Web", "Redes / Routers", "Software / Licencias", "Bases de Datos", "General"];
 
 export default function CredentialList() {
+  const { canManageTI } = useRole();
   const [credentials, setCredentials] = useState([]);
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -166,9 +168,11 @@ export default function CredentialList() {
           </h1>
           <p className="text-xs text-gray-500">Administración centralizada de credenciales y accesos de TI</p>
         </div>
-        <button onClick={() => handleOpenModal()} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> Nueva Credencial
-        </button>
+        {canManageTI && (
+          <button onClick={() => handleOpenModal()} className="btn-primary flex items-center gap-2">
+            <Plus size={16} /> Nueva Credencial
+          </button>
+        )}
       </div>
 
       {/* Barra de Filtros y Búsqueda */}
@@ -295,22 +299,26 @@ export default function CredentialList() {
                       {item.employee?.full_name || "Sin asignar"}
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => handleOpenModal(item)}
-                          className="text-gray-400 hover:text-blue-600"
-                          title="Editar"
-                        >
-                          <Edit size={15} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id, item.title)}
-                          className="text-gray-400 hover:text-red-600"
-                          title="Eliminar"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                      {canManageTI ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => handleOpenModal(item)}
+                            className="text-gray-400 hover:text-blue-600"
+                            title="Editar"
+                          >
+                            <Edit size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(item.id, item.title)}
+                            className="text-gray-400 hover:text-red-600"
+                            title="Eliminar"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      ) : (
+                        <span className="text-gray-300 text-xs">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}

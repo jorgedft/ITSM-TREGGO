@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
 import { Plus, FileSpreadsheet, FileText } from 'lucide-react';
+import { useRole } from '../../hooks/useRole';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -29,6 +30,7 @@ function todayStr() {
 }
 
 export default function PhoneList() {
+  const { canManageTI } = useRole();
   const navigate = useNavigate();
   const [phones, setPhones] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -280,12 +282,14 @@ export default function PhoneList() {
           >
             <FileText size={16} /> Exportar PDF
           </button>
-          <button
-            onClick={() => navigate('/phones/new')}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-          >
-            <Plus size={16} /> Nuevo Teléfono
-          </button>
+          {canManageTI && (
+            <button
+              onClick={() => navigate('/phones/new')}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            >
+              <Plus size={16} /> Nuevo Teléfono
+            </button>
+          )}
         </div>
       </div>
 
@@ -364,12 +368,16 @@ export default function PhoneList() {
                           {phone.service_end_date || <span className="text-gray-400">-</span>}
                         </td>
                         <td className="py-3 px-4 text-right">
-                          <button
-                            onClick={() => navigate(`/phones/${phone.id}/edit`)}
-                            className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
-                          >
-                            Editar
-                          </button>
+                          {canManageTI ? (
+                            <button
+                              onClick={() => navigate(`/phones/${phone.id}/edit`)}
+                              className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
+                            >
+                              Editar
+                            </button>
+                          ) : (
+                            <span className="text-gray-300 text-xs">—</span>
+                          )}
                         </td>
                       </tr>
                     );

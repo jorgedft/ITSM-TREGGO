@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { supabase } from "../../services/supabase";
+import { useRole } from "../../hooks/useRole";
 import {
   Plus, Wrench, ShieldCheck, AlertTriangle, BookOpen,
   Search, Trash2, X, CheckCircle, Cpu, Filter, Paperclip, FileDown, Eye, Edit, Download
@@ -19,6 +20,7 @@ function getFileExtension(filename) {
 }
 
 export default function MaintenanceList() {
+  const { canManageTI } = useRole();
   const [maintenances, setMaintenances] = useState([]);
   const [assets, setAssets] = useState([]);
   const [workflows, setWorkflows] = useState([]);
@@ -403,6 +405,7 @@ export default function MaintenanceList() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Formulario de Registro / Edición */}
+        {canManageTI ? (
         <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl h-fit">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
@@ -484,6 +487,11 @@ export default function MaintenanceList() {
             </button>
           </form>
         </div>
+        ) : (
+        <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl h-fit flex items-center justify-center text-center text-sm text-slate-400">
+          Solo lectura: tu rol no tiene permiso para registrar mantenimientos.
+        </div>
+        )}
 
         {/* Tabla de Registros */}
         <div className="lg:col-span-2 bg-slate-800 border border-slate-700 p-5 rounded-xl">
@@ -556,20 +564,26 @@ export default function MaintenanceList() {
                         {item.description}
                       </td>
                       <td className="py-3 px-3 text-right whitespace-nowrap space-x-1">
-                        <button
-                          onClick={() => handleEditMaintenance(item)}
-                          className="p-1 text-slate-400 hover:text-amber-400 transition-colors"
-                          title="Editar"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteMaintenance(item.id)}
-                          className="p-1 text-slate-400 hover:text-red-400 transition-colors"
-                          title="Eliminar"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        {canManageTI ? (
+                          <>
+                            <button
+                              onClick={() => handleEditMaintenance(item)}
+                              className="p-1 text-slate-400 hover:text-amber-400 transition-colors"
+                              title="Editar"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteMaintenance(item.id)}
+                              className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+                              title="Eliminar"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-slate-600 text-xs">—</span>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -598,6 +612,7 @@ export default function MaintenanceList() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Formulario Crear Workflow */}
+              {canManageTI && (
               <form onSubmit={handleCreateWorkflow} className="space-y-3 bg-slate-900/60 p-4 border border-slate-700/60 rounded-lg">
                 <h4 className="font-semibold text-purple-300 text-sm">Registrar Nuevo Procedimiento</h4>
                 <div>
@@ -649,6 +664,7 @@ export default function MaintenanceList() {
                   {savingWorkflow ? "Guardando..." : "Guardar Guía"}
                 </button>
               </form>
+              )}
 
               {/* Lista de Guías en la Bóveda */}
               <div className="space-y-3 overflow-y-auto max-h-[350px] pr-2">
@@ -664,6 +680,7 @@ export default function MaintenanceList() {
                           <span className="bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[10px] font-medium border border-slate-700">
                             {wf.category || "General"}
                           </span>
+                          {canManageTI && (
                           <button
                             onClick={() => handleDeleteWorkflow(wf.id, wf.file_path)}
                             className="text-slate-400 hover:text-red-400 transition-colors"
@@ -671,6 +688,7 @@ export default function MaintenanceList() {
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
+                          )}
                         </div>
                       </div>
 

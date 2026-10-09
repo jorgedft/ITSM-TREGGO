@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
 import { ArrowLeft, Edit, Laptop, User, ShieldAlert } from 'lucide-react';
+import { useRole } from '../../hooks/useRole';
 
 export default function AssetDetail() {
+  const { canManageTI } = useRole();
   const { id } = useParams();
   const navigate = useNavigate();
   const [asset, setAsset] = useState(null);
@@ -48,12 +50,14 @@ export default function AssetDetail() {
         >
           <ArrowLeft size={18} /> Volver a Inventario
         </button>
-        <button
-          onClick={() => navigate(`/assets/${asset.id}/edit`)}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          <Edit size={16} /> Editar Equipo
-        </button>
+        {canManageTI && (
+          <button
+            onClick={() => navigate(`/assets/${asset.id}/edit`)}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            <Edit size={16} /> Editar Equipo
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-6 space-y-6">
