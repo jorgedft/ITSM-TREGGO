@@ -8,10 +8,14 @@ export const ASSET_TYPES = [
   { value: "other",      label: "Otro"          },
 ];
 export const LOCATIONS = [
-  { value: "main_office", label: "Oficina Principal" },
-  { value: "warehouse",   label: "Almacén" },
-  { value: "ti",          label: "Sistemas / TI" },
-  { value: "remote",      label: "Remoto" },
+  { value: "main_office",    label: "Oficina Principal" },
+  { value: "warehouse",      label: "Almacén" },
+  { value: "ti",             label: "Sistemas / TI" },
+  { value: "remote",         label: "Remoto" },
+  { value: "ventas",         label: "Ventas" },
+  { value: "rh",             label: "RH" },
+  { value: "compras",        label: "Compras" },
+  { value: "administracion", label: "Administración" },
 ];
 
 export const ASSET_STATUS = [

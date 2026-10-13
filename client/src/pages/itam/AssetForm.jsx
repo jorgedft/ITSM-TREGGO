@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/services/supabase';
 import { ASSET_TYPES, LOCATIONS } from '@/utils/constants';
+import { EditableSelect } from '@/components/ui/EditableSelect';
 
 const STATUS_OPTIONS = ['Disponible', 'Asignado', 'En Mantenimiento', 'Baja'];
 const CONDITION_OPTIONS = ['Nuevo', 'Excelente', 'Bueno', 'Regular', 'Malo'];
@@ -116,22 +117,13 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
           {/* Tipo de Activo */}
           <div>
             <label className="label">Tipo de Activo *</label>
-            <select
+            <EditableSelect
               name="asset_type"
               value={formData.asset_type}
               onChange={handleChange}
-              className="input-field"
-            >
-              {ASSET_TYPES.map((type) => {
-                const value = typeof type === 'object' ? type.value : type;
-                const label = typeof type === 'object' ? type.label : type;
-                return (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
+              options={ASSET_TYPES}
+              placeholder="Ej. Impresora 3D"
+            />
           </div>
 
           {/* Marca */}
@@ -231,22 +223,13 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
           {/* Ubicación / Oficina */}
           <div>
             <label className="label">Ubicación / Oficina</label>
-            <select
+            <EditableSelect
               name="location"
               value={formData.location}
               onChange={handleChange}
-              className="input-field"
-            >
-              {LOCATIONS.map((loc) => {
-                const value = typeof loc === 'object' ? loc.value : loc;
-                const label = typeof loc === 'object' ? loc.label : loc;
-                return (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
+              options={LOCATIONS}
+              placeholder="Ej. Sucursal Monterrey"
+            />
           </div>
         </div>
       </div>
