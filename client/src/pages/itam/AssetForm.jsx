@@ -51,6 +51,17 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Convierte cadenas vacías a null. Importante para serial_number: la tabla
+  // tiene un UNIQUE constraint, y dos textos vacíos ("") cuentan como
+  // duplicados para esa restricción, mientras que varios NULL sí se permiten.
+  const cleanValue = (val) => {
+    if (typeof val === 'string') {
+      const trimmed = val.trim();
+      return trimmed === '' ? null : trimmed;
+    }
+    return val ?? null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -60,14 +71,14 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
         asset_tag: formData.asset_tag,
         asset_code: formData.asset_tag, // Compatibilidad con esquemas previos
         asset_type: formData.asset_type,
-        brand: formData.brand,
-        model: formData.model,
-        serial_number: formData.serial_number,
+        brand: cleanValue(formData.brand),
+        model: cleanValue(formData.model),
+        serial_number: cleanValue(formData.serial_number),
         status: formData.status,
         condition: formData.condition,
-        assigned_to: formData.assigned_to,
+        assigned_to: cleanValue(formData.assigned_to),
         location: formData.location,
-        warranty_info: formData.warranty_info,
+        warranty_info: cleanValue(formData.warranty_info),
         warranty_expiration: formData.warranty_expiration || null
       };
 
