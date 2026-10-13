@@ -263,30 +263,31 @@ export default function PhoneList() {
         headStyles: {
           fillColor: navyColor,
           textColor: [255, 255, 255],
-          fontSize: 8,
+          fontSize: 7.5,
           fontStyle: 'bold',
           halign: 'left',
-          cellPadding: 3,
+          cellPadding: 2.5,
         },
         bodyStyles: {
-          fontSize: 8,
+          fontSize: 7.5,
           textColor: [30, 41, 59],
-          cellPadding: 2.5,
+          cellPadding: 2,
+          overflow: 'linebreak',
         },
         alternateRowStyles: {
           fillColor: [248, 250, 252],
         },
         columnStyles: {
-          0: { cellWidth: 42, fontStyle: 'bold' }, // Dispositivo
-          1: { cellWidth: 30, font: 'courier' },   // Número
-          2: { cellWidth: 35, font: 'courier' },   // IMEI
-          3: { cellWidth: 38 },                   // Asignado
-          4: { cellWidth: 28 },                   // Dpto.
-          5: { cellWidth: 38 },                   // Plan
-          6: { cellWidth: 20, halign: 'center' },  // Tipo SIM
-          7: { cellWidth: 23, halign: 'center' },  // Inicio
-          8: { cellWidth: 23, halign: 'center' },  // Fin
-          9: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, // Datos
+          0: { cellWidth: 36, fontStyle: 'bold' }, // Dispositivo
+          1: { cellWidth: 25, font: 'courier', fontSize: 7 },   // Número
+          2: { cellWidth: 28, font: 'courier', fontSize: 7 },   // IMEI
+          3: { cellWidth: 32 },                   // Asignado
+          4: { cellWidth: 22 },                   // Dpto.
+          5: { cellWidth: 32 },                   // Plan
+          6: { cellWidth: 16, halign: 'center' },  // Tipo SIM
+          7: { cellWidth: 19, halign: 'center', fontSize: 7 },  // Inicio
+          8: { cellWidth: 19, halign: 'center', fontSize: 7 },  // Fin
+          9: { cellWidth: 18, halign: 'center', fontStyle: 'bold', fontSize: 7 }, // Datos
         },
         didParseCell: (data) => {
           if (data.section === 'body') {
