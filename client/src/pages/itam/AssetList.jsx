@@ -5,6 +5,7 @@ import { useRole } from '@/hooks/useRole';
 import AssetForm from './AssetForm';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 
 function escapeCSV(value) {
   const str = String(value ?? '');
@@ -53,6 +54,39 @@ function compareAssetTags(a, b) {
   if (!pa.hasNumber && pb.hasNumber) return 1;
   return tagA.localeCompare(tagB);
 }
+
+// Considera "placeholder" valores como "SNXXXXXXXXXX" (sin dato real).
+function isPlaceholder(value) {
+  return /x{3,}/i.test(String(value || ''));
+}
+
+function hasRealValue(value) {
+  return Boolean(value && String(value).trim()) && !isPlaceholder(value);
+}
+
+// Campos clave para considerar un equipo "completo". No incluye "Asignado a":
+// un equipo Disponible sin asignar no es un dato faltante.
+const COMPLETENESS_FIELDS = ['asset_type', 'brand', 'model', 'serial_number', 'location'];
+
+function getCompleteness(item) {
+  const filled = COMPLETENESS_FIELDS.filter((f) => hasRealValue(item[f])).length;
+  if (filled === COMPLETENESS_FIELDS.length) return 'complete';
+  if (filled === 0) return 'empty';
+  return 'partial';
+}
+
+const COMPLETENESS_META = {
+  complete: { label: 'Completo',   icon: CheckCircle2,  className: 'text-emerald-500' },
+  partial:  { label: 'Incompleto', icon: AlertTriangle, className: 'text-amber-500' },
+  empty:    { label: 'Sin datos',  icon: XCircle,        className: 'text-red-500' },
+};
+
+// Colores de fondo por fila para el PDF (jsPDF-autotable, RGB 0-255).
+const COMPLETENESS_PDF_FILL = {
+  complete: [220, 252, 231], // emerald-100
+  partial:  [254, 243, 199], // amber-100
+  empty:    [254, 226, 226], // red-100
+};
 
 function getLocationLabel(value) {
   if (!value) return '—';
@@ -154,7 +188,7 @@ export default function AssetList() {
     try {
       setExporting(true);
 
-      const headers = ['Etiqueta', 'Tipo', 'Marca', 'Modelo', 'SN', 'Ubicación / Área', 'Estado'];
+      const headers = ['Etiqueta', 'Tipo', 'Marca', 'Modelo', 'SN', 'Ubicación / Área', 'Estado', 'Estatus de Datos'];
       const rows = assets.map((item) => [
         item.asset_tag || item.asset_code || '',
         item.asset_type || '',
@@ -163,6 +197,7 @@ export default function AssetList() {
         item.serial_number || '',
         getLocationLabel(item.location),
         renderStatus(item),
+        COMPLETENESS_META[getCompleteness(item)].label,
       ]);
 
       const metaLines = [
@@ -222,7 +257,7 @@ export default function AssetList() {
       // --- Generación de la Tabla con autoTable ---
       autoTable(doc, {
         startY: 42,
-        head: [['Etiqueta', 'Tipo', 'Marca / Modelo', 'Nº Serie (SN)', 'Ubicación / Área', 'Estado / Asignación']],
+        head: [['Etiqueta', 'Tipo', 'Marca / Modelo', 'Nº Serie (SN)', 'Ubicación / Área', 'Estado / Asignación', 'Datos']],
         body: assets.map((item) => [
           item.asset_tag || item.asset_code || '—',
           item.asset_type || '—',
@@ -230,7 +265,15 @@ export default function AssetList() {
           item.serial_number || '—',
           getLocationLabel(item.location),
           renderStatus(item),
+          COMPLETENESS_META[getCompleteness(item)].label,
         ]),
+        didParseCell: (data) => {
+          if (data.section === 'body') {
+            const item = assets[data.row.index];
+            const fill = COMPLETENESS_PDF_FILL[getCompleteness(item)];
+            if (fill) data.cell.styles.fillColor = fill;
+          }
+        },
         theme: 'grid',
         styles: {
           font: 'helvetica',
@@ -257,6 +300,7 @@ export default function AssetList() {
           3: { fontStyle: 'normal', cellWidth: 42 },
           4: { cellWidth: 45 },
           5: { cellWidth: 'auto' },
+          6: { cellWidth: 24, halign: 'center', fontStyle: 'bold' },
         },
         margin: { top: 42, right: 14, bottom: 18, left: 14 },
         didDrawPage: (data) => {
@@ -370,7 +414,16 @@ export default function AssetList() {
         <table className="table-app w-full text-left">
           <thead>
             <tr className="border-b bg-gray-50 text-xs font-semibold text-gray-600 uppercase">
-              <th className="py-3 px-4">Etiqueta de equipo</th>
+              <th className="py-3 px-4">
+                <span className="inline-flex items-center gap-1.5">
+                  Etiqueta de equipo
+                  <span className="hidden lg:inline-flex items-center gap-2 normal-case font-normal text-[10px] text-gray-400 ml-1">
+                    <span className="inline-flex items-center gap-0.5"><CheckCircle2 size={11} className="text-emerald-500" /> Completo</span>
+                    <span className="inline-flex items-center gap-0.5"><AlertTriangle size={11} className="text-amber-500" /> Incompleto</span>
+                    <span className="inline-flex items-center gap-0.5"><XCircle size={11} className="text-red-500" /> Sin datos</span>
+                  </span>
+                </span>
+              </th>
               <th className="py-3 px-4">Tipo</th>
               <th className="py-3 px-4">Marca / Modelo</th>
               <th className="py-3 px-4">SN</th>
@@ -389,11 +442,17 @@ export default function AssetList() {
                 <td colSpan="7" className="text-center py-6 text-gray-500">No se encontraron equipos</td>
               </tr>
             ) : (
-              assets.map((item) => (
+              assets.map((item) => {
+                const completeness = getCompleteness(item);
+                const { icon: CompletenessIcon, className: completenessClass, label: completenessLabel } = COMPLETENESS_META[completeness];
+                return (
                 <tr key={item.id} className="hover:bg-gray-50">
                   {/* 1. Etiqueta de equipo */}
                   <td className="py-3 px-4 font-semibold text-blue-600">
-                    {item.asset_tag || item.asset_code || '—'}
+                    <span className="inline-flex items-center gap-1.5">
+                      <CompletenessIcon size={15} className={`shrink-0 ${completenessClass}`} title={completenessLabel} />
+                      {item.asset_tag || item.asset_code || '—'}
+                    </span>
                   </td>
 
                   {/* 2. Tipo */}
@@ -445,7 +504,8 @@ export default function AssetList() {
                     )}
                   </td>
                 </tr>
-              ))
+                );
+              })
             )}
           </tbody>
         </table>
