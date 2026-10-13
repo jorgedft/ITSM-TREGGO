@@ -1,10 +1,67 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
-import { Plus, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
+import {
+  Plus, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, XCircle,
+  Trash2, Upload, Download,
+} from 'lucide-react';
 import { useRole } from '../../hooks/useRole';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+
+function normalizeHeader(h) {
+  return String(h || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+// Alias de encabezados aceptados al importar -> campo real de la tabla "phones".
+const IMPORT_HEADER_ALIASES = {
+  'marca': 'brand',
+  'modelo': 'model',
+  'imei': 'imei',
+  'numero sim': 'phone_number',
+  'numero': 'phone_number',
+  'telefono': 'phone_number',
+  'linea': 'phone_number',
+  'asignado a': 'assigned_to',
+  'asignado': 'assigned_to',
+  'dpto': 'department',
+  'departamento': 'department',
+  'plan contrato': 'contract_plan',
+  'plan': 'contract_plan',
+  'esim': 'esim',
+  'tipo sim': 'esim',
+  'inicio serv': 'service_start_date',
+  'fecha inicio': 'service_start_date',
+  'inicio': 'service_start_date',
+  'fin serv': 'service_end_date',
+  'fecha fin': 'service_end_date',
+  'fin': 'service_end_date',
+};
+
+function parseEsimValue(raw) {
+  const v = normalizeHeader(raw);
+  if (!v) return null;
+  if (['si', 'sí', 'esim', 'true', 'yes'].includes(v)) return true;
+  if (['no', 'fisica', 'física', 'false'].includes(v)) return false;
+  return null;
+}
+
+function parseImportDate(raw) {
+  const str = String(raw || '').trim();
+  if (!str) return null;
+  // dd/mm/aaaa -> aaaa-mm-dd
+  const m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (m) {
+    const [, d, mo, y] = m;
+    return `${y}-${mo.padStart(2, '0')}-${d.padStart(2, '0')}`;
+  }
+  return str; // ya viene en formato aaaa-mm-dd u otro aceptado por <input type="date">
+}
 
 // Considera "placeholder" valores como "SNXXXXXXXXXX" (sin dato real).
 function isPlaceholder(value) {
@@ -86,10 +143,116 @@ export default function PhoneList() {
   const [phones, setPhones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [selected, setSelected] = useState(new Set());
+  const [deleting, setDeleting] = useState(false);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchPhones();
   }, []);
+
+  const toggleSelect = (id) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    setSelected((prev) => (prev.size === phones.length ? new Set() : new Set(phones.map((p) => p.id))));
+  };
+
+  const handleDeleteOne = async (id) => {
+    if (!window.confirm('¿Eliminar este dispositivo? Esta acción no se puede deshacer.')) return;
+    const { error } = await supabase.from('phones').delete().eq('id', id);
+    if (error) {
+      alert('Error al eliminar: ' + error.message);
+      return;
+    }
+    setSelected((prev) => { const next = new Set(prev); next.delete(id); return next; });
+    fetchPhones();
+  };
+
+  const handleDeleteSelected = async () => {
+    const ids = Array.from(selected);
+    if (ids.length === 0) return;
+    if (!window.confirm(`¿Eliminar ${ids.length} dispositivo(s) seleccionado(s)? Esta acción no se puede deshacer.`)) return;
+    setDeleting(true);
+    try {
+      const { error } = await supabase.from('phones').delete().in('id', ids);
+      if (error) throw error;
+      setSelected(new Set());
+      fetchPhones();
+    } catch (err) {
+      alert('Error al eliminar: ' + err.message);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDownloadTemplate = () => {
+    const headers = ['Marca', 'Modelo', 'IMEI', 'Número / SIM', 'Asignado a', 'Dpto.', 'Plan Contrato', 'eSIM', 'Inicio Serv.', 'Fin Serv.'];
+    const ws = XLSX.utils.aoa_to_sheet([headers]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Plantilla');
+    XLSX.writeFile(wb, 'plantilla_telefonia.xlsx', { bookType: 'xlsx' });
+  };
+
+  const handleImportFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+      if (rows.length === 0) {
+        alert('El archivo no tiene filas para importar.');
+        return;
+      }
+
+      const payload = rows.map((row) => {
+        const record = {};
+        Object.entries(row).forEach(([header, value]) => {
+          const norm = normalizeHeader(header);
+          const str = String(value ?? '').trim();
+          if (norm === 'dispositivo') {
+            // Compatibilidad con el formato de exportación actual (Marca + Modelo combinados).
+            const [brand, ...rest] = str.split(' ');
+            if (!record.brand) record.brand = brand || '';
+            if (!record.model) record.model = rest.join(' ') || '';
+            return;
+          }
+          const field = IMPORT_HEADER_ALIASES[norm];
+          if (!field || str === '') return;
+          if (field === 'esim') record[field] = parseEsimValue(str);
+          else if (field === 'service_start_date' || field === 'service_end_date') record[field] = parseImportDate(str);
+          else record[field] = str;
+        });
+        return record;
+      }).filter((r) => r.brand || r.model || r.imei || r.phone_number);
+
+      if (payload.length === 0) {
+        alert('No se encontraron filas válidas (se necesita al menos Marca, Modelo, IMEI o Número).');
+        return;
+      }
+
+      const { error } = await supabase.from('phones').insert(payload);
+      if (error) throw error;
+
+      alert(`Se importaron ${payload.length} dispositivo(s).`);
+      fetchPhones();
+    } catch (err) {
+      alert('Error al importar: ' + err.message);
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const fetchPhones = async () => {
     try {
@@ -358,12 +521,37 @@ export default function PhoneList() {
             <FileText size={16} /> Exportar PDF
           </button>
           {canManageTI && (
-            <button
-              onClick={() => navigate('/phones/new')}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            >
-              <Plus size={16} /> Nuevo Teléfono
-            </button>
+            <>
+              <button
+                onClick={handleDownloadTemplate}
+                className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                <Download size={16} /> Plantilla
+              </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+              >
+                <Upload size={16} /> {importing ? 'Importando...' : 'Importar CSV/XLSX'}
+              </button>
+              <input ref={fileInputRef} type="file" accept=".csv,.xlsx,.xls" onChange={handleImportFile} className="hidden" />
+              {selected.size > 0 && (
+                <button
+                  onClick={handleDeleteSelected}
+                  disabled={deleting}
+                  className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                >
+                  <Trash2 size={16} /> {deleting ? 'Eliminando...' : `Eliminar (${selected.size})`}
+                </button>
+              )}
+              <button
+                onClick={() => navigate('/phones/new')}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                <Plus size={16} /> Nuevo Teléfono
+              </button>
+            </>
           )}
         </div>
       </div>
@@ -376,6 +564,16 @@ export default function PhoneList() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">
+                  {canManageTI && (
+                    <th className="py-3 px-4 w-10">
+                      <input
+                        type="checkbox"
+                        checked={phones.length > 0 && selected.size === phones.length}
+                        onChange={toggleSelectAll}
+                        className="rounded border-gray-300"
+                      />
+                    </th>
+                  )}
                   <th className="py-3 px-4">
                     <span className="inline-flex items-center gap-1.5">
                       Dispositivo
@@ -400,7 +598,7 @@ export default function PhoneList() {
               <tbody className="divide-y divide-gray-200 text-sm whitespace-nowrap">
                 {phones.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="py-8 text-center text-gray-400">
+                    <td colSpan={canManageTI ? 11 : 10} className="py-8 text-center text-gray-400">
                       No hay teléfonos registrados.
                     </td>
                   </tr>
@@ -414,6 +612,16 @@ export default function PhoneList() {
 
                     return (
                       <tr key={phone.id} className="hover:bg-gray-50">
+                        {canManageTI && (
+                          <td className="py-3 px-4">
+                            <input
+                              type="checkbox"
+                              checked={selected.has(phone.id)}
+                              onChange={() => toggleSelect(phone.id)}
+                              className="rounded border-gray-300"
+                            />
+                          </td>
+                        )}
                         <td className="py-3 px-4 font-semibold text-gray-800">
                           <span className="inline-flex items-center gap-1.5">
                             <CompletenessIcon size={15} className={`shrink-0 ${completenessClass}`} title={completenessLabel} />
@@ -456,14 +664,22 @@ export default function PhoneList() {
                         <td className="py-3 px-4 text-xs text-gray-600">
                           {phone.service_end_date || <span className="text-gray-400">-</span>}
                         </td>
-                        <td className="py-3 px-4 text-right">
+                        <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
                           {canManageTI ? (
-                            <button
-                              onClick={() => navigate(`/phones/${phone.id}/edit`)}
-                              className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
-                            >
-                              Editar
-                            </button>
+                            <>
+                              <button
+                                onClick={() => navigate(`/phones/${phone.id}/edit`)}
+                                className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
+                              >
+                                Editar
+                              </button>
+                              <button
+                                onClick={() => handleDeleteOne(phone.id)}
+                                className="text-red-600 hover:text-red-800 text-xs font-semibold"
+                              >
+                                Eliminar
+                              </button>
+                            </>
                           ) : (
                             <span className="text-gray-300 text-xs">—</span>
                           )}
