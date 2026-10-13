@@ -88,6 +88,29 @@ const COMPLETENESS_PDF_FILL = {
   empty:    [254, 226, 226], // red-100
 };
 
+// Resumen estadístico del inventario (respeta los filtros/búsqueda activos,
+// ya que se calcula sobre la misma lista `assets` que se exporta).
+function computeAssetStats(assets) {
+  const count = (pred) => assets.filter(pred).length;
+  const completenessCounts = assets.reduce((acc, item) => {
+    const c = getCompleteness(item);
+    acc[c] = (acc[c] || 0) + 1;
+    return acc;
+  }, {});
+
+  return {
+    total: assets.length,
+    asignados: count((a) => a.status === 'Asignado'),
+    disponibles: count((a) => a.status === 'Disponible'),
+    mantenimiento: count((a) => a.status === 'En Mantenimiento'),
+    baja: count((a) => a.status === 'Baja'),
+    regularOMal: count((a) => a.condition === 'Regular' || a.condition === 'Malo'),
+    datosCompletos: completenessCounts.complete || 0,
+    datosIncompletos: completenessCounts.partial || 0,
+    datosSinInfo: completenessCounts.empty || 0,
+  };
+}
+
 function getLocationLabel(value) {
   if (!value) return '—';
   const match = LOCATIONS.find((loc) => (typeof loc === 'object' ? loc.value : loc) === value);
@@ -200,10 +223,21 @@ export default function AssetList() {
         COMPLETENESS_META[getCompleteness(item)].label,
       ]);
 
+      const stats = computeAssetStats(assets);
       const metaLines = [
         ['Gestión de Equipos Treggo'],
         [`Generado: ${new Date().toLocaleString('es-MX')}`],
-        [`Total de equipos: ${assets.length}`],
+        [],
+        ['Resumen del Inventario'],
+        ['Total de equipos', stats.total],
+        ['Asignados', stats.asignados],
+        ['Disponibles', stats.disponibles],
+        ['En mantenimiento', stats.mantenimiento],
+        ['De baja', stats.baja],
+        ['En condición regular/mala', stats.regularOMal],
+        ['Con datos completos', stats.datosCompletos],
+        ['Con datos incompletos', stats.datosIncompletos],
+        ['Sin datos clave', stats.datosSinInfo],
         [],
       ];
 
@@ -252,11 +286,38 @@ export default function AssetList() {
       doc.setFontSize(9);
       doc.setTextColor(100, 116, 139);
       doc.text(`Fecha de emisión: ${nowStr}`, 14, 32);
-      doc.text(`Total de equipos registrados: ${assets.length}`, 14, 37);
+
+      // --- Tarjetas de Resumen del Inventario ---
+      const stats = computeAssetStats(assets);
+      const summaryCards = [
+        { label: 'Total Equipos', value: stats.total, fill: [226, 232, 240] },
+        { label: 'Asignados', value: stats.asignados, fill: [219, 234, 254] },
+        { label: 'Disponibles', value: stats.disponibles, fill: [209, 250, 229] },
+        { label: 'Mantenimiento', value: stats.mantenimiento, fill: [254, 243, 199] },
+        { label: 'De Baja', value: stats.baja, fill: [241, 245, 249] },
+        { label: 'Cond. Regular/Mala', value: stats.regularOMal, fill: [254, 226, 226] },
+      ];
+      const cardY = 36;
+      const cardH = 14;
+      const cardGap = 2;
+      const cardW = (269 - cardGap * (summaryCards.length - 1)) / summaryCards.length;
+      summaryCards.forEach((card, i) => {
+        const x = 14 + i * (cardW + cardGap);
+        doc.setFillColor(...card.fill);
+        doc.roundedRect(x, cardY, cardW, cardH, 1.5, 1.5, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(30, 41, 59);
+        doc.text(String(card.value), x + cardW / 2, cardY + 7, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(71, 85, 105);
+        doc.text(card.label, x + cardW / 2, cardY + 11.5, { align: 'center' });
+      });
 
       // --- Generación de la Tabla con autoTable ---
       autoTable(doc, {
-        startY: 42,
+        startY: cardY + cardH + 6,
         head: [['Etiqueta', 'Tipo', 'Marca / Modelo', 'Nº Serie (SN)', 'Ubicación / Área', 'Estado / Asignación', 'Datos']],
         body: assets.map((item) => [
           item.asset_tag || item.asset_code || '—',
@@ -302,7 +363,7 @@ export default function AssetList() {
           5: { cellWidth: 'auto' },
           6: { cellWidth: 24, halign: 'center', fontStyle: 'bold' },
         },
-        margin: { top: 42, right: 14, bottom: 18, left: 14 },
+        margin: { top: 20, right: 14, bottom: 18, left: 14 },
         didDrawPage: (data) => {
           // --- Pie de página en cada hoja ---
           const pageCount = doc.internal.getNumberOfPages();
