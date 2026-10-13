@@ -1,10 +1,61 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../services/supabase';
-import { Plus, FileSpreadsheet, FileText } from 'lucide-react';
+import { Plus, FileSpreadsheet, FileText, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
 import { useRole } from '../../hooks/useRole';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+
+// Considera "placeholder" valores como "SNXXXXXXXXXX" (sin dato real).
+function isPlaceholder(value) {
+  return /x{3,}/i.test(String(value || ''));
+}
+function hasRealValue(value) {
+  return Boolean(value && String(value).trim()) && !isPlaceholder(value);
+}
+
+// Campos clave para considerar un dispositivo "completo". No incluye
+// "Asignado a": un teléfono disponible sin asignar es válido.
+const PHONE_COMPLETENESS_FIELDS = ['brand', 'model', 'imei', 'phone_number', 'contract_plan', 'department'];
+
+function getPhoneCompleteness(item) {
+  const filled = PHONE_COMPLETENESS_FIELDS.filter((f) => hasRealValue(item[f])).length;
+  if (filled === PHONE_COMPLETENESS_FIELDS.length) return 'complete';
+  if (filled === 0) return 'empty';
+  return 'partial';
+}
+
+const COMPLETENESS_META = {
+  complete: { label: 'Completo',   icon: CheckCircle2,  className: 'text-emerald-500' },
+  partial:  { label: 'Incompleto', icon: AlertTriangle, className: 'text-amber-500' },
+  empty:    { label: 'Sin datos',  icon: XCircle,        className: 'text-red-500' },
+};
+
+const COMPLETENESS_PDF_FILL = {
+  complete: [220, 252, 231], // emerald-100
+  partial:  [254, 243, 199], // amber-100
+  empty:    [254, 226, 226], // red-100
+};
+
+// Resumen estadístico del inventario de telefonía (respeta filtros activos).
+function computePhoneStats(phones) {
+  const count = (pred) => phones.filter(pred).length;
+  const completenessCounts = phones.reduce((acc, item) => {
+    const c = getPhoneCompleteness(item);
+    acc[c] = (acc[c] || 0) + 1;
+    return acc;
+  }, {});
+  return {
+    total: phones.length,
+    asignados: count((p) => p.assigned_to && p.assigned_to.trim() !== ''),
+    sinAsignar: count((p) => !p.assigned_to || p.assigned_to.trim() === ''),
+    esim: count((p) => p.esim === true || p.esim === 'true'),
+    simFisica: count((p) => p.esim === false || p.esim === 'false'),
+    datosCompletos: completenessCounts.complete || 0,
+    datosIncompletos: completenessCounts.partial || 0,
+    datosSinInfo: completenessCounts.empty || 0,
+  };
+}
 
 function escapeCSV(value) {
   const str = String(value ?? '');
@@ -90,7 +141,24 @@ export default function PhoneList() {
         phone.service_end_date || '-',
       ]);
 
-      const csvContent = [headers, ...rows]
+      const stats = computePhoneStats(phones);
+      const metaLines = [
+        ['Gestión de Telefonía Treggo'],
+        [`Generado: ${new Date().toLocaleString('es-MX')}`],
+        [],
+        ['Resumen del Inventario'],
+        ['Total de dispositivos', stats.total],
+        ['Asignados', stats.asignados],
+        ['Sin asignar', stats.sinAsignar],
+        ['eSIM', stats.esim],
+        ['SIM física', stats.simFisica],
+        ['Con datos completos', stats.datosCompletos],
+        ['Con datos incompletos', stats.datosIncompletos],
+        ['Sin datos clave', stats.datosSinInfo],
+        [],
+      ];
+
+      const csvContent = [...metaLines, headers, ...rows]
         .map((row) => row.map(escapeCSV).join(','))
         .join('\r\n');
 
@@ -115,9 +183,8 @@ export default function PhoneList() {
       const textMuted = [100, 116, 139];  // #64748b
 
       // Métrica y Estadísticas Rápidas
-      const totalPhones = phones.length;
-      const esimCount = phones.filter(p => p.esim === true || p.esim === 'true').length;
-      const assignedCount = phones.filter(p => p.assigned_to && p.assigned_to.trim() !== '').length;
+      const stats = computePhoneStats(phones);
+      const totalPhones = stats.total;
 
       // 1. BANNER DE ENCABEZADO
       doc.setFillColor(...navyColor);
@@ -144,36 +211,36 @@ export default function PhoneList() {
       doc.text(`Fecha: ${dateStr}`, 283, 12, { align: 'right' });
       doc.text(`Total Registros: ${totalPhones}`, 283, 18, { align: 'right' });
 
-      // 2. BLOQUE DE MÉTRICAS / RESUMEN
-      doc.setFillColor(...grayLight);
-      doc.roundedRect(14, 29, 269, 14, 2, 2, 'F');
-      doc.setDrawColor(226, 232, 240);
-      doc.roundedRect(14, 29, 269, 14, 2, 2, 'D');
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(8);
-      doc.setTextColor(...navyColor);
-      
-      // KPI 1: Dispositivos
-      doc.text('TOTAL EQUIPOS:', 20, 37);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${totalPhones}`, 50, 37);
-
-      // KPI 2: Asignados
-      doc.setFont('helvetica', 'bold');
-      doc.text('ASIGNADOS:', 90, 37);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${assignedCount} (${Math.round((assignedCount / (totalPhones || 1)) * 100)}%)`, 115, 37);
-
-      // KPI 3: Tecnología SIM
-      doc.setFont('helvetica', 'bold');
-      doc.text('TECNOLOGÍA:', 170, 37);
-      doc.setFont('helvetica', 'normal');
-      doc.text(`${esimCount} eSIM / ${totalPhones - esimCount} SIM Física`, 198, 37);
+      // 2. TARJETAS DE RESUMEN DEL INVENTARIO
+      const summaryCards = [
+        { label: 'Total Equipos', value: stats.total, fill: [226, 232, 240] },
+        { label: 'Asignados', value: stats.asignados, fill: [219, 234, 254] },
+        { label: 'Sin Asignar', value: stats.sinAsignar, fill: [241, 245, 249] },
+        { label: 'eSIM', value: stats.esim, fill: [237, 233, 254] },
+        { label: 'SIM Física', value: stats.simFisica, fill: [224, 242, 254] },
+        { label: 'Datos Completos', value: stats.datosCompletos, fill: [209, 250, 229] },
+      ];
+      const cardY = 29;
+      const cardH = 14;
+      const cardGap = 2;
+      const cardW = (269 - cardGap * (summaryCards.length - 1)) / summaryCards.length;
+      summaryCards.forEach((card, i) => {
+        const x = 14 + i * (cardW + cardGap);
+        doc.setFillColor(...card.fill);
+        doc.roundedRect(x, cardY, cardW, cardH, 1.5, 1.5, 'F');
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(...navyColor);
+        doc.text(String(card.value), x + cardW / 2, cardY + 7, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(6.5);
+        doc.setTextColor(71, 85, 105);
+        doc.text(card.label, x + cardW / 2, cardY + 11.5, { align: 'center' });
+      });
 
       // 3. TABLA CON AUTOTABLE
-      const head = [['Dispositivo', 'Número / SIM', 'IMEI', 'Asignado a', 'Dpto.', 'Plan Contrato', 'Tipo SIM', 'Inicio Serv.', 'Fin Serv.']];
-      
+      const head = [['Dispositivo', 'Número / SIM', 'IMEI', 'Asignado a', 'Dpto.', 'Plan Contrato', 'Tipo SIM', 'Inicio Serv.', 'Fin Serv.', 'Datos']];
+
       const body = phones.map((phone) => [
         `${phone.brand || ''} ${phone.model || ''}`.trim() || 'Sin Especificar',
         phone.phone_number || 'Sin Línea',
@@ -184,10 +251,12 @@ export default function PhoneList() {
         getEsimText(phone.esim),
         phone.service_start_date || '-',
         phone.service_end_date || '-',
+        COMPLETENESS_META[getPhoneCompleteness(phone)].label,
       ]);
 
+      const tableStartY = cardY + cardH + 4;
       autoTable(doc, {
-        startY: 47,
+        startY: tableStartY,
         head: head,
         body: body,
         theme: 'grid',
@@ -217,8 +286,13 @@ export default function PhoneList() {
           6: { cellWidth: 20, halign: 'center' },  // Tipo SIM
           7: { cellWidth: 23, halign: 'center' },  // Inicio
           8: { cellWidth: 23, halign: 'center' },  // Fin
+          9: { cellWidth: 20, halign: 'center', fontStyle: 'bold' }, // Datos
         },
         didParseCell: (data) => {
+          if (data.section === 'body') {
+            const fill = COMPLETENESS_PDF_FILL[getPhoneCompleteness(phones[data.row.index])];
+            if (fill) data.cell.styles.fillColor = fill;
+          }
           // Destacar eSIM vs SIM Física
           if (data.section === 'body' && data.column.index === 6) {
             if (data.cell.raw === 'eSIM') {
@@ -234,7 +308,7 @@ export default function PhoneList() {
             data.cell.styles.fontStyle = 'italic';
           }
         },
-        margin: { top: 47, left: 14, right: 14, bottom: 15 },
+        margin: { top: 20, left: 14, right: 14, bottom: 15 },
         didDrawPage: (data) => {
           // Pie de Página
           const totalPages = doc.internal.getNumberOfPages();
@@ -301,7 +375,16 @@ export default function PhoneList() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">
-                  <th className="py-3 px-4">Dispositivo</th>
+                  <th className="py-3 px-4">
+                    <span className="inline-flex items-center gap-1.5">
+                      Dispositivo
+                      <span className="hidden lg:inline-flex items-center gap-2 normal-case font-normal text-[10px] text-gray-400 ml-1">
+                        <span className="inline-flex items-center gap-0.5"><CheckCircle2 size={11} className="text-emerald-500" /> Completo</span>
+                        <span className="inline-flex items-center gap-0.5"><AlertTriangle size={11} className="text-amber-500" /> Incompleto</span>
+                        <span className="inline-flex items-center gap-0.5"><XCircle size={11} className="text-red-500" /> Sin datos</span>
+                      </span>
+                    </span>
+                  </th>
                   <th className="py-3 px-4">Número / SIM</th>
                   <th className="py-3 px-4">IMEI</th>
                   <th className="py-3 px-4">Asignado a</th>
@@ -325,11 +408,16 @@ export default function PhoneList() {
                     const deviceName = `${phone.brand || ''} ${phone.model || ''}`.trim();
                     const contractPlan = phone.contract_plan || phone.plan || null;
                     const imeiVal = phone.imei || phone.imei1 || null;
+                    const completeness = getPhoneCompleteness(phone);
+                    const { icon: CompletenessIcon, className: completenessClass, label: completenessLabel } = COMPLETENESS_META[completeness];
 
                     return (
                       <tr key={phone.id} className="hover:bg-gray-50">
                         <td className="py-3 px-4 font-semibold text-gray-800">
-                          {deviceName || <span className="text-gray-400 italic font-normal">Sin especificar</span>}
+                          <span className="inline-flex items-center gap-1.5">
+                            <CompletenessIcon size={15} className={`shrink-0 ${completenessClass}`} title={completenessLabel} />
+                            {deviceName || <span className="text-gray-400 italic font-normal">Sin especificar</span>}
+                          </span>
                         </td>
                         <td className="py-3 px-4 font-mono text-xs text-blue-600">
                           {phone.phone_number || <span className="text-gray-400 font-sans">Sin Línea</span>}
