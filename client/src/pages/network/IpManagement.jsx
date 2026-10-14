@@ -1,7 +1,45 @@
 import { useState, useEffect } from 'react';
-import { Network, Search, RefreshCw, Save, HardDriveDownload, Globe, Plus, Trash2, X } from 'lucide-react';
+import {
+  Network, Search, RefreshCw, Save, HardDriveDownload, Globe, Plus, Trash2, X,
+  LayoutGrid, Rows3, Monitor, Server, Router, Wifi, Printer, Camera, CircleDot,
+} from 'lucide-react';
 import { supabase } from '../../services/supabase';
 import { useRole } from '../../hooks/useRole';
+
+const DEVICE_ICONS = {
+  PC: Monitor,
+  SWITCH: Router,
+  ROUTER: Router,
+  'ACCESS POINT': Wifi,
+  SERVER: Server,
+  IMPRESORA: Printer,
+  CAMARA: Camera,
+  LIBRE: CircleDot,
+};
+
+const STATUS_STYLES = {
+  AVAILABLE: {
+    label: 'Disponible',
+    tile: 'bg-emerald-500/10 border-emerald-400/40 text-emerald-300 hover:bg-emerald-500/20 hover:border-emerald-400/80',
+    glow: 'hover:shadow-[0_0_16px_rgba(16,185,129,0.55)]',
+    dot: 'bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.9)]',
+    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/40',
+  },
+  ASSIGNED: {
+    label: 'En Uso',
+    tile: 'bg-cyan-500/10 border-cyan-400/40 text-cyan-300 hover:bg-cyan-500/20 hover:border-cyan-400/80',
+    glow: 'hover:shadow-[0_0_16px_rgba(34,211,238,0.55)]',
+    dot: 'bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.9)]',
+    badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-400/40',
+  },
+  RESERVED: {
+    label: 'Reservada',
+    tile: 'bg-amber-500/10 border-amber-400/40 text-amber-300 hover:bg-amber-500/20 hover:border-amber-400/80',
+    glow: 'hover:shadow-[0_0_16px_rgba(245,158,11,0.55)]',
+    dot: 'bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.9)]',
+    badge: 'bg-amber-500/15 text-amber-300 border-amber-400/40',
+  },
+};
 
 export default function IpManagement() {
   const { canManageTI } = useRole();
@@ -11,6 +49,20 @@ export default function IpManagement() {
   const [filter, setFilter] = useState('ALL');
   const [loading, setLoading] = useState(false);
   const [savingGlobal, setSavingGlobal] = useState(false);
+  const [view, setView] = useState('grid'); // 'grid' (Mapa de Red) | 'table' (clásica)
+  const [selectedIp, setSelectedIp] = useState(null);
+  const [panelVisible, setPanelVisible] = useState(false);
+  const [savingSelected, setSavingSelected] = useState(false);
+
+  const openIpPanel = (ip) => {
+    setSelectedIp(ip);
+    requestAnimationFrame(() => requestAnimationFrame(() => setPanelVisible(true)));
+  };
+
+  const closeIpPanel = () => {
+    setPanelVisible(false);
+    setTimeout(() => setSelectedIp(null), 200);
+  };
 
   // Estados para Modal y Dominios
   const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
@@ -188,7 +240,6 @@ export default function IpManagement() {
         }], { onConflict: 'ip_address' });
 
       if (error) throw error;
-      alert(`Guardado con éxito: ${row.ip_address}`);
     } catch (err) {
       alert(`Error al guardar en Supabase: ${err.message}`);
     }
@@ -280,18 +331,43 @@ export default function IpManagement() {
           </button>
         </form>
 
-        <div className="flex gap-2">
-          {['ALL', 'AVAILABLE', 'ASSIGNED', 'RESERVED'].map(s => (
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2">
+            {['ALL', 'AVAILABLE', 'ASSIGNED', 'RESERVED'].map(s => (
+              <button
+                key={s}
+                onClick={() => setFilter(s)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                  filter === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {s === 'ALL' ? 'Todas (254)' : s === 'AVAILABLE' ? 'Disponibles' : s === 'ASSIGNED' ? 'En Uso' : 'Reservadas'}
+              </button>
+            ))}
+          </div>
+
+          <div className="h-6 w-px bg-gray-200" />
+
+          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
             <button
-              key={s}
-              onClick={() => setFilter(s)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                filter === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              onClick={() => setView('grid')}
+              title="Mapa de Red"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                view === 'grid' ? 'bg-slate-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {s === 'ALL' ? 'Todas (254)' : s === 'AVAILABLE' ? 'Disponibles' : s === 'ASSIGNED' ? 'En Uso' : 'Reservadas'}
+              <LayoutGrid size={14} /> Mapa
             </button>
-          ))}
+            <button
+              onClick={() => setView('table')}
+              title="Vista de Tabla"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                view === 'table' ? 'bg-slate-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              <Rows3 size={14} /> Tabla
+            </button>
+          </div>
         </div>
       </div>
 
@@ -307,7 +383,81 @@ export default function IpManagement() {
         />
       </div>
 
-      {/* Tabla Interactiva de IPs */}
+      {/* Franja de estadísticas en vivo */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { key: 'ALL', label: 'Total IPs', value: ipList.length, color: 'text-slate-200', dot: 'bg-slate-400' },
+          { key: 'AVAILABLE', label: 'Disponibles', value: ipList.filter(i => i.status === 'AVAILABLE').length, color: 'text-emerald-300', dot: STATUS_STYLES.AVAILABLE.dot },
+          { key: 'ASSIGNED', label: 'En Uso', value: ipList.filter(i => i.status === 'ASSIGNED').length, color: 'text-cyan-300', dot: STATUS_STYLES.ASSIGNED.dot },
+          { key: 'RESERVED', label: 'Reservadas', value: ipList.filter(i => i.status === 'RESERVED').length, color: 'text-amber-300', dot: STATUS_STYLES.RESERVED.dot },
+        ].map((card) => (
+          <button
+            key={card.key}
+            onClick={() => setFilter(card.key)}
+            className={`bg-slate-900 border rounded-xl p-3.5 flex items-center gap-3 text-left transition-all hover:-translate-y-0.5 ${
+              filter === card.key ? 'border-blue-400/60 shadow-[0_0_14px_rgba(59,130,246,0.35)]' : 'border-slate-800'
+            }`}
+          >
+            <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${card.dot}`} />
+            <div className="min-w-0">
+              <p className={`text-xl font-extrabold tracking-tight ${card.color}`}>{card.value}</p>
+              <p className="text-[11px] text-slate-400 font-medium truncate">{card.label}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      {/* MAPA DE RED: grid interactivo de IPs */}
+      {view === 'grid' && (
+        <div
+          className="relative bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-inner overflow-hidden"
+          style={{
+            backgroundImage:
+              'linear-gradient(rgba(148,163,184,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.07) 1px, transparent 1px)',
+            backgroundSize: '22px 22px',
+          }}
+        >
+          {loading ? (
+            <div className="py-16 text-center text-slate-400 text-sm">Generando plantilla del segmento {segment}.X...</div>
+          ) : filteredIps.length === 0 ? (
+            <div className="py-16 text-center text-slate-500 text-sm">No hay direcciones que coincidan con el filtro.</div>
+          ) : (
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(58px,1fr))] gap-2 max-h-[560px] overflow-y-auto pr-1">
+              {filteredIps.map((row) => {
+                const style = STATUS_STYLES[row.status] || STATUS_STYLES.AVAILABLE;
+                const DeviceIcon = DEVICE_ICONS[row.device_type] || Monitor;
+                const lastOctet = row.ip_address.split('.').pop();
+                return (
+                  <button
+                    key={row.ip_address}
+                    onClick={() => openIpPanel(row.ip_address)}
+                    title={`${row.ip_address}${row.assigned_to_text ? ' — ' + row.assigned_to_text : ''}`}
+                    className={`group relative aspect-square rounded-lg border flex flex-col items-center justify-center gap-0.5
+                      transition-all duration-200 hover:scale-110 hover:z-10 ${style.tile} ${style.glow}`}
+                  >
+                    <DeviceIcon size={13} className="opacity-70" />
+                    <span className="font-mono text-[11px] font-bold leading-none">{lastOctet}</span>
+                    <span className={`absolute -top-1 -right-1 w-2 h-2 rounded-full ${style.dot}`} />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Leyenda */}
+          <div className="mt-4 pt-3 border-t border-slate-800 flex flex-wrap gap-4">
+            {Object.entries(STATUS_STYLES).map(([key, s]) => (
+              <span key={key} className="flex items-center gap-1.5 text-[11px] font-medium text-slate-400">
+                <span className={`w-2 h-2 rounded-full ${s.dot}`} /> {s.label}
+              </span>
+            ))}
+            <span className="text-[11px] text-slate-600 ml-auto">Click en una IP para ver/editar el detalle</span>
+          </div>
+        </div>
+      )}
+
+      {/* Tabla Interactiva de IPs (vista clásica) */}
+      {view === 'table' && (
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-gray-500">Generando plantilla del segmento {segment}.X...</div>
@@ -403,6 +553,131 @@ export default function IpManagement() {
           </div>
         )}
       </div>
+      )}
+
+      {/* Panel de Edición Rápida (Mapa de Red) */}
+      {selectedIp && (() => {
+        const row = ipList.find((r) => r.ip_address === selectedIp);
+        if (!row) return null;
+        const style = STATUS_STYLES[row.status] || STATUS_STYLES.AVAILABLE;
+        return (
+          <div
+            className={`fixed inset-0 z-50 flex items-center justify-end bg-black/50 transition-opacity duration-200 ${panelVisible ? 'opacity-100' : 'opacity-0'}`}
+            onClick={() => closeIpPanel()}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className={`h-full w-full max-w-sm bg-slate-950 border-l border-slate-800 shadow-2xl flex flex-col
+                transform transition-transform duration-200 ease-out ${panelVisible ? 'translate-x-0' : 'translate-x-full'}`}
+            >
+              <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+                <div>
+                  <p className="font-mono text-lg font-bold text-white">{row.ip_address}</p>
+                  <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 mt-1 rounded-full text-[11px] font-semibold border ${style.badge}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${style.dot}`} /> {style.label}
+                  </span>
+                </div>
+                <button onClick={() => closeIpPanel()} className="text-slate-400 hover:text-white">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">Tipo de Dispositivo</label>
+                  <select
+                    value={row.device_type}
+                    onChange={(e) => updateIpRow(row.ip_address, 'device_type', e.target.value)}
+                    disabled={!canManageTI}
+                    className="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-100 disabled:opacity-60"
+                  >
+                    <option value="PC">PC / Laptop</option>
+                    <option value="SWITCH">Switch</option>
+                    <option value="ROUTER">Router / Firewall</option>
+                    <option value="ACCESS POINT">Access Point</option>
+                    <option value="SERVER">Servidor</option>
+                    <option value="IMPRESORA">Impresora</option>
+                    <option value="CAMARA">Cámara IP</option>
+                    <option value="LIBRE">Libre / Reserva</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">Estado</label>
+                  <select
+                    value={row.status}
+                    onChange={(e) => updateIpRow(row.ip_address, 'status', e.target.value)}
+                    disabled={!canManageTI}
+                    className="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-100 disabled:opacity-60"
+                  >
+                    <option value="AVAILABLE">Disponible</option>
+                    <option value="ASSIGNED">En Uso</option>
+                    <option value="RESERVED">Reservada</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">Dirección MAC</label>
+                  <input
+                    type="text"
+                    placeholder="00:1A:2B:3C:4D:5E"
+                    value={row.mac_address || ''}
+                    onChange={(e) => updateIpRow(row.ip_address, 'mac_address', e.target.value)}
+                    disabled={!canManageTI}
+                    className="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm font-mono text-slate-100 disabled:opacity-60"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">Usuario / Equipo Asignado</label>
+                  <input
+                    type="text"
+                    placeholder="Escribe Usuario o Nombre de PC..."
+                    value={row.assigned_to_text || ''}
+                    onChange={(e) => updateIpRow(row.ip_address, 'assigned_to_text', e.target.value)}
+                    disabled={!canManageTI}
+                    className="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-100 disabled:opacity-60"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs text-slate-400 font-medium">Notas</label>
+                  <textarea
+                    rows={3}
+                    value={row.notes || ''}
+                    onChange={(e) => updateIpRow(row.ip_address, 'notes', e.target.value)}
+                    disabled={!canManageTI}
+                    className="w-full mt-1 px-3 py-2 bg-slate-900 border border-slate-700 rounded-lg text-sm text-slate-100 disabled:opacity-60"
+                  />
+                </div>
+              </div>
+
+              {canManageTI && (
+                <div className="p-4 border-t border-slate-800 flex gap-2">
+                  <button
+                    onClick={() => closeIpPanel()}
+                    className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-900 transition-colors"
+                  >
+                    Cerrar
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setSavingSelected(true);
+                      await saveSingleRow(row);
+                      setSavingSelected(false);
+                      closeIpPanel();
+                    }}
+                    disabled={savingSelected}
+                    className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                  >
+                    <Save size={15} /> {savingSelected ? 'Guardando...' : 'Guardar'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Modal de Gestión de Dominios */}
       {isDomainModalOpen && (
