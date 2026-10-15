@@ -11,8 +11,9 @@ Corre los scripts **en orden** en el SQL Editor de Supabase (dashboard → SQL E
 7. `007_tabla_hr_vacaciones.sql` — tabla `hr_vacation_requests` (solicitudes de vacaciones/permisos) + saldo de días por colaborador.
 8. `008_tabla_hr_payroll.sql` — tabla `hr_payroll` + bucket de almacenamiento `payroll-receipts` para los PDF de recibos.
 9. `009_tabla_hr_reclutamiento.sql` — tablas `hr_job_openings` y `hr_candidates` + bucket `candidate-cvs` para los CV.
+10. `010_notificaciones.sql` — tablas `notifications` y `push_subscriptions`, triggers que avisan de tickets nuevos/asignados y solicitudes de vacaciones, y habilita Realtime en `notifications`. Después de correr este script, sigue la guía en `functions/send-push/README.md` para activar las notificaciones push reales (requiere Supabase CLI).
 
-Los scripts 7, 8 y 9 dependen de que ya exista `public.audit_trigger_func()` (del script 6), así que ese debe ir antes.
+Los scripts 7, 8, 9 y 10 dependen de que ya exista `public.audit_trigger_func()` (del script 6), así que ese debe ir antes.
 
 Cada script es idempotente: puedes volver a correrlo sin duplicar nada.
 

@@ -1,17 +1,79 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Bell, Search, Menu, LogOut, User, Settings, CheckCircle2, AlertTriangle, X } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import {
+  Bell, BellRing, Search, Menu, LogOut, User, Settings, CheckCircle2,
+  AlertTriangle, Ticket, Plane, X,
+} from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { supabase } from "../../services/supabase";
+import { isPushSupported, isSubscribed, subscribeToPush } from "../../lib/push";
+
+const TYPE_ICONS = {
+  ticket_nuevo: Ticket,
+  ticket_asignado: Ticket,
+  vacacion_nueva: Plane,
+};
+
+function timeAgo(dateStr) {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return "justo ahora";
+  if (mins < 60) return `Hace ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `Hace ${hours} h`;
+  const days = Math.floor(hours / 24);
+  return `Hace ${days} d`;
+}
 
 export function Navbar({ onMenuToggle }) {
-  const { profile, signOut } = useAuth();
-  
+  const { user, profile, signOut } = useAuth();
+  const navigate = useNavigate();
+
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [notifications, setNotifications] = useState([]);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [enablingPush, setEnablingPush] = useState(false);
 
   const notifRef = useRef(null);
   const profileRef = useRef(null);
   const searchInputRef = useRef(null);
+
+  const loadNotifications = useCallback(async () => {
+    if (!user?.id) return;
+    const { data } = await supabase
+      .from("notifications")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    setNotifications(data || []);
+  }, [user?.id]);
+
+  useEffect(() => { loadNotifications(); }, [loadNotifications]);
+
+  useEffect(() => {
+    if (isPushSupported()) isSubscribed().then(setPushEnabled);
+  }, []);
+
+  // Notificaciones en vivo mientras la pestaña está abierta (además del push real).
+  useEffect(() => {
+    if (!user?.id) return;
+    const channel = supabase
+      .channel(`notifications-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          setNotifications((prev) => [payload.new, ...prev]);
+          toast(payload.new.title, { icon: "🔔" });
+        }
+      )
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user?.id]);
 
   // Cerrar menús al hacer clic fuera
   useEffect(() => {
@@ -39,15 +101,34 @@ export function Navbar({ onMenuToggle }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Simulación de notificaciones activas
-  const notifications = [
-    { id: 1, title: "Licencia M365 próxima a vencer", type: "warning", time: "Hace 10 min" },
-    { id: 2, title: "Nuevo ticket de soporte creado", type: "info", time: "Hace 1 hora" },
-  ];
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const handleNotificationClick = async (n) => {
+    if (!n.read) {
+      await supabase.from("notifications").update({ read: true }).eq("id", n.id);
+      setNotifications((prev) => prev.map((x) => (x.id === n.id ? { ...x, read: true } : x)));
+    }
+    setShowNotifications(false);
+    if (n.link) navigate(n.link);
+  };
+
+  const handleEnablePush = async () => {
+    if (!user?.id) return;
+    setEnablingPush(true);
+    try {
+      await subscribeToPush(user.id);
+      setPushEnabled(true);
+      toast.success("Notificaciones activadas en este dispositivo");
+    } catch (err) {
+      toast.error(err.message || "No se pudieron activar las notificaciones");
+    } finally {
+      setEnablingPush(false);
+    }
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-2.5 flex items-center justify-between shrink-0 z-20 sticky top-0">
-      
+
       {/* Lado Izquierdo: Toggle Móvil + Buscador */}
       <div className="flex items-center gap-3">
         {/* Botón menú responsive */}
@@ -87,7 +168,7 @@ export function Navbar({ onMenuToggle }) {
 
       {/* Lado Derecho: Acciones y Perfil */}
       <div className="flex items-center gap-2 sm:gap-4 ml-auto">
-        
+
         {/* Notificaciones Dropdown */}
         <div className="relative" ref={notifRef}>
           <button
@@ -99,33 +180,55 @@ export function Navbar({ onMenuToggle }) {
             title="Notificaciones"
           >
             <Bell size={20} />
-            {notifications.length > 0 && (
+            {unreadCount > 0 && (
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
             )}
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+            <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
               <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">Notificaciones</h3>
-                <span className="text-[10px] bg-sky-50 text-sky-600 font-bold px-2 py-0.5 rounded-full">
-                  {notifications.length} nuevas
-                </span>
+                {unreadCount > 0 && (
+                  <span className="text-[10px] bg-sky-50 text-sky-600 font-bold px-2 py-0.5 rounded-full">
+                    {unreadCount} nuevas
+                  </span>
+                )}
               </div>
-              <div className="divide-y divide-gray-50 max-h-64 overflow-y-auto">
-                {notifications.map((n) => (
-                  <div key={n.id} className="p-3 hover:bg-gray-50 transition-colors flex items-start gap-3">
-                    {n.type === "warning" ? (
-                      <AlertTriangle size={16} className="text-amber-500 shrink-0 mt-0.5" />
-                    ) : (
-                      <CheckCircle2 size={16} className="text-sky-500 shrink-0 mt-0.5" />
-                    )}
-                    <div>
-                      <p className="text-xs font-medium text-gray-800">{n.title}</p>
-                      <span className="text-[10px] text-gray-400">{n.time}</span>
-                    </div>
-                  </div>
-                ))}
+
+              {!pushEnabled && isPushSupported() && (
+                <button
+                  onClick={handleEnablePush}
+                  disabled={enablingPush}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 border-b border-gray-100 transition-colors disabled:opacity-50"
+                >
+                  <BellRing size={14} />
+                  {enablingPush ? "Activando..." : "Activar notificaciones en este dispositivo"}
+                </button>
+              )}
+
+              <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <p className="p-4 text-center text-xs text-gray-400">Sin notificaciones por ahora.</p>
+                ) : (
+                  notifications.map((n) => {
+                    const Icon = TYPE_ICONS[n.type] || (n.type?.includes("warning") ? AlertTriangle : CheckCircle2);
+                    return (
+                      <button
+                        key={n.id}
+                        onClick={() => handleNotificationClick(n)}
+                        className={`w-full text-left p-3 hover:bg-gray-50 transition-colors flex items-start gap-3 ${!n.read ? "bg-sky-50/40" : ""}`}
+                      >
+                        <Icon size={16} className="text-sky-500 shrink-0 mt-0.5" />
+                        <div className="min-w-0">
+                          <p className={`text-xs ${!n.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>{n.title}</p>
+                          {n.body && <p className="text-[11px] text-gray-500 truncate">{n.body}</p>}
+                          <span className="text-[10px] text-gray-400">{timeAgo(n.created_at)}</span>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </div>
           )}

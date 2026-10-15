@@ -7,6 +7,14 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Service worker propio (src/sw.js) para poder recibir notificaciones
+      // push reales además del precache normal de la PWA.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
+      injectManifest: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+      },
       // Apunta a los archivos directamente en la raíz de public/
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'logo.png', '*.png'],
       manifest: {
@@ -36,20 +44,6 @@ export default defineConfig({
         shortcuts: [
           { name: 'Nuevo Ticket', url: '/tickets/new', description: 'Abrir ticket de soporte' },
           { name: 'Inventario',   url: '/assets',      description: 'Ver inventario' },
-        ],
-      },
-      workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/v1\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-api',
-              expiration: { maxEntries: 100, maxAgeSeconds: 300 },
-              networkTimeoutSeconds: 10,
-            },
-          },
         ],
       },
     }),
