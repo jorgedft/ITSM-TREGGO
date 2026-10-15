@@ -14,6 +14,8 @@ export default defineConfig({
       filename: 'sw.js',
       injectManifest: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // El bundle principal supera el límite default de Workbox (2 MiB).
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
       },
       // Apunta a los archivos directamente en la raíz de public/
       includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'logo.png', '*.png'],
