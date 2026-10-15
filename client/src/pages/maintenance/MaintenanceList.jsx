@@ -3,7 +3,8 @@ import { supabase } from "../../services/supabase";
 import { useRole } from "../../hooks/useRole";
 import {
   Plus, Wrench, ShieldCheck, AlertTriangle, BookOpen,
-  Search, Trash2, X, CheckCircle, Cpu, Filter, Paperclip, FileDown, Eye, Edit, Download
+  Search, Trash2, X, CheckCircle, Cpu, Filter, Paperclip, FileDown, Eye, Edit, Download,
+  CalendarClock, CalendarCheck2, Ban, Repeat,
 } from "lucide-react";
 import { renderAsync as renderDocx } from "docx-preview";
 import * as XLSX from "xlsx";
@@ -14,9 +15,50 @@ const MAX_FILE_SIZE_MB = 10;
 
 const EMPTY_VIEWER = { open: false, loading: false, error: null, type: null, fileName: "", pdfUrl: null, textContent: null };
 
+const RECURRENCE_LABELS = {
+  none: "Sin recurrencia",
+  monthly: "Mensual",
+  quarterly: "Trimestral",
+  semiannual: "Semestral",
+  yearly: "Anual",
+};
+
+const EMPTY_SCHEDULE_FORM = {
+  asset_id: "", title: "", maintenance_type: "Preventivo", technician_name: "",
+  scheduled_date: "", recurrence: "none", notes: "",
+};
+
 function getFileExtension(filename) {
   const idx = filename.lastIndexOf(".");
   return idx === -1 ? "" : filename.slice(idx).toLowerCase();
+}
+
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// Calcula la siguiente fecha según la recurrencia (para auto-programar el próximo).
+function nextScheduledDate(dateStr, recurrence) {
+  const d = new Date(dateStr + "T00:00:00");
+  switch (recurrence) {
+    case "monthly": d.setMonth(d.getMonth() + 1); break;
+    case "quarterly": d.setMonth(d.getMonth() + 3); break;
+    case "semiannual": d.setMonth(d.getMonth() + 6); break;
+    case "yearly": d.setFullYear(d.getFullYear() + 1); break;
+    default: return null;
+  }
+  return d.toISOString().slice(0, 10);
+}
+
+function getScheduleStatusMeta(item) {
+  if (item.status === "completado") return { label: "Completado", className: "bg-emerald-950 text-emerald-400 border-emerald-800" };
+  if (item.status === "cancelado") return { label: "Cancelado", className: "bg-slate-800 text-slate-400 border-slate-700" };
+  const today = todayISO();
+  if (item.scheduled_date < today) return { label: "Vencido", className: "bg-red-950 text-red-400 border-red-800" };
+  const in7days = new Date();
+  in7days.setDate(in7days.getDate() + 7);
+  if (item.scheduled_date <= in7days.toISOString().slice(0, 10)) return { label: "Próximo", className: "bg-amber-950 text-amber-400 border-amber-800" };
+  return { label: "Programado", className: "bg-sky-950 text-sky-400 border-sky-800" };
 }
 
 export default function MaintenanceList() {
@@ -24,9 +66,16 @@ export default function MaintenanceList() {
   const [maintenances, setMaintenances] = useState([]);
   const [assets, setAssets] = useState([]);
   const [workflows, setWorkflows] = useState([]);
+  const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showWorkflowModal, setShowWorkflowModal] = useState(false);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleForm, setScheduleForm] = useState(EMPTY_SCHEDULE_FORM);
+  const [savingSchedule, setSavingSchedule] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   // Estado Form Mantenimiento (Soporta Edición)
   const [editingMaintenanceId, setEditingMaintenanceId] = useState(null);
@@ -73,9 +122,16 @@ export default function MaintenanceList() {
         .select("*")
         .order("created_at", { ascending: false });
 
+      // 4. Obtener mantenimientos programados
+      const { data: schedulesData } = await supabase
+        .from("maintenance_schedules")
+        .select("*, asset:assets(asset_code, asset_tag, brand, model)")
+        .order("scheduled_date", { ascending: true });
+
       setMaintenances(logsData || []);
       setAssets(assetsData || []);
       setWorkflows(wfData || []);
+      setSchedules(schedulesData || []);
     } catch (err) {
       console.error("Error al cargar datos:", err.message);
     } finally {
@@ -159,6 +215,92 @@ export default function MaintenanceList() {
     } catch (err) {
       alert("Error al eliminar mantenimiento: " + err.message);
     }
+  };
+
+  // --- Mantenimientos Programados ---
+
+  const handleSaveSchedule = async (e) => {
+    e.preventDefault();
+    if (!scheduleForm.asset_id || !scheduleForm.title || !scheduleForm.scheduled_date) return;
+    setSavingSchedule(true);
+    try {
+      const { error } = await supabase.from("maintenance_schedules").insert([{
+        asset_id: scheduleForm.asset_id,
+        title: scheduleForm.title,
+        maintenance_type: scheduleForm.maintenance_type,
+        technician_name: scheduleForm.technician_name || null,
+        scheduled_date: scheduleForm.scheduled_date,
+        recurrence: scheduleForm.recurrence,
+        notes: scheduleForm.notes || null,
+      }]);
+      if (error) throw error;
+      setScheduleForm(EMPTY_SCHEDULE_FORM);
+      setShowScheduleModal(false);
+      fetchData();
+    } catch (err) {
+      alert("Error al programar mantenimiento: " + err.message);
+    } finally {
+      setSavingSchedule(false);
+    }
+  };
+
+  // Completa el programado: crea su bitácora de intervención y, si tiene
+  // recurrencia, agenda automáticamente la siguiente fecha.
+  const handleCompleteSchedule = async (item) => {
+    if (!window.confirm(`¿Marcar "${item.title}" como completado? Se registrará en el historial.`)) return;
+    try {
+      const { data: logRows, error: logError } = await supabase
+        .from("maintenance_logs")
+        .insert([{
+          asset_id: item.asset_id,
+          maintenance_type: item.maintenance_type,
+          technician_name: item.technician_name,
+          description: `${item.title}${item.notes ? " — " + item.notes : ""} (mantenimiento programado)`,
+        }])
+        .select()
+        .single();
+      if (logError) throw logError;
+
+      const { error: updateError } = await supabase
+        .from("maintenance_schedules")
+        .update({ status: "completado", completed_log_id: logRows.id })
+        .eq("id", item.id);
+      if (updateError) throw updateError;
+
+      if (item.recurrence !== "none") {
+        const next = nextScheduledDate(item.scheduled_date, item.recurrence);
+        if (next) {
+          const { error: nextError } = await supabase.from("maintenance_schedules").insert([{
+            asset_id: item.asset_id,
+            title: item.title,
+            maintenance_type: item.maintenance_type,
+            technician_name: item.technician_name,
+            scheduled_date: next,
+            recurrence: item.recurrence,
+            notes: item.notes,
+          }]);
+          if (nextError) throw nextError;
+        }
+      }
+
+      fetchData();
+    } catch (err) {
+      alert("Error al completar el mantenimiento programado: " + err.message);
+    }
+  };
+
+  const handleCancelSchedule = async (id) => {
+    if (!window.confirm("¿Cancelar este mantenimiento programado?")) return;
+    const { error } = await supabase.from("maintenance_schedules").update({ status: "cancelado" }).eq("id", id);
+    if (error) alert("Error: " + error.message);
+    else fetchData();
+  };
+
+  const handleDeleteSchedule = async (id) => {
+    if (!window.confirm("¿Eliminar este mantenimiento programado?")) return;
+    const { error } = await supabase.from("maintenance_schedules").delete().eq("id", id);
+    if (error) alert("Error al eliminar: " + error.message);
+    else fetchData();
   };
 
   // Exportar Mantenimientos a Excel (.xlsx)
@@ -353,10 +495,19 @@ export default function MaintenanceList() {
   };
 
   // Filtrado de mantenimientos
-  const filteredMaintenances = maintenances.filter(m =>
-    m.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    m.asset?.asset_code?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMaintenances = maintenances.filter((m) => {
+    const matchesSearch =
+      m.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      m.asset?.asset_code?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = !typeFilter || m.maintenance_type === typeFilter;
+    const createdDate = m.created_at?.slice(0, 10);
+    const matchesFrom = !dateFrom || (createdDate && createdDate >= dateFrom);
+    const matchesTo = !dateTo || (createdDate && createdDate <= dateTo);
+    return matchesSearch && matchesType && matchesFrom && matchesTo;
+  });
+
+  const pendingSchedules = schedules.filter((s) => s.status === "pendiente");
+  const overdueSchedulesCount = pendingSchedules.filter((s) => s.scheduled_date < todayISO()).length;
 
   return (
     <div className="p-6 bg-slate-900 min-h-screen text-slate-100">
@@ -369,28 +520,38 @@ export default function MaintenanceList() {
           </h1>
           <p className="text-slate-400 text-sm">Registro de intervenciones, métricas y bóveda de procedimientos.</p>
         </div>
-        <button
-          onClick={() => setShowWorkflowModal(true)}
-          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg font-medium shadow transition-all"
-        >
-          <BookOpen className="w-4 h-4" /> Bóveda de Workflows ({workflows.length})
-        </button>
+        <div className="flex items-center gap-2">
+          {canManageTI && (
+            <button
+              onClick={() => { setScheduleForm(EMPTY_SCHEDULE_FORM); setShowScheduleModal(true); }}
+              className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg font-medium shadow transition-all"
+            >
+              <CalendarClock className="w-4 h-4" /> Programar Mantenimiento
+            </button>
+          )}
+          <button
+            onClick={() => setShowWorkflowModal(true)}
+            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg font-medium shadow transition-all"
+          >
+            <BookOpen className="w-4 h-4" /> Bóveda de Workflows ({workflows.length})
+          </button>
+        </div>
       </div>
 
       {/* Tarjetas del Dashboard / Métricas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
         <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
           <span className="text-xs text-slate-400 font-semibold uppercase">Total Intervenciones</span>
           <div className="text-2xl font-bold text-slate-100">{maintenances.length}</div>
         </div>
         <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
-          <span className="text-xs text-slate-400 font-semibold uppercase">Mantenimientos Preventivos</span>
+          <span className="text-xs text-slate-400 font-semibold uppercase">Preventivos</span>
           <div className="text-2xl font-bold text-sky-400">
             {maintenances.filter(m => m.maintenance_type === "Preventivo").length}
           </div>
         </div>
         <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
-          <span className="text-xs text-slate-400 font-semibold uppercase">Mantenimientos Correctivos</span>
+          <span className="text-xs text-slate-400 font-semibold uppercase">Correctivos</span>
           <div className="text-2xl font-bold text-amber-400">
             {maintenances.filter(m => m.maintenance_type === "Correctivo").length}
           </div>
@@ -398,6 +559,80 @@ export default function MaintenanceList() {
         <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
           <span className="text-xs text-purple-400 font-semibold uppercase">Guías en Bóveda</span>
           <div className="text-2xl font-bold text-purple-300">{workflows.length}</div>
+        </div>
+        <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+          <span className="text-xs text-sky-400 font-semibold uppercase">Programados</span>
+          <div className="text-2xl font-bold text-sky-300">{pendingSchedules.length}</div>
+        </div>
+        <div className="bg-slate-800 border border-red-900/60 p-4 rounded-xl">
+          <span className="text-xs text-red-400 font-semibold uppercase">Vencidos</span>
+          <div className="text-2xl font-bold text-red-400">{overdueSchedulesCount}</div>
+        </div>
+      </div>
+
+      {/* Mantenimientos Programados */}
+      <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
+            <CalendarClock className="w-5 h-5 text-sky-400" /> Mantenimientos Programados
+          </h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-slate-700 text-slate-400 uppercase text-xs">
+                <th className="py-2.5 px-3">Fecha</th>
+                <th className="py-2.5 px-3">Equipo</th>
+                <th className="py-2.5 px-3">Título</th>
+                <th className="py-2.5 px-3">Recurrencia</th>
+                <th className="py-2.5 px-3">Estatus</th>
+                {canManageTI && <th className="py-2.5 px-3 text-right">Acciones</th>}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-700 text-slate-300">
+              {schedules.length === 0 ? (
+                <tr><td colSpan={6} className="py-6 text-center text-slate-500">No hay mantenimientos programados.</td></tr>
+              ) : (
+                schedules.map((item) => {
+                  const meta = getScheduleStatusMeta(item);
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-750">
+                      <td className="py-2.5 px-3 whitespace-nowrap">{item.scheduled_date}</td>
+                      <td className="py-2.5 px-3">
+                        {item.asset?.asset_tag || item.asset?.asset_code || "—"}
+                        <span className="block text-xs text-slate-400">{item.asset?.brand} {item.asset?.model}</span>
+                      </td>
+                      <td className="py-2.5 px-3">{item.title}</td>
+                      <td className="py-2.5 px-3 text-xs">
+                        {item.recurrence !== "none" && <Repeat className="w-3 h-3 inline mr-1 text-slate-400" />}
+                        {RECURRENCE_LABELS[item.recurrence]}
+                      </td>
+                      <td className="py-2.5 px-3">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold border ${meta.className}`}>{meta.label}</span>
+                      </td>
+                      {canManageTI && (
+                        <td className="py-2.5 px-3 text-right whitespace-nowrap space-x-1">
+                          {item.status === "pendiente" && (
+                            <>
+                              <button onClick={() => handleCompleteSchedule(item)} className="p-1 text-slate-400 hover:text-emerald-400 transition-colors" title="Marcar completado">
+                                <CalendarCheck2 className="w-4 h-4" />
+                              </button>
+                              <button onClick={() => handleCancelSchedule(item.id)} className="p-1 text-slate-400 hover:text-amber-400 transition-colors" title="Cancelar">
+                                <Ban className="w-4 h-4" />
+                              </button>
+                            </>
+                          )}
+                          <button onClick={() => handleDeleteSchedule(item.id)} className="p-1 text-slate-400 hover:text-red-400 transition-colors" title="Eliminar">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -522,6 +757,44 @@ export default function MaintenanceList() {
             </div>
           </div>
 
+          {/* Filtros adicionales: tipo y rango de fechas */}
+          <div className="flex flex-wrap items-center gap-2 mb-4">
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none"
+            >
+              <option value="">Todos los tipos</option>
+              <option value="Preventivo">Preventivo</option>
+              <option value="Correctivo">Correctivo</option>
+              <option value="Limpieza">Limpieza</option>
+              <option value="Actualización">Actualización</option>
+            </select>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none"
+              title="Desde"
+            />
+            <span className="text-slate-500 text-xs">a</span>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none"
+              title="Hasta"
+            />
+            {(typeFilter || dateFrom || dateTo) && (
+              <button
+                onClick={() => { setTypeFilter(""); setDateFrom(""); setDateTo(""); }}
+                className="text-xs text-slate-400 hover:text-white underline"
+              >
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
@@ -593,6 +866,109 @@ export default function MaintenanceList() {
           </div>
         </div>
       </div>
+
+      {/* Modal Programar Mantenimiento */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md p-6 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+              <h3 className="text-lg font-bold text-sky-400 flex items-center gap-2">
+                <CalendarClock className="w-5 h-5" /> Programar Mantenimiento
+              </h3>
+              <button onClick={() => setShowScheduleModal(false)} className="text-slate-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <form onSubmit={handleSaveSchedule} className="space-y-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Equipo / Activo (*)</label>
+                <select
+                  required
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 outline-none"
+                  value={scheduleForm.asset_id}
+                  onChange={(e) => setScheduleForm({ ...scheduleForm, asset_id: e.target.value })}
+                >
+                  <option value="">-- Seleccionar Equipo --</option>
+                  {assets.map((a) => (
+                    <option key={a.id} value={a.id}>{a.asset_code} - {a.brand} {a.model}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Título (*)</label>
+                <input
+                  type="text" required placeholder="Ej. Limpieza trimestral de servidor"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 outline-none"
+                  value={scheduleForm.title}
+                  onChange={(e) => setScheduleForm({ ...scheduleForm, title: e.target.value })}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Tipo</label>
+                  <select
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 outline-none"
+                    value={scheduleForm.maintenance_type}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, maintenance_type: e.target.value })}
+                  >
+                    <option value="Preventivo">Preventivo</option>
+                    <option value="Correctivo">Correctivo</option>
+                    <option value="Limpieza">Limpieza</option>
+                    <option value="Actualización">Actualización</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-400 mb-1">Fecha Programada (*)</label>
+                  <input
+                    type="date" required min={todayISO()}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 outline-none"
+                    value={scheduleForm.scheduled_date}
+                    onChange={(e) => setScheduleForm({ ...scheduleForm, scheduled_date: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Recurrencia</label>
+                <select
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 outline-none"
+                  value={scheduleForm.recurrence}
+                  onChange={(e) => setScheduleForm({ ...scheduleForm, recurrence: e.target.value })}
+                >
+                  {Object.entries(RECURRENCE_LABELS).map(([k, v]) => (
+                    <option key={k} value={k}>{v}</option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-slate-500 mt-1">Al completar este mantenimiento, se programará automáticamente el siguiente si eliges una recurrencia.</p>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Técnico / Responsable</label>
+                <input
+                  type="text" placeholder="Ej. Daniel"
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 outline-none"
+                  value={scheduleForm.technician_name}
+                  onChange={(e) => setScheduleForm({ ...scheduleForm, technician_name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-400 mb-1">Notas</label>
+                <textarea
+                  rows={2}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 outline-none"
+                  value={scheduleForm.notes}
+                  onChange={(e) => setScheduleForm({ ...scheduleForm, notes: e.target.value })}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={savingSchedule}
+                className="w-full bg-sky-600 hover:bg-sky-500 disabled:opacity-50 text-white font-medium py-2.5 rounded-lg transition-all"
+              >
+                {savingSchedule ? "Guardando..." : "Programar"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Modal Bóveda de Workflows / Guías */}
       {showWorkflowModal && (
