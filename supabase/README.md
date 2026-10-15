@@ -8,6 +8,11 @@ Corre los scripts **en orden** en el SQL Editor de Supabase (dashboard → SQL E
 4. `004_tabla_hr_attendance.sql` — crea las tablas del módulo Incidencias y Asistencia (`hr_attendance` y `hr_checador_map`).
 5. `005_limpiar_serial_number_vacios.sql` — corrige equipos guardados con `serial_number = ''` en vez de `NULL`.
 6. `006_bitacora_auditoria.sql` — crea `audit_log` y engancha triggers de auditoría a las tablas principales (Equipos, Teléfonos, Licencias, Red, Mantenimiento, Bóveda, Colaboradores, Asistencia, Tickets, Perfiles). Visible en el módulo **Administración**, solo para admin/ti.
+7. `007_tabla_hr_vacaciones.sql` — tabla `hr_vacation_requests` (solicitudes de vacaciones/permisos) + saldo de días por colaborador.
+8. `008_tabla_hr_payroll.sql` — tabla `hr_payroll` + bucket de almacenamiento `payroll-receipts` para los PDF de recibos.
+9. `009_tabla_hr_reclutamiento.sql` — tablas `hr_job_openings` y `hr_candidates` + bucket `candidate-cvs` para los CV.
+
+Los scripts 7, 8 y 9 dependen de que ya exista `public.audit_trigger_func()` (del script 6), así que ese debe ir antes.
 
 Cada script es idempotente: puedes volver a correrlo sin duplicar nada.
 
