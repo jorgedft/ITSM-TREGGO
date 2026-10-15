@@ -6,6 +6,8 @@ Corre los scripts **en orden** en el SQL Editor de Supabase (dashboard → SQL E
 2. `002_ajustar_check_de_role.sql` — amplía el CHECK de `profiles.role` para aceptar `admin`/`ti`/`rh` (solo hace falta una vez, ya corrido).
 3. `003_tabla_employees.sql` — agrega los campos del módulo Colaboradores a la tabla `employees`.
 4. `004_tabla_hr_attendance.sql` — crea las tablas del módulo Incidencias y Asistencia (`hr_attendance` y `hr_checador_map`).
+5. `005_limpiar_serial_number_vacios.sql` — corrige equipos guardados con `serial_number = ''` en vez de `NULL`.
+6. `006_bitacora_auditoria.sql` — crea `audit_log` y engancha triggers de auditoría a las tablas principales (Equipos, Teléfonos, Licencias, Red, Mantenimiento, Bóveda, Colaboradores, Asistencia, Tickets, Perfiles). Visible en el módulo **Administración**, solo para admin/ti.
 
 Cada script es idempotente: puedes volver a correrlo sin duplicar nada.
 
