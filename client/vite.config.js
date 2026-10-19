@@ -50,6 +50,13 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    // La ruta de la app "/assets" (Equipos) choca con la carpeta "assets/"
+    // que Vite usa por default para sus JS/CSS compilados: al pedir
+    // exactamente "/assets" en producción, Vercel sirve un archivo de esa
+    // carpeta en vez de la página. Se renombra para evitar el choque.
+    assetsDir: 'static',
+  },
   server: {
     port: 5174,
     strictPort: true,
