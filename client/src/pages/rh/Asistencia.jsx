@@ -7,13 +7,13 @@ import { supabase } from '../../services/supabase';
 import { useRole } from '../../hooks/useRole';
 
 const TYPE_META = {
-    asistencia:  { label: 'Asistencia',  color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    retardo:     { label: 'Retardo',     color: 'bg-amber-50 text-amber-700 border-amber-200' },
-    falta:       { label: 'Falta',       color: 'bg-red-50 text-red-700 border-red-200' },
-    permiso:     { label: 'Permiso',     color: 'bg-blue-50 text-blue-700 border-blue-200' },
-    incapacidad: { label: 'Incapacidad', color: 'bg-purple-50 text-purple-700 border-purple-200' },
-    home_office: { label: 'Home Office', color: 'bg-sky-50 text-sky-700 border-sky-200' },
-    otro:        { label: 'Otro',        color: 'bg-gray-100 text-gray-600 border-gray-200' },
+    asistencia:  { label: 'Asistencia',  color: 'bg-emerald-950 text-emerald-400 border-emerald-800' },
+    retardo:     { label: 'Retardo',     color: 'bg-amber-950 text-amber-400 border-amber-800' },
+    falta:       { label: 'Falta',       color: 'bg-red-950 text-red-400 border-red-800' },
+    permiso:     { label: 'Permiso',     color: 'bg-blue-950 text-blue-400 border-blue-800' },
+    incapacidad: { label: 'Incapacidad', color: 'bg-purple-950 text-purple-400 border-purple-800' },
+    home_office: { label: 'Home Office', color: 'bg-sky-950 text-sky-400 border-sky-800' },
+    otro:        { label: 'Otro',        color: 'bg-slate-700 text-slate-400 border-slate-600' },
 };
 const MANUAL_TYPES = ['falta', 'permiso', 'incapacidad', 'home_office', 'otro'];
 
@@ -98,22 +98,22 @@ function MappingModal({ pending, employees, onCancel, onConfirm }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center gap-2 mb-2">
                     <AlertTriangle className="text-amber-500" size={20} />
-                    <h2 className="text-lg font-bold text-gray-900">Vincular colaboradores nuevos</h2>
+                    <h2 className="text-lg font-bold text-slate-100">Vincular colaboradores nuevos</h2>
                 </div>
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm text-slate-400 mb-4">
                     Estos IDs del checador no están vinculados a ningún colaborador todavía.
                     Vincúlalos una vez; las próximas importaciones ya los reconocerán solas.
                 </p>
 
                 <div className="space-y-3">
                     {pending.map((p) => (
-                        <div key={p.deviceId} className="flex items-center gap-3 border border-gray-200 rounded-lg p-3">
+                        <div key={p.deviceId} className="flex items-center gap-3 border border-slate-700 rounded-lg p-3">
                             <div className="flex-1 min-w-0">
-                                <p className="text-xs text-gray-400">ID checador {p.deviceId}</p>
-                                <p className="font-medium text-gray-800 truncate">{p.rawName}</p>
+                                <p className="text-xs text-slate-500">ID checador {p.deviceId}</p>
+                                <p className="font-medium text-slate-200 truncate">{p.rawName}</p>
                             </div>
                             <select
                                 className="input-field flex-1"
@@ -129,7 +129,7 @@ function MappingModal({ pending, employees, onCancel, onConfirm }) {
                     ))}
                 </div>
 
-                <div className="flex justify-end gap-2 pt-5 border-t border-gray-100 mt-5">
+                <div className="flex justify-end gap-2 pt-5 border-t border-slate-700 mt-5">
                     <button onClick={onCancel} className="btn-secondary">Cancelar</button>
                     <button onClick={() => onConfirm(choices)} className="btn-primary">Confirmar y continuar</button>
                 </div>
@@ -172,10 +172,10 @@ function ManualEntryModal({ employees, onClose, onSaved }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-lg max-w-lg w-full p-6">
+            <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-lg w-full p-6">
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-gray-900">Registrar Incidencia</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+                    <h2 className="text-lg font-bold text-slate-100">Registrar Incidencia</h2>
+                    <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
@@ -223,7 +223,7 @@ function ManualEntryModal({ employees, onClose, onSaved }) {
                         <textarea rows={2} className="input-field" value={form.notes}
                             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
                     </div>
-                    <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+                    <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
                         <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
                         <button type="submit" disabled={saving} className="btn-primary">
                             {saving ? 'Guardando...' : 'Guardar'}
@@ -391,15 +391,15 @@ export default function Asistencia() {
         <div className="space-y-6 pb-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
                         <CalendarCheck className="text-brand-500" /> Incidencias y Asistencia
                     </h1>
-                    <p className="text-sm text-gray-500">Importa el reporte del reloj checador o registra incidencias a mano.</p>
+                    <p className="text-sm text-slate-400">Importa el reporte del reloj checador o registra incidencias a mano.</p>
                 </div>
 
                 {canManageRH && (
                     <div className="flex flex-wrap items-center gap-2">
-                        <label className="text-xs text-gray-500 flex items-center gap-1">
+                        <label className="text-xs text-slate-400 flex items-center gap-1">
                             Hora límite entrada
                             <input type="time" value={horaLimite} onChange={(e) => setHoraLimite(e.target.value)}
                                 className="input-field py-1 text-xs w-24" />
@@ -459,11 +459,11 @@ export default function Asistencia() {
                 </div>
             )}
 
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                            <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
                                 <th className="py-3 px-4">Fecha</th>
                                 <th className="py-3 px-4">Colaborador</th>
                                 <th className="py-3 px-4">Entrada</th>
@@ -474,16 +474,16 @@ export default function Asistencia() {
                                 {canManageRH && <th className="py-3 px-4 text-right">Acciones</th>}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 text-sm">
+                        <tbody className="divide-y divide-slate-700 text-sm">
                             {loading ? (
-                                <tr><td colSpan={8} className="text-center py-8 text-gray-500">Cargando...</td></tr>
+                                <tr><td colSpan={8} className="text-center py-8 text-slate-500">Cargando...</td></tr>
                             ) : records.length === 0 ? (
-                                <tr><td colSpan={8} className="text-center py-8 text-gray-400">Sin registros en este rango.</td></tr>
+                                <tr><td colSpan={8} className="text-center py-8 text-slate-500">Sin registros en este rango.</td></tr>
                             ) : (
                                 records.map((r) => (
-                                    <tr key={r.id} className="hover:bg-gray-50">
-                                        <td className="py-3 px-4 text-xs text-gray-600">{r.date}</td>
-                                        <td className="py-3 px-4 font-medium text-gray-900">{r.employee?.full_name || '—'}</td>
+                                    <tr key={r.id} className="hover:bg-slate-700/40">
+                                        <td className="py-3 px-4 text-xs text-slate-400">{r.date}</td>
+                                        <td className="py-3 px-4 font-medium text-slate-100">{r.employee?.full_name || '—'}</td>
                                         <td className="py-3 px-4 font-mono text-xs">{r.check_in || '—'}</td>
                                         <td className="py-3 px-4 font-mono text-xs">{r.check_out || '—'}</td>
                                         <td className="py-3 px-4">
@@ -491,12 +491,12 @@ export default function Asistencia() {
                                                 {TYPE_META[r.type]?.label || r.type}
                                             </span>
                                         </td>
-                                        <td className="py-3 px-4 text-xs text-gray-500 capitalize">{r.source}</td>
-                                        <td className="py-3 px-4 text-xs text-gray-500 max-w-xs truncate">{r.notes || '—'}</td>
+                                        <td className="py-3 px-4 text-xs text-slate-500 capitalize">{r.source}</td>
+                                        <td className="py-3 px-4 text-xs text-slate-500 max-w-xs truncate">{r.notes || '—'}</td>
                                         {canManageRH && (
                                             <td className="py-3 px-4 text-right">
                                                 <button onClick={() => handleDelete(r.id)}
-                                                    className="text-red-600 hover:text-red-800 inline-flex items-center gap-1 text-xs font-medium">
+                                                    className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 text-xs font-medium">
                                                     <Trash2 size={13} /> Eliminar
                                                 </button>
                                             </td>

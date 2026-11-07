@@ -82,12 +82,12 @@ function EmployeeFormModal({ initial, onClose, onSaved }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div className="bg-slate-800 rounded-xl shadow-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto border border-slate-700">
                 <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-bold text-gray-900">
+                    <h2 className="text-lg font-bold text-slate-100">
                         {isEdit ? 'Editar Colaborador' : 'Nuevo Colaborador'}
                     </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+                    <button onClick={onClose} className="text-slate-500 hover:text-slate-300">
                         <X size={20} />
                     </button>
                 </div>
@@ -153,7 +153,7 @@ function EmployeeFormModal({ initial, onClose, onSaved }) {
                         </div>
                     </div>
 
-                    <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
+                    <div className="flex justify-end gap-2 pt-4 border-t border-slate-700">
                         <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
                         <button type="submit" disabled={saving} className="btn-primary">
                             {saving ? 'Guardando...' : isEdit ? 'Actualizar' : 'Guardar'}
@@ -291,10 +291,10 @@ export default function Colaboradores() {
         <div className="space-y-6 pb-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
                         <Users className="text-brand-500" /> Colaboradores ({filtered.length})
                     </h1>
-                    <p className="text-sm text-gray-500">Directorio y expedientes del personal.</p>
+                    <p className="text-sm text-slate-400">Directorio y expedientes del personal.</p>
                 </div>
 
                 {canManageRH && (
@@ -331,7 +331,7 @@ export default function Colaboradores() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="relative sm:col-span-2">
-                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input
                         type="text"
                         placeholder="Buscar por nombre, puesto, departamento, email..."
@@ -348,11 +348,11 @@ export default function Colaboradores() {
                 </select>
             </div>
 
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                            <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
                                 <th className="py-3 px-4"># Empleado</th>
                                 <th className="py-3 px-4">Nombre</th>
                                 <th className="py-3 px-4">Puesto / Depto.</th>
@@ -363,29 +363,29 @@ export default function Colaboradores() {
                                 {canManageRH && <th className="py-3 px-4 text-right">Acciones</th>}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200 text-sm">
+                        <tbody className="divide-y divide-slate-700 text-sm">
                             {loading ? (
-                                <tr><td colSpan={8} className="text-center py-8 text-gray-500">Cargando colaboradores...</td></tr>
+                                <tr><td colSpan={8} className="text-center py-8 text-slate-500">Cargando colaboradores...</td></tr>
                             ) : filtered.length === 0 ? (
-                                <tr><td colSpan={8} className="text-center py-8 text-gray-400">No hay colaboradores registrados.</td></tr>
+                                <tr><td colSpan={8} className="text-center py-8 text-slate-500">No hay colaboradores registrados.</td></tr>
                             ) : (
                                 filtered.map((emp) => (
-                                    <tr key={emp.id} className="hover:bg-gray-50">
-                                        <td className="py-3 px-4 font-mono text-xs text-gray-600">{emp.employee_number || '—'}</td>
-                                        <td className="py-3 px-4 font-semibold text-gray-900">{emp.full_name}</td>
-                                        <td className="py-3 px-4 text-gray-700">
+                                    <tr key={emp.id} className="hover:bg-slate-700/40">
+                                        <td className="py-3 px-4 font-mono text-xs text-slate-400">{emp.employee_number || '—'}</td>
+                                        <td className="py-3 px-4 font-semibold text-slate-100">{emp.full_name}</td>
+                                        <td className="py-3 px-4 text-slate-300">
                                             {emp.position || '—'}
-                                            {emp.department && <span className="block text-xs text-gray-400">{emp.department}</span>}
+                                            {emp.department && <span className="block text-xs text-slate-500">{emp.department}</span>}
                                         </td>
-                                        <td className="py-3 px-4 text-gray-700 text-xs">
+                                        <td className="py-3 px-4 text-slate-300 text-xs">
                                             {emp.email || '—'}
                                             {emp.phone && <span className="block">{emp.phone}</span>}
                                         </td>
-                                        <td className="py-3 px-4 text-xs text-gray-600">{emp.hire_date || '—'}</td>
-                                        <td className="py-3 px-4 text-xs text-gray-600 capitalize">{emp.contract_type || '—'}</td>
+                                        <td className="py-3 px-4 text-xs text-slate-400">{emp.hire_date || '—'}</td>
+                                        <td className="py-3 px-4 text-xs text-slate-400 capitalize">{emp.contract_type || '—'}</td>
                                         <td className="py-3 px-4">
                                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                                                emp.status === 'activo' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-600 border border-gray-200'
+                                                emp.status === 'activo' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-slate-700 text-slate-400 border border-slate-600'
                                             }`}>
                                                 {emp.status === 'activo' ? 'Activo' : 'Baja'}
                                             </span>
@@ -393,11 +393,11 @@ export default function Colaboradores() {
                                         {canManageRH && (
                                             <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
                                                 <button onClick={() => { setEditing(emp); setModalOpen(true); }}
-                                                    className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 text-xs font-medium">
+                                                    className="text-sky-400 hover:text-sky-300 inline-flex items-center gap-1 text-xs font-medium">
                                                     <Pencil size={13} /> Editar
                                                 </button>
                                                 <button onClick={() => handleDelete(emp.id)}
-                                                    className="text-red-600 hover:text-red-800 inline-flex items-center gap-1 text-xs font-medium">
+                                                    className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 text-xs font-medium">
                                                     <Trash2 size={13} /> Eliminar
                                                 </button>
                                             </td>

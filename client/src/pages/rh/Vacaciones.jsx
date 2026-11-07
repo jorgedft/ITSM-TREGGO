@@ -8,15 +8,15 @@ import { useAuth } from '../../context/AuthContext';
 import { useRole } from '../../hooks/useRole';
 
 const TYPE_META = {
-  vacaciones:        { label: 'Vacaciones',           color: 'bg-sky-50 text-sky-700 border-sky-200' },
-  permiso_con_goce:  { label: 'Permiso con goce',     color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  permiso_sin_goce:  { label: 'Permiso sin goce',     color: 'bg-gray-100 text-gray-600 border-gray-200' },
+  vacaciones:        { label: 'Vacaciones',           color: 'bg-sky-950 text-sky-400 border-sky-800' },
+  permiso_con_goce:  { label: 'Permiso con goce',     color: 'bg-indigo-950 text-indigo-400 border-indigo-800' },
+  permiso_sin_goce:  { label: 'Permiso sin goce',     color: 'bg-slate-700 text-slate-400 border-slate-600' },
 };
 
 const STATUS_META = {
-  pendiente: { label: 'Pendiente', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  aprobado:  { label: 'Aprobado',  color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  rechazado: { label: 'Rechazado', color: 'bg-red-50 text-red-700 border-red-200' },
+  pendiente: { label: 'Pendiente', color: 'bg-amber-950 text-amber-400 border-amber-800' },
+  aprobado:  { label: 'Aprobado',  color: 'bg-emerald-950 text-emerald-400 border-emerald-800' },
+  rechazado: { label: 'Rechazado', color: 'bg-red-950 text-red-400 border-red-800' },
 };
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -84,10 +84,10 @@ function RequestModal({ employees, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg max-w-lg w-full p-6">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-lg w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Nueva Solicitud</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+          <h2 className="text-lg font-bold text-slate-100">Nueva Solicitud</h2>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -100,9 +100,9 @@ function RequestModal({ employees, onClose, onSaved }) {
               ))}
             </select>
             {balance && (
-              <p className="text-xs text-gray-500 mt-1">
-                Saldo {new Date().getFullYear()}: <span className="font-semibold text-gray-700">{balance.available}</span> de {balance.total} días disponibles
-                {balance.available < 0 && <span className="text-red-600 font-semibold"> (excedido)</span>}
+              <p className="text-xs text-slate-400 mt-1">
+                Saldo {new Date().getFullYear()}: <span className="font-semibold text-slate-200">{balance.available}</span> de {balance.total} días disponibles
+                {balance.available < 0 && <span className="text-red-400 font-semibold"> (excedido)</span>}
               </p>
             )}
           </div>
@@ -134,7 +134,7 @@ function RequestModal({ employees, onClose, onSaved }) {
             <label className="label">Días solicitados</label>
             <input type="number" min="0" step="0.5" className="input-field" value={form.days_requested}
               onChange={(e) => setForm((f) => ({ ...f, days_requested: Number(e.target.value) }))} />
-            <p className="text-[11px] text-gray-400 mt-1">Calculado automáticamente por fecha; puedes ajustarlo si aplica media jornada u otro criterio.</p>
+            <p className="text-[11px] text-slate-500 mt-1">Calculado automáticamente por fecha; puedes ajustarlo si aplica media jornada u otro criterio.</p>
           </div>
 
           <div>
@@ -143,7 +143,7 @@ function RequestModal({ employees, onClose, onSaved }) {
               onChange={(e) => setForm((f) => ({ ...f, reason: e.target.value }))} />
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
             <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary">
               {saving ? 'Guardando...' : 'Enviar Solicitud'}
@@ -229,10 +229,10 @@ export default function Vacaciones() {
     <div className="space-y-6 pb-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
             <Plane className="text-brand-500" /> Vacaciones y Permisos
           </h1>
-          <p className="text-sm text-gray-500">Solicitudes, aprobación y saldo de días disponibles.</p>
+          <p className="text-sm text-slate-400">Solicitudes, aprobación y saldo de días disponibles.</p>
         </div>
         {canManageRH && (
           <div className="flex flex-wrap items-center gap-2">
@@ -264,11 +264,11 @@ export default function Vacaciones() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+              <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
                 <th className="py-3 px-4">Colaborador</th>
                 <th className="py-3 px-4">Tipo</th>
                 <th className="py-3 px-4">Fechas</th>
@@ -278,44 +278,44 @@ export default function Vacaciones() {
                 {canManageRH && <th className="py-3 px-4 text-right">Acciones</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 text-sm">
+            <tbody className="divide-y divide-slate-700 text-sm">
               {loading ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-500">Cargando...</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-slate-500">Cargando...</td></tr>
               ) : requests.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-400">No hay solicitudes registradas.</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-slate-500">No hay solicitudes registradas.</td></tr>
               ) : (
                 requests.map((r) => (
-                  <tr key={r.id} className="hover:bg-gray-50">
-                    <td className="py-3 px-4 font-medium text-gray-900">{r.employee?.full_name || '—'}</td>
+                  <tr key={r.id} className="hover:bg-slate-700/40">
+                    <td className="py-3 px-4 font-medium text-slate-100">{r.employee?.full_name || '—'}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${TYPE_META[r.type]?.color || ''}`}>
                         {TYPE_META[r.type]?.label || r.type}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-600">{r.start_date} → {r.end_date}</td>
-                    <td className="py-3 px-4 text-sm text-gray-700">{r.days_requested}</td>
+                    <td className="py-3 px-4 text-xs text-slate-400">{r.start_date} → {r.end_date}</td>
+                    <td className="py-3 px-4 text-sm text-slate-300">{r.days_requested}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${STATUS_META[r.status]?.color || ''}`}>
                         {STATUS_META[r.status]?.label || r.status}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-xs text-gray-500">{r.reviewer?.full_name || '—'}</td>
+                    <td className="py-3 px-4 text-xs text-slate-500">{r.reviewer?.full_name || '—'}</td>
                     {canManageRH && (
                       <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
                         {r.status === 'pendiente' && (
                           <>
                             <button onClick={() => handleReview(r.id, 'aprobado')}
-                              className="text-emerald-600 hover:text-emerald-800 inline-flex items-center gap-1 text-xs font-medium">
+                              className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 text-xs font-medium">
                               <Check size={13} /> Aprobar
                             </button>
                             <button onClick={() => handleReview(r.id, 'rechazado')}
-                              className="text-red-600 hover:text-red-800 inline-flex items-center gap-1 text-xs font-medium">
+                              className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 text-xs font-medium">
                               <Ban size={13} /> Rechazar
                             </button>
                           </>
                         )}
                         <button onClick={() => handleDelete(r.id)}
-                          className="text-gray-400 hover:text-red-600 inline-flex items-center gap-1 text-xs font-medium">
+                          className="text-slate-500 hover:text-red-400 inline-flex items-center gap-1 text-xs font-medium">
                           <Trash2 size={13} />
                         </button>
                       </td>
