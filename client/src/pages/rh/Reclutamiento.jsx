@@ -8,11 +8,11 @@ import { useRole } from '../../hooks/useRole';
 const CVS_BUCKET = 'candidate-cvs';
 
 const STAGE_META = {
-  nuevo:      { label: 'Nuevo',      color: 'bg-gray-100 text-gray-600 border-gray-200' },
-  entrevista: { label: 'Entrevista', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  oferta:     { label: 'Oferta',     color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  rechazado:  { label: 'Rechazado',  color: 'bg-red-50 text-red-700 border-red-200' },
-  contratado: { label: 'Contratado', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  nuevo:      { label: 'Nuevo',      color: 'bg-slate-800 text-slate-400 border-slate-700' },
+  entrevista: { label: 'Entrevista', color: 'bg-sky-950 text-sky-400 border-sky-800' },
+  oferta:     { label: 'Oferta',     color: 'bg-purple-950 text-purple-400 border-purple-800' },
+  rechazado:  { label: 'Rechazado',  color: 'bg-red-950 text-red-400 border-red-800' },
+  contratado: { label: 'Contratado', color: 'bg-emerald-950 text-emerald-400 border-emerald-800' },
 };
 
 function todayISO() { return new Date().toISOString().slice(0, 10); }
@@ -39,10 +39,10 @@ function JobOpeningModal({ onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Nueva Vacante</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+          <h2 className="text-lg font-bold text-slate-100">Nueva Vacante</h2>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -60,7 +60,7 @@ function JobOpeningModal({ onClose, onSaved }) {
             <textarea rows={2} className="input-field" value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
           </div>
-          <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
             <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Guardando...' : 'Crear Vacante'}</button>
           </div>
@@ -108,10 +108,10 @@ function CandidateModal({ jobOpeningId, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Nuevo Candidato</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+          <h2 className="text-lg font-bold text-slate-100">Nuevo Candidato</h2>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -134,14 +134,14 @@ function CandidateModal({ jobOpeningId, onClose, onSaved }) {
           <div>
             <label className="label flex items-center gap-1.5"><Paperclip size={13} /> CV (PDF, opcional)</label>
             <input type="file" accept=".pdf" onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="w-full text-xs text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer" />
+              className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-950 file:text-sky-400 hover:file:bg-sky-900 cursor-pointer" />
           </div>
           <div>
             <label className="label">Notas</label>
             <textarea rows={2} className="input-field" value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
           </div>
-          <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
             <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Guardando...' : 'Agregar Candidato'}</button>
           </div>
@@ -260,10 +260,10 @@ export default function Reclutamiento() {
     <div className="space-y-6 pb-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
             <Briefcase className="text-brand-500" /> Reclutamiento / Vacantes
           </h1>
-          <p className="text-sm text-gray-500">Gestión de vacantes abiertas y seguimiento de candidatos.</p>
+          <p className="text-sm text-slate-400">Gestión de vacantes abiertas y seguimiento de candidatos.</p>
         </div>
         {canManageRH && (
           <button onClick={() => setJobModalOpen(true)} className="btn-primary flex items-center gap-1.5">
@@ -274,31 +274,31 @@ export default function Reclutamiento() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Lista de Vacantes */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden lg:col-span-1">
-          <div className="px-4 py-3 border-b border-gray-100 font-semibold text-sm text-gray-700">
+        <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden lg:col-span-1">
+          <div className="px-4 py-3 border-b border-slate-700 font-semibold text-sm text-slate-300">
             Vacantes ({openings.length})
           </div>
-          <div className="divide-y divide-gray-100 max-h-[560px] overflow-y-auto">
+          <div className="divide-y divide-slate-700 max-h-[560px] overflow-y-auto">
             {loadingOpenings ? (
-              <p className="p-4 text-sm text-gray-500">Cargando...</p>
+              <p className="p-4 text-sm text-slate-500">Cargando...</p>
             ) : openings.length === 0 ? (
-              <p className="p-4 text-sm text-gray-400">No hay vacantes registradas.</p>
+              <p className="p-4 text-sm text-slate-500">No hay vacantes registradas.</p>
             ) : (
               openings.map((job) => (
                 <button
                   key={job.id}
                   onClick={() => setSelectedId(job.id)}
-                  className={`w-full text-left px-4 py-3 transition-colors ${selectedId === job.id ? 'bg-brand-50' : 'hover:bg-gray-50'}`}
+                  className={`w-full text-left px-4 py-3 transition-colors ${selectedId === job.id ? 'bg-sky-950/50' : 'hover:bg-slate-700/40'}`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium text-gray-900 text-sm truncate">{job.title}</p>
+                    <p className="font-medium text-slate-100 text-sm truncate">{job.title}</p>
                     <span className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
-                      job.status === 'abierta' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-gray-100 text-gray-500 border-gray-200'
+                      job.status === 'abierta' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' : 'bg-slate-800 text-slate-500 border-slate-700'
                     }`}>
                       {job.status === 'abierta' ? 'Abierta' : 'Cerrada'}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{job.department || 'Sin depto.'} · {job.candidates?.[0]?.count ?? 0} candidato(s)</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{job.department || 'Sin depto.'} · {job.candidates?.[0]?.count ?? 0} candidato(s)</p>
                 </button>
               ))
             )}
@@ -306,15 +306,15 @@ export default function Reclutamiento() {
         </div>
 
         {/* Candidatos de la vacante seleccionada */}
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden lg:col-span-2">
+        <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden lg:col-span-2">
           {!selectedJob ? (
-            <p className="p-6 text-sm text-gray-400">Selecciona una vacante para ver sus candidatos.</p>
+            <p className="p-6 text-sm text-slate-500">Selecciona una vacante para ver sus candidatos.</p>
           ) : (
             <>
-              <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between gap-2 flex-wrap">
+              <div className="px-4 py-3 border-b border-slate-700 flex items-center justify-between gap-2 flex-wrap">
                 <div>
-                  <p className="font-semibold text-gray-900">{selectedJob.title}</p>
-                  <p className="text-xs text-gray-400">{selectedJob.department || 'Sin departamento'} · Abierta desde {selectedJob.opened_at}</p>
+                  <p className="font-semibold text-slate-100">{selectedJob.title}</p>
+                  <p className="text-xs text-slate-500">{selectedJob.department || 'Sin departamento'} · Abierta desde {selectedJob.opened_at}</p>
                 </div>
                 {canManageRH && (
                   <div className="flex items-center gap-2">
@@ -324,7 +324,7 @@ export default function Reclutamiento() {
                     <button onClick={() => handleToggleOpeningStatus(selectedJob)} className="btn-secondary text-xs">
                       {selectedJob.status === 'abierta' ? 'Cerrar Vacante' : 'Reabrir Vacante'}
                     </button>
-                    <button onClick={() => handleDeleteOpening(selectedJob)} className="text-red-500 hover:text-red-700 p-1.5 rounded hover:bg-red-50">
+                    <button onClick={() => handleDeleteOpening(selectedJob)} className="text-red-400 hover:text-red-300 p-1.5 rounded hover:bg-red-950">
                       <Trash2 size={15} />
                     </button>
                   </div>
@@ -334,7 +334,7 @@ export default function Reclutamiento() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                    <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
                       <th className="py-2.5 px-4">Candidato</th>
                       <th className="py-2.5 px-4">Contacto</th>
                       <th className="py-2.5 px-4">Etapa</th>
@@ -342,16 +342,16 @@ export default function Reclutamiento() {
                       {canManageRH && <th className="py-2.5 px-4 text-right">Acciones</th>}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200 text-sm">
+                  <tbody className="divide-y divide-slate-700 text-sm">
                     {loadingCandidates ? (
-                      <tr><td colSpan={5} className="text-center py-8 text-gray-500">Cargando...</td></tr>
+                      <tr><td colSpan={5} className="text-center py-8 text-slate-500">Cargando...</td></tr>
                     ) : candidates.length === 0 ? (
-                      <tr><td colSpan={5} className="text-center py-8 text-gray-400">Sin candidatos todavía.</td></tr>
+                      <tr><td colSpan={5} className="text-center py-8 text-slate-500">Sin candidatos todavía.</td></tr>
                     ) : (
                       candidates.map((c) => (
-                        <tr key={c.id} className="hover:bg-gray-50">
-                          <td className="py-2.5 px-4 font-medium text-gray-900">{c.full_name}</td>
-                          <td className="py-2.5 px-4 text-xs text-gray-500">
+                        <tr key={c.id} className="hover:bg-slate-700/40">
+                          <td className="py-2.5 px-4 font-medium text-slate-100">{c.full_name}</td>
+                          <td className="py-2.5 px-4 text-xs text-slate-400">
                             {c.email || '—'}
                             {c.phone && <span className="block">{c.phone}</span>}
                           </td>
@@ -374,14 +374,14 @@ export default function Reclutamiento() {
                           </td>
                           <td className="py-2.5 px-4">
                             {c.cv_path ? (
-                              <button onClick={() => handleDownloadCv(c)} className="text-blue-600 hover:text-blue-800 text-xs font-medium inline-flex items-center gap-1">
+                              <button onClick={() => handleDownloadCv(c)} className="text-sky-400 hover:text-sky-300 text-xs font-medium inline-flex items-center gap-1">
                                 <Download size={13} /> Ver
                               </button>
-                            ) : <span className="text-gray-300 text-xs">—</span>}
+                            ) : <span className="text-slate-600 text-xs">—</span>}
                           </td>
                           {canManageRH && (
                             <td className="py-2.5 px-4 text-right">
-                              <button onClick={() => handleDeleteCandidate(c)} className="text-red-600 hover:text-red-800 text-xs font-medium">
+                              <button onClick={() => handleDeleteCandidate(c)} className="text-red-400 hover:text-red-300 text-xs font-medium">
                                 <Trash2 size={13} />
                               </button>
                             </td>

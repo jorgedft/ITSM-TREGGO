@@ -8,8 +8,8 @@ import { useRole } from '../../hooks/useRole';
 
 const BUCKET = 'payroll-receipts';
 const STATUS_META = {
-  pendiente: { label: 'Pendiente', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-  pagado:    { label: 'Pagado',    color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
+  pendiente: { label: 'Pendiente', color: 'bg-amber-950 text-amber-400 border-amber-800' },
+  pagado:    { label: 'Pagado',    color: 'bg-emerald-950 text-emerald-400 border-emerald-800' },
 };
 
 function currency(n) {
@@ -87,10 +87,10 @@ function PayrollModal({ initial, employees, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">{isEdit ? 'Editar Registro' : 'Nuevo Registro de Nómina'}</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={20} /></button>
+          <h2 className="text-lg font-bold text-slate-100">{isEdit ? 'Editar Registro' : 'Nuevo Registro de Nómina'}</h2>
+          <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -153,13 +153,13 @@ function PayrollModal({ initial, employees, onClose, onSaved }) {
           <div>
             <label className="label flex items-center gap-1.5"><Paperclip size={13} /> Recibo (PDF, opcional)</label>
             <input ref={fileRef} type="file" accept=".pdf" onChange={(e) => setFile(e.target.files?.[0] || null)}
-              className="w-full text-xs text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 cursor-pointer" />
+              className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-950 file:text-sky-400 hover:file:bg-sky-900 cursor-pointer" />
             {initial?.receipt_file_name && !file && (
-              <p className="text-[11px] text-gray-400 mt-1">Ya tiene: {initial.receipt_file_name} (sube otro para reemplazarlo)</p>
+              <p className="text-[11px] text-slate-500 mt-1">Ya tiene: {initial.receipt_file_name} (sube otro para reemplazarlo)</p>
             )}
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
             <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary">
               {saving ? 'Guardando...' : isEdit ? 'Actualizar' : 'Guardar'}
@@ -264,10 +264,10 @@ export default function Nominas() {
     <div className="space-y-6 pb-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
             <Receipt className="text-brand-500" /> Nóminas y Recibos
           </h1>
-          <p className="text-sm text-gray-500">Pre-nómina y recibos de pago del personal.</p>
+          <p className="text-sm text-slate-400">Pre-nómina y recibos de pago del personal.</p>
         </div>
         {canManageRH && (
           <div className="flex flex-wrap items-center gap-2">
@@ -299,11 +299,11 @@ export default function Nominas() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+              <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
                 <th className="py-3 px-4">Colaborador</th>
                 <th className="py-3 px-4">Periodo</th>
                 <th className="py-3 px-4">Percepciones</th>
@@ -314,22 +314,22 @@ export default function Nominas() {
                 {canManageRH && <th className="py-3 px-4 text-right">Acciones</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 text-sm">
+            <tbody className="divide-y divide-slate-700 text-sm">
               {loading ? (
-                <tr><td colSpan={8} className="text-center py-8 text-gray-500">Cargando...</td></tr>
+                <tr><td colSpan={8} className="text-center py-8 text-slate-500">Cargando...</td></tr>
               ) : records.length === 0 ? (
-                <tr><td colSpan={8} className="text-center py-8 text-gray-400">No hay registros de nómina.</td></tr>
+                <tr><td colSpan={8} className="text-center py-8 text-slate-500">No hay registros de nómina.</td></tr>
               ) : (
                 records.map((r) => (
-                  <tr key={r.id} className="hover:bg-gray-50">
-                    <td className="py-3 px-4 font-medium text-gray-900">{r.employee?.full_name || '—'}</td>
-                    <td className="py-3 px-4 text-gray-700">
+                  <tr key={r.id} className="hover:bg-slate-700/40">
+                    <td className="py-3 px-4 font-medium text-slate-100">{r.employee?.full_name || '—'}</td>
+                    <td className="py-3 px-4 text-slate-300">
                       {r.period_label}
-                      <span className="block text-[11px] text-gray-400">{r.period_start} → {r.period_end}</span>
+                      <span className="block text-[11px] text-slate-500">{r.period_start} → {r.period_end}</span>
                     </td>
-                    <td className="py-3 px-4 text-gray-700">{currency(r.gross_pay)}</td>
-                    <td className="py-3 px-4 text-gray-700">{currency(r.deductions)}</td>
-                    <td className="py-3 px-4 font-semibold text-gray-900">{currency(r.net_pay)}</td>
+                    <td className="py-3 px-4 text-slate-300">{currency(r.gross_pay)}</td>
+                    <td className="py-3 px-4 text-slate-300">{currency(r.deductions)}</td>
+                    <td className="py-3 px-4 font-semibold text-slate-100">{currency(r.net_pay)}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${STATUS_META[r.status]?.color || ''}`}>
                         {STATUS_META[r.status]?.label || r.status}
@@ -337,24 +337,24 @@ export default function Nominas() {
                     </td>
                     <td className="py-3 px-4">
                       {r.receipt_path ? (
-                        <button onClick={() => handleDownloadReceipt(r)} className="text-blue-600 hover:text-blue-800 text-xs font-medium inline-flex items-center gap-1">
+                        <button onClick={() => handleDownloadReceipt(r)} className="text-sky-400 hover:text-sky-300 text-xs font-medium inline-flex items-center gap-1">
                           <Download size={13} /> Ver
                         </button>
                       ) : (
-                        <span className="text-gray-300 text-xs">—</span>
+                        <span className="text-slate-600 text-xs">—</span>
                       )}
                     </td>
                     {canManageRH && (
                       <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
                         {r.status === 'pendiente' && (
-                          <button onClick={() => handleMarkPaid(r)} className="text-emerald-600 hover:text-emerald-800 inline-flex items-center gap-1 text-xs font-medium">
+                          <button onClick={() => handleMarkPaid(r)} className="text-emerald-400 hover:text-emerald-300 inline-flex items-center gap-1 text-xs font-medium">
                             <CheckCircle2 size={13} /> Pagar
                           </button>
                         )}
-                        <button onClick={() => { setEditing(r); setModalOpen(true); }} className="text-blue-600 hover:text-blue-800 inline-flex items-center gap-1 text-xs font-medium">
+                        <button onClick={() => { setEditing(r); setModalOpen(true); }} className="text-sky-400 hover:text-sky-300 inline-flex items-center gap-1 text-xs font-medium">
                           <Pencil size={13} />
                         </button>
-                        <button onClick={() => handleDelete(r)} className="text-red-600 hover:text-red-800 inline-flex items-center gap-1 text-xs font-medium">
+                        <button onClick={() => handleDelete(r)} className="text-red-400 hover:text-red-300 inline-flex items-center gap-1 text-xs font-medium">
                           <Trash2 size={13} />
                         </button>
                       </td>

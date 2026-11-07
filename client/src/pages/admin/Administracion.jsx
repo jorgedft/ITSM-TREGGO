@@ -26,9 +26,9 @@ const TABLE_LABELS = {
 };
 
 const ACTION_META = {
-  INSERT: { label: 'Creación', icon: PlusCircle, className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  UPDATE: { label: 'Modificación', icon: Pencil, className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  DELETE: { label: 'Eliminación', icon: Trash2, className: 'bg-red-50 text-red-700 border-red-200' },
+  INSERT: { label: 'Creación', icon: PlusCircle, className: 'bg-emerald-950 text-emerald-400 border-emerald-800' },
+  UPDATE: { label: 'Modificación', icon: Pencil, className: 'bg-amber-950 text-amber-400 border-amber-800' },
+  DELETE: { label: 'Eliminación', icon: Trash2, className: 'bg-red-950 text-red-400 border-red-800' },
 };
 
 // Oculta campos sensibles (contraseñas) al mostrar el detalle del cambio.
@@ -55,43 +55,43 @@ function AuditRow({ entry }) {
 
   return (
     <>
-      <tr className="hover:bg-gray-50 cursor-pointer" onClick={() => setOpen((o) => !o)}>
-        <td className="py-2.5 px-4 text-xs text-gray-500 whitespace-nowrap">
+      <tr className="hover:bg-slate-700/40 cursor-pointer" onClick={() => setOpen((o) => !o)}>
+        <td className="py-2.5 px-4 text-xs text-slate-500 whitespace-nowrap">
           {new Date(entry.created_at).toLocaleString('es-MX')}
         </td>
-        <td className="py-2.5 px-4 text-sm text-gray-800">
-          {entry.actor?.full_name || <span className="text-gray-400 italic">Sistema</span>}
+        <td className="py-2.5 px-4 text-sm text-slate-200">
+          {entry.actor?.full_name || <span className="text-slate-500 italic">Sistema</span>}
         </td>
-        <td className="py-2.5 px-4 text-sm text-gray-700">{TABLE_LABELS[entry.table_name] || entry.table_name}</td>
+        <td className="py-2.5 px-4 text-sm text-slate-300">{TABLE_LABELS[entry.table_name] || entry.table_name}</td>
         <td className="py-2.5 px-4">
           <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ${meta.className}`}>
             <ActionIcon size={12} /> {meta.label}
           </span>
         </td>
-        <td className="py-2.5 px-4 text-sm text-gray-600 truncate max-w-[220px]">{getRecordLabel(entry)}</td>
-        <td className="py-2.5 px-4 text-xs text-gray-500">
+        <td className="py-2.5 px-4 text-sm text-slate-400 truncate max-w-[220px]">{getRecordLabel(entry)}</td>
+        <td className="py-2.5 px-4 text-xs text-slate-500">
           {entry.changed_fields?.length ? entry.changed_fields.join(', ') : '—'}
         </td>
         <td className="py-2.5 px-4 text-right">
-          {open ? <ChevronDown size={16} className="text-gray-400" /> : <ChevronRight size={16} className="text-gray-400" />}
+          {open ? <ChevronDown size={16} className="text-slate-500" /> : <ChevronRight size={16} className="text-slate-500" />}
         </td>
       </tr>
       {open && (
-        <tr className="bg-gray-50/70">
+        <tr className="bg-slate-900/60">
           <td colSpan={7} className="px-4 py-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
               {entry.old_data && (
                 <div>
-                  <p className="font-semibold text-gray-500 mb-1 uppercase tracking-wider text-[10px]">Antes</p>
-                  <pre className="bg-white border border-gray-200 rounded-lg p-2.5 overflow-x-auto text-[11px] text-gray-700 max-h-56">
+                  <p className="font-semibold text-slate-500 mb-1 uppercase tracking-wider text-[10px]">Antes</p>
+                  <pre className="bg-slate-900 border border-slate-700 rounded-lg p-2.5 overflow-x-auto text-[11px] text-slate-300 max-h-56">
                     {JSON.stringify(sanitize(entry.old_data), null, 2)}
                   </pre>
                 </div>
               )}
               {entry.new_data && (
                 <div>
-                  <p className="font-semibold text-gray-500 mb-1 uppercase tracking-wider text-[10px]">Después</p>
-                  <pre className="bg-white border border-gray-200 rounded-lg p-2.5 overflow-x-auto text-[11px] text-gray-700 max-h-56">
+                  <p className="font-semibold text-slate-500 mb-1 uppercase tracking-wider text-[10px]">Después</p>
+                  <pre className="bg-slate-900 border border-slate-700 rounded-lg p-2.5 overflow-x-auto text-[11px] text-slate-300 max-h-56">
                     {JSON.stringify(sanitize(entry.new_data), null, 2)}
                   </pre>
                 </div>
@@ -164,15 +164,15 @@ export default function Administracion() {
   return (
     <div className="space-y-6 pb-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
           <Settings className="text-brand-500" /> Administración
         </h1>
-        <p className="text-sm text-gray-500">Bitácora de auditoría: quién hizo qué y cuándo, en todos los módulos.</p>
+        <p className="text-sm text-slate-400">Bitácora de auditoría: quién hizo qué y cuándo, en todos los módulos.</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <div className="relative lg:col-span-1">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
             placeholder="Buscar usuario, registro, módulo..."
@@ -201,11 +201,11 @@ export default function Administracion() {
         </select>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+              <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
                 <th className="py-3 px-4">Fecha</th>
                 <th className="py-3 px-4">Usuario</th>
                 <th className="py-3 px-4">Módulo</th>
@@ -215,11 +215,11 @@ export default function Administracion() {
                 <th className="py-3 px-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-sm">
+            <tbody className="divide-y divide-slate-700 text-sm">
               {loading && logs.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-500">Cargando bitácora...</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-slate-500">Cargando bitácora...</td></tr>
               ) : filteredLogs.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-8 text-gray-400">No hay actividad registrada con estos filtros.</td></tr>
+                <tr><td colSpan={7} className="text-center py-8 text-slate-500">No hay actividad registrada con estos filtros.</td></tr>
               ) : (
                 filteredLogs.map((entry) => <AuditRow key={entry.id} entry={entry} />)
               )}
@@ -228,10 +228,10 @@ export default function Administracion() {
         </div>
 
         {hasMore && !loading && filteredLogs.length > 0 && (
-          <div className="p-3 border-t border-gray-100 text-center">
+          <div className="p-3 border-t border-slate-700 text-center">
             <button
               onClick={() => { const next = page + 1; setPage(next); loadLogs(next); }}
-              className="text-sm font-medium text-blue-600 hover:text-blue-700"
+              className="text-sm font-medium text-sky-400 hover:text-sky-300"
             >
               Cargar más
             </button>
