@@ -127,14 +127,14 @@ export function Navbar({ onMenuToggle }) {
   };
 
   return (
-    <header className="glass border-x-0 border-t-0 rounded-none px-4 sm:px-6 py-2.5 flex items-center justify-between shrink-0 z-20 sticky top-0">
+    <header className="bg-slate-900 border-b border-slate-800 px-4 sm:px-6 py-2.5 flex items-center justify-between shrink-0 z-20 sticky top-0">
 
       {/* Lado Izquierdo: Toggle Móvil + Buscador */}
       <div className="flex items-center gap-3">
         {/* Botón menú responsive */}
         <button
           onClick={onMenuToggle}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-600 lg:hidden focus:outline-none"
+          className="p-2 rounded-lg hover:bg-slate-800 text-slate-300 lg:hidden focus:outline-none"
           title="Abrir Menú"
         >
           <Menu size={20} />
@@ -142,24 +142,24 @@ export function Navbar({ onMenuToggle }) {
 
         {/* Campo de búsqueda */}
         <div className="relative hidden sm:block">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar activo, ticket o usuario... (Presiona '/')"
-            className="pl-9 pr-10 py-1.5 text-xs sm:text-sm border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-64 md:w-80 transition-all"
+            className="pl-9 pr-10 py-1.5 text-xs sm:text-sm border border-slate-700 rounded-xl bg-slate-800 text-slate-100 focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent w-64 md:w-80 transition-all placeholder:text-slate-500"
           />
           {searchQuery ? (
             <button
               onClick={() => setSearchQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
             >
               <X size={14} />
             </button>
           ) : (
-            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden md:inline-block px-1.5 py-0.5 text-[10px] font-semibold text-gray-400 bg-gray-100 border border-gray-200 rounded">
+            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 hidden md:inline-block px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 bg-slate-900 border border-slate-700 rounded">
               /
             </kbd>
           )}
@@ -176,21 +176,21 @@ export function Navbar({ onMenuToggle }) {
               setShowNotifications(!showNotifications);
               setShowProfileMenu(false);
             }}
-            className="relative p-2 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none"
+            className="relative p-2 rounded-xl text-slate-300 hover:bg-slate-800 transition-colors focus:outline-none"
             title="Notificaciones"
           >
             <Bell size={20} />
             {unreadCount > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-slate-900" />
             )}
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 glass-strong rounded-2xl py-2 z-50">
-              <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">Notificaciones</h3>
+            <div className="absolute right-0 mt-2 w-80 bg-slate-800 border border-slate-700 rounded-2xl shadow-xl py-2 z-50">
+              <div className="px-4 py-2 border-b border-slate-700 flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">Notificaciones</h3>
                 {unreadCount > 0 && (
-                  <span className="text-[10px] bg-sky-50 text-sky-600 font-bold px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] bg-sky-950 text-sky-400 border border-sky-800 font-bold px-2 py-0.5 rounded-full">
                     {unreadCount} nuevas
                   </span>
                 )}
@@ -200,16 +200,16 @@ export function Navbar({ onMenuToggle }) {
                 <button
                   onClick={handleEnablePush}
                   disabled={enablingPush}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-brand-700 bg-brand-50 hover:bg-brand-100 border-b border-gray-100 transition-colors disabled:opacity-50"
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-xs font-medium text-sky-400 bg-sky-950/40 hover:bg-sky-950/70 border-b border-slate-700 transition-colors disabled:opacity-50"
                 >
                   <BellRing size={14} />
                   {enablingPush ? "Activando..." : "Activar notificaciones en este dispositivo"}
                 </button>
               )}
 
-              <div className="divide-y divide-gray-50 max-h-72 overflow-y-auto">
+              <div className="divide-y divide-slate-700/60 max-h-72 overflow-y-auto">
                 {notifications.length === 0 ? (
-                  <p className="p-4 text-center text-xs text-gray-400">Sin notificaciones por ahora.</p>
+                  <p className="p-4 text-center text-xs text-slate-500">Sin notificaciones por ahora.</p>
                 ) : (
                   notifications.map((n) => {
                     const Icon = TYPE_ICONS[n.type] || (n.type?.includes("warning") ? AlertTriangle : CheckCircle2);
@@ -217,13 +217,13 @@ export function Navbar({ onMenuToggle }) {
                       <button
                         key={n.id}
                         onClick={() => handleNotificationClick(n)}
-                        className={`w-full text-left p-3 hover:bg-gray-50 transition-colors flex items-start gap-3 ${!n.read ? "bg-sky-50/40" : ""}`}
+                        className={`w-full text-left p-3 hover:bg-slate-700/50 transition-colors flex items-start gap-3 ${!n.read ? "bg-sky-950/30" : ""}`}
                       >
-                        <Icon size={16} className="text-sky-500 shrink-0 mt-0.5" />
+                        <Icon size={16} className="text-sky-400 shrink-0 mt-0.5" />
                         <div className="min-w-0">
-                          <p className={`text-xs ${!n.read ? "font-semibold text-gray-900" : "font-medium text-gray-700"}`}>{n.title}</p>
-                          {n.body && <p className="text-[11px] text-gray-500 truncate">{n.body}</p>}
-                          <span className="text-[10px] text-gray-400">{timeAgo(n.created_at)}</span>
+                          <p className={`text-xs ${!n.read ? "font-semibold text-slate-100" : "font-medium text-slate-300"}`}>{n.title}</p>
+                          {n.body && <p className="text-[11px] text-slate-400 truncate">{n.body}</p>}
+                          <span className="text-[10px] text-slate-500">{timeAgo(n.created_at)}</span>
                         </div>
                       </button>
                     );
@@ -234,7 +234,7 @@ export function Navbar({ onMenuToggle }) {
           )}
         </div>
 
-        <div className="h-6 w-px bg-gray-200 hidden sm:block" />
+        <div className="h-6 w-px bg-slate-700 hidden sm:block" />
 
         {/* Menú de Usuario */}
         <div className="relative" ref={profileRef}>
@@ -243,47 +243,47 @@ export function Navbar({ onMenuToggle }) {
               setShowProfileMenu(!showProfileMenu);
               setShowNotifications(false);
             }}
-            className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-gray-100 transition-colors focus:outline-none"
+            className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-800 transition-colors focus:outline-none"
           >
             <div className="w-8 h-8 rounded-xl bg-sky-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
               {profile?.full_name?.[0]?.toUpperCase() ?? "U"}
             </div>
             <div className="hidden md:block text-left text-xs">
-              <p className="font-semibold text-gray-900 leading-tight">
+              <p className="font-semibold text-slate-100 leading-tight">
                 {profile?.full_name || "Usuario"}
               </p>
-              <p className="text-gray-400 text-[10px] capitalize">
+              <p className="text-slate-400 text-[10px] capitalize">
                 {profile?.role || "Técnico TI"}
               </p>
             </div>
           </button>
 
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-56 glass-strong rounded-2xl py-1.5 z-50">
-              <div className="px-4 py-2 border-b border-gray-100 md:hidden">
-                <p className="text-xs font-bold text-gray-900">{profile?.full_name}</p>
-                <p className="text-[10px] text-gray-400 capitalize">{profile?.role}</p>
+            <div className="absolute right-0 mt-2 w-56 bg-slate-800 border border-slate-700 rounded-2xl shadow-xl py-1.5 z-50">
+              <div className="px-4 py-2 border-b border-slate-700 md:hidden">
+                <p className="text-xs font-bold text-slate-100">{profile?.full_name}</p>
+                <p className="text-[10px] text-slate-400 capitalize">{profile?.role}</p>
               </div>
 
               <div className="p-1">
                 <button
                   onClick={() => setShowProfileMenu(false)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-300 hover:bg-slate-700/50 rounded-xl font-medium transition-colors"
                 >
-                  <User size={15} className="text-gray-400" /> Mi Perfil
+                  <User size={15} className="text-slate-500" /> Mi Perfil
                 </button>
                 <button
                   onClick={() => setShowProfileMenu(false)}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-gray-700 hover:bg-gray-50 rounded-xl font-medium transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-300 hover:bg-slate-700/50 rounded-xl font-medium transition-colors"
                 >
-                  <Settings size={15} className="text-gray-400" /> Ajustes
+                  <Settings size={15} className="text-slate-500" /> Ajustes
                 </button>
               </div>
 
-              <div className="border-t border-gray-100 p-1 mt-1">
+              <div className="border-t border-slate-700 p-1 mt-1">
                 <button
                   onClick={signOut}
-                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-600 hover:bg-red-50 rounded-xl font-medium transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:bg-red-950/40 rounded-xl font-medium transition-colors"
                 >
                   <LogOut size={15} /> Cerrar Sesión
                 </button>

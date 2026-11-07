@@ -163,10 +163,10 @@ export function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose
             )}
 
             <aside className={`
-                glass-dark flex flex-col text-white
+                flex flex-col text-white bg-slate-950 border-r border-slate-800
                 fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300
                 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-                lg:static lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:z-auto lg:border-l-0 lg:border-t-0 lg:border-b-0 lg:rounded-none
+                lg:static lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:z-auto
                 ${collapsed ? 'lg:w-16' : 'lg:w-64'}
                 min-h-screen shrink-0
             `}>

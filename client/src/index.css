@@ -7,8 +7,8 @@
 @layer base {
     *, *::before, *::after { box-sizing: border-box; }
     
-    html { 
-        color-scheme: light; /* Fuerza renderizado claro nativo en el navegador */
+    html {
+        color-scheme: dark;
         font-family: 'Inter', system-ui, sans-serif;
         padding-top: env(safe-area-inset-top);
         padding-bottom: env(safe-area-inset-bottom);
@@ -17,15 +17,9 @@
     }
 
     body {
-        @apply text-gray-900 antialiased;
+        @apply bg-slate-900 text-slate-100 antialiased;
         -webkit-tap-highlight-color: transparent;
         overscroll-behavior-y: none;
-        background-color: #eef2f7;
-        background-image:
-            radial-gradient(at 15% 10%, rgba(56, 189, 248, 0.16) 0px, transparent 50%),
-            radial-gradient(at 85% 0%, rgba(99, 102, 241, 0.14) 0px, transparent 50%),
-            radial-gradient(at 50% 90%, rgba(14, 165, 233, 0.12) 0px, transparent 55%);
-        background-attachment: fixed;
     }
 
     /* Previene el zoom automático molesto en móviles al tocar inputs/selects */
@@ -37,7 +31,7 @@
 
     /* Forzar visibilidad y contraste en celdas de tabla */
     table td {
-        @apply text-gray-900;
+        @apply text-slate-100;
     }
 }
 
@@ -45,7 +39,7 @@
     /* Botones adaptativos */
     .btn-primary {
         @apply inline-flex items-center justify-center gap-1.5 sm:gap-2
-               bg-brand-500 hover:bg-brand-600 active:bg-brand-700
+               bg-sky-600 hover:bg-sky-500 active:bg-sky-700
                text-white font-medium px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg
                transition-colors duration-200 disabled:opacity-50
                disabled:cursor-not-allowed touch-manipulation;
@@ -53,66 +47,53 @@
 
     .btn-secondary {
         @apply inline-flex items-center justify-center gap-1.5 sm:gap-2
-               bg-white hover:bg-gray-50 text-gray-700 font-medium
-               border border-gray-300 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg
+               bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium
+               border border-slate-700 px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg
                transition-colors duration-200 touch-manipulation;
     }
 
     .btn-danger {
         @apply inline-flex items-center justify-center gap-1.5 sm:gap-2
-               bg-red-500 hover:bg-red-600 text-white font-medium
-               px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg 
+               bg-red-600 hover:bg-red-500 text-white font-medium
+               px-3 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm rounded-lg
                transition-colors duration-200 touch-manipulation;
     }
 
     /* Card optimizada */
     .card {
-        @apply bg-white rounded-xl shadow-sm border border-gray-200 p-3 sm:p-4 md:p-6;
+        @apply bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-3 sm:p-4 md:p-6;
     }
 
-    /* Input ajustado con texto oscuro explícito y soporte para estados disabled/readonly */
+    /* Input con fondo/borde oscuros y soporte para estados disabled/readonly */
     .input-field {
-        @apply w-full bg-white text-gray-900 border border-gray-300 rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm
-               focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
-               disabled:bg-gray-100 disabled:text-gray-700 disabled:opacity-100
-               read-only:bg-gray-50 read-only:text-gray-800 transition-shadow;
+        @apply w-full bg-slate-900 text-slate-100 border border-slate-700 rounded-lg px-2.5 py-1.5 sm:px-3 sm:py-2 text-xs sm:text-sm
+               focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent
+               disabled:bg-slate-800 disabled:text-slate-400 disabled:opacity-100
+               read-only:bg-slate-800 read-only:text-slate-300 transition-shadow;
     }
 
     /* Estilo explícito para el placeholder */
     .input-field::placeholder {
-        @apply text-gray-400 opacity-100;
+        @apply text-slate-500 opacity-100;
     }
 
-    /* Garantiza que las opciones desplegables mantengan fondo blanco y texto oscuro */
+    /* Garantiza que las opciones desplegables mantengan fondo y texto oscuros */
     select.input-field option {
-        @apply bg-white text-gray-900;
+        @apply bg-slate-800 text-slate-100;
     }
 
     .label {
-        @apply block text-xs sm:text-sm font-medium text-gray-700 mb-1;
-    }
-
-    /* Tema "glassy" (vidrio esmerilado) — uso selectivo: navegación,
-       encabezados, tarjetas de dashboard y modales. Las tablas de datos
-       se quedan con fondo sólido para no perder contraste/legibilidad. */
-    .glass {
-        @apply bg-white/70 backdrop-blur-xl border border-white/60 shadow-[0_8px_32px_rgba(15,23,42,0.08)];
-    }
-    .glass-strong {
-        @apply bg-white/80 backdrop-blur-2xl border border-white/70 shadow-[0_8px_32px_rgba(15,23,42,0.10)];
-    }
-    .glass-dark {
-        @apply bg-slate-900/70 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.35)];
+        @apply block text-xs sm:text-sm font-medium text-slate-400 mb-1;
     }
 
     /* Badges de estado */
-    .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium; }
-    .badge-open      { @apply badge bg-blue-100   text-blue-800;  }
-    .badge-progress  { @apply badge bg-yellow-100 text-yellow-800; }
-    .badge-resolved  { @apply badge bg-green-100  text-green-800; }
-    .badge-closed    { @apply badge bg-gray-100   text-gray-700;  }
-    .badge-critical  { @apply badge bg-red-100    text-red-800;   }
-    .badge-available { @apply badge bg-green-100  text-green-800; }
-    .badge-assigned  { @apply badge bg-brand-100  text-brand-800; }
-    .badge-retired   { @apply badge bg-gray-100   text-gray-600;  }
+    .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium border; }
+    .badge-open      { @apply badge bg-sky-950     text-sky-400     border-sky-800;     }
+    .badge-progress  { @apply badge bg-amber-950   text-amber-400   border-amber-800;   }
+    .badge-resolved  { @apply badge bg-emerald-950 text-emerald-400 border-emerald-800; }
+    .badge-closed    { @apply badge bg-slate-800   text-slate-400   border-slate-700;   }
+    .badge-critical  { @apply badge bg-red-950     text-red-400     border-red-800;     }
+    .badge-available { @apply badge bg-emerald-950 text-emerald-400 border-emerald-800; }
+    .badge-assigned  { @apply badge bg-sky-950     text-sky-400     border-sky-800;     }
+    .badge-retired   { @apply badge bg-slate-800   text-slate-400   border-slate-700;   }
 }

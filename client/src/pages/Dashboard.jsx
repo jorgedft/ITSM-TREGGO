@@ -22,17 +22,17 @@ import { useAuth } from "../context/AuthContext";
 // Tarjeta de Estadística Reutilizable
 function StatCard({ label, value, icon: Icon, color, sub, to }) {
   const content = (
-    <div className="glass rounded-2xl p-4 hover:bg-white/80 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4">
+    <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 hover:border-slate-600 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4">
       <div className={`${color} p-3.5 rounded-xl text-white shrink-0 shadow-sm`}>
         <Icon size={24} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-2xl font-extrabold text-gray-900 tracking-tight">
+        <p className="text-2xl font-extrabold text-slate-100 tracking-tight">
           {value ?? "—"}
         </p>
-        <p className="text-xs font-medium text-gray-500 truncate">{label}</p>
+        <p className="text-xs font-medium text-slate-400 truncate">{label}</p>
         {sub && (
-          <p className="text-[11px] font-semibold text-gray-400 mt-0.5 truncate">
+          <p className="text-[11px] font-semibold text-slate-500 mt-0.5 truncate">
             {sub}
           </p>
         )}
@@ -122,17 +122,17 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 pb-8">
       {/* Saludo y Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-800 border border-slate-700 p-6 rounded-2xl">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
             Bienvenido, {profile?.full_name?.split(" ")[0] || "Usuario"} 👋
           </h1>
-          <p className="text-gray-500 text-sm mt-0.5">
+          <p className="text-slate-400 text-sm mt-0.5">
             Panel de Control General — Infraestructura y Servicios de TI
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950 text-emerald-400 border border-emerald-800">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             En Linea
           </span>
@@ -143,7 +143,7 @@ export default function Dashboard() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-gray-100 rounded-2xl animate-pulse" />
+            <div key={i} className="h-24 bg-slate-800 rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : (
@@ -189,27 +189,27 @@ export default function Dashboard() {
 
       {/* Accesos Rápidos Modulares */}
       <div className="space-y-3">
-        <h2 className="text-sm font-bold uppercase tracking-wider text-gray-500 flex items-center gap-2">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
           <Activity size={16} /> Accesos Rápidos a Módulos
         </h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {[
-            { to: "/assets/new", label: "Nuevo Equipo", icon: Monitor, color: "hover:border-blue-300 hover:bg-blue-50/50 text-blue-600" },
-            { to: "/phones/new", label: "Nueva Línea", icon: Smartphone, color: "hover:border-sky-300 hover:bg-sky-50/50 text-sky-600" },
-            { to: "/licenses/new", label: "Nueva Licencia", icon: Shield, color: "hover:border-emerald-300 hover:bg-emerald-50/50 text-emerald-600" },
-            { to: "/vault", label: "Bóveda Guías", icon: BookOpen, color: "hover:border-purple-300 hover:bg-purple-50/50 text-purple-600" },
-            { to: "/network", label: "Red & IPs", icon: Network, color: "hover:border-indigo-300 hover:bg-indigo-50/50 text-indigo-600" },
-            { to: "/maintenance", label: "Servicios TI", icon: Wrench, color: "hover:border-amber-300 hover:bg-amber-50/50 text-amber-600" },
+            { to: "/assets/new", label: "Nuevo Equipo", icon: Monitor, color: "hover:border-blue-700 text-blue-400" },
+            { to: "/phones/new", label: "Nueva Línea", icon: Smartphone, color: "hover:border-sky-700 text-sky-400" },
+            { to: "/licenses/new", label: "Nueva Licencia", icon: Shield, color: "hover:border-emerald-700 text-emerald-400" },
+            { to: "/vault", label: "Bóveda Guías", icon: BookOpen, color: "hover:border-purple-700 text-purple-400" },
+            { to: "/network", label: "Red & IPs", icon: Network, color: "hover:border-indigo-700 text-indigo-400" },
+            { to: "/maintenance", label: "Servicios TI", icon: Wrench, color: "hover:border-amber-700 text-amber-400" },
           ].map(({ to, label, icon: Icon, color }) => (
             <Link
               key={to}
               to={to}
-              className={`glass rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 transition-all duration-150 hover:-translate-y-0.5 group ${color}`}
+              className={`bg-slate-800 border border-slate-700 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 transition-all duration-150 hover:-translate-y-0.5 group ${color}`}
             >
-              <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-white transition-colors">
+              <div className="p-2 rounded-lg bg-slate-900 group-hover:bg-slate-950 transition-colors">
                 <Icon size={20} />
               </div>
-              <span className="text-xs font-semibold text-gray-700 group-hover:text-gray-900 leading-tight">
+              <span className="text-xs font-semibold text-slate-300 group-hover:text-slate-100 leading-tight">
                 {label}
               </span>
             </Link>
@@ -221,15 +221,15 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Lista de Tickets Recientes (2 Columnas) */}
-        <div className="lg:col-span-2 glass rounded-2xl p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+        <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-700 pb-3">
             <div className="flex items-center gap-2">
-              <Ticket size={18} className="text-blue-600" />
-              <h2 className="text-base font-bold text-gray-900">Tickets Recientes</h2>
+              <Ticket size={18} className="text-sky-400" />
+              <h2 className="text-base font-bold text-slate-100">Tickets Recientes</h2>
             </div>
             <Link
               to="/tickets"
-              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 hover:underline"
+              className="text-xs font-semibold text-sky-400 hover:text-sky-300 flex items-center gap-1 hover:underline"
             >
               Ver todos <ArrowRight size={12} />
             </Link>
@@ -238,12 +238,12 @@ export default function Dashboard() {
           <div className="overflow-x-auto">
             {tickets.length === 0 ? (
               <div className="text-center py-10">
-                <p className="text-gray-400 text-sm">No hay tickets registrados recientemente.</p>
+                <p className="text-slate-500 text-sm">No hay tickets registrados recientemente.</p>
               </div>
             ) : (
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-gray-100 text-[11px] uppercase tracking-wider text-gray-400 font-bold">
+                  <tr className="border-b border-slate-700 text-[11px] uppercase tracking-wider text-slate-500 font-bold">
                     <th className="py-2.5 px-3">Ticket</th>
                     <th className="py-2.5 px-3">Título</th>
                     <th className="py-2.5 px-3">Solicitante</th>
@@ -251,27 +251,27 @@ export default function Dashboard() {
                     <th className="py-2.5 px-3 text-right">Prioridad</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50 text-xs">
+                <tbody className="divide-y divide-slate-700/60 text-xs">
                   {tickets.map((t) => (
-                    <tr key={t.id} className="hover:bg-gray-50/80 transition-colors">
+                    <tr key={t.id} className="hover:bg-slate-700/40 transition-colors">
                       <td className="py-3 px-3">
                         <Link
                           to={`/tickets/${t.id}`}
-                          className="font-mono font-semibold text-blue-600 hover:underline"
+                          className="font-mono font-semibold text-sky-400 hover:underline"
                         >
                           {t.ticket_number}
                         </Link>
                       </td>
-                      <td className="py-3 px-3 font-medium text-gray-800 max-w-[180px] truncate">
+                      <td className="py-3 px-3 font-medium text-slate-200 max-w-[180px] truncate">
                         {t.title}
                       </td>
-                      <td className="py-3 px-3 text-gray-500">
+                      <td className="py-3 px-3 text-slate-400">
                         {t.requester?.full_name || "N/A"}
                       </td>
                       <td className="py-3 px-3">
                         <span
                           className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[11px] font-medium capitalize ${
-                            statusBadges[t.status] || "bg-gray-50 text-gray-600 border-gray-200"
+                            statusBadges[t.status] || "bg-slate-800 text-slate-400 border-slate-700"
                           }`}
                         >
                           {statusIcons[t.status]}
@@ -282,12 +282,12 @@ export default function Dashboard() {
                         <span
                           className={`font-semibold capitalize ${
                             t.priority === "critical"
-                              ? "text-red-600"
+                              ? "text-red-400"
                               : t.priority === "high"
-                              ? "text-orange-600"
+                              ? "text-orange-400"
                               : t.priority === "medium"
-                              ? "text-blue-600"
-                              : "text-emerald-600"
+                              ? "text-sky-400"
+                              : "text-emerald-400"
                           }`}
                         >
                           {t.priority}
@@ -302,36 +302,36 @@ export default function Dashboard() {
         </div>
 
         {/* Resumen de Estado / Alertas de Soporte (1 Columna) */}
-        <div className="glass rounded-2xl p-5 space-y-4">
-          <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
-            <TrendingUp size={18} className="text-purple-600" />
-            <h2 className="text-base font-bold text-gray-900">Resumen de Soporte</h2>
+        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4">
+          <div className="flex items-center gap-2 border-b border-slate-700 pb-3">
+            <TrendingUp size={18} className="text-purple-400" />
+            <h2 className="text-base font-bold text-slate-100">Resumen de Soporte</h2>
           </div>
 
           <div className="space-y-3">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-600">Tickets Abiertos</span>
-              <span className="text-sm font-bold text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-100">
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-400">Tickets Abiertos</span>
+              <span className="text-sm font-bold text-sky-400 bg-sky-950 px-2.5 py-0.5 rounded-full border border-sky-800">
                 {stats.openTickets}
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-600">Licencias Vencidas</span>
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-400">Licencias Vencidas</span>
               <span
                 className={`text-sm font-bold px-2.5 py-0.5 rounded-full border ${
                   stats.expiredLicenses > 0
-                    ? "text-red-600 bg-red-50 border-red-100"
-                    : "text-emerald-600 bg-emerald-50 border-emerald-100"
+                    ? "text-red-400 bg-red-950 border-red-800"
+                    : "text-emerald-400 bg-emerald-950 border-emerald-800"
                 }`}
               >
                 {stats.expiredLicenses}
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-              <span className="text-xs font-medium text-slate-600">Equipos Asignados</span>
-              <span className="text-sm font-bold text-gray-800">
+            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between">
+              <span className="text-xs font-medium text-slate-400">Equipos Asignados</span>
+              <span className="text-sm font-bold text-slate-200">
                 {stats.totalAssets > 0
                   ? `${Math.round((stats.assignedAssets / stats.totalAssets) * 100)}%`
                   : "0%"}
@@ -342,7 +342,7 @@ export default function Dashboard() {
           <div className="pt-2">
             <Link
               to="/maintenance"
-              className="w-full py-2.5 px-4 bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors border border-purple-100"
+              className="w-full py-2.5 px-4 bg-purple-950/50 hover:bg-purple-950 text-purple-300 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors border border-purple-800"
             >
               <Wrench size={14} /> Registrar Mantenimiento
             </Link>
