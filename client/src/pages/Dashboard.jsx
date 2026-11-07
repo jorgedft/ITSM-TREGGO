@@ -22,7 +22,7 @@ import { useAuth } from "../context/AuthContext";
 // Tarjeta de Estadística Reutilizable
 function StatCard({ label, value, icon: Icon, color, sub, to }) {
   const content = (
-    <div className="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-all duration-200 flex items-center gap-4">
+    <div className="glass rounded-2xl p-4 hover:bg-white/80 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4">
       <div className={`${color} p-3.5 rounded-xl text-white shrink-0 shadow-sm`}>
         <Icon size={24} />
       </div>
@@ -122,7 +122,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 pb-8">
       {/* Saludo y Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass p-6 rounded-2xl">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
             Bienvenido, {profile?.full_name?.split(" ")[0] || "Usuario"} 👋
@@ -204,7 +204,7 @@ export default function Dashboard() {
             <Link
               key={to}
               to={to}
-              className={`bg-white border border-gray-200 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 transition-all duration-150 shadow-sm group ${color}`}
+              className={`glass rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 transition-all duration-150 hover:-translate-y-0.5 group ${color}`}
             >
               <div className="p-2 rounded-lg bg-gray-50 group-hover:bg-white transition-colors">
                 <Icon size={20} />
@@ -221,7 +221,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Lista de Tickets Recientes (2 Columnas) */}
-        <div className="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="lg:col-span-2 glass rounded-2xl p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-gray-100 pb-3">
             <div className="flex items-center gap-2">
               <Ticket size={18} className="text-blue-600" />
@@ -302,7 +302,7 @@ export default function Dashboard() {
         </div>
 
         {/* Resumen de Estado / Alertas de Soporte (1 Columna) */}
-        <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="glass rounded-2xl p-5 space-y-4">
           <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
             <TrendingUp size={18} className="text-purple-600" />
             <h2 className="text-base font-bold text-gray-900">Resumen de Soporte</h2>

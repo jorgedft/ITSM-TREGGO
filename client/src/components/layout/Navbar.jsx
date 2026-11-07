@@ -127,7 +127,7 @@ export function Navbar({ onMenuToggle }) {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 sm:px-6 py-2.5 flex items-center justify-between shrink-0 z-20 sticky top-0">
+    <header className="glass border-x-0 border-t-0 rounded-none px-4 sm:px-6 py-2.5 flex items-center justify-between shrink-0 z-20 sticky top-0">
 
       {/* Lado Izquierdo: Toggle Móvil + Buscador */}
       <div className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export function Navbar({ onMenuToggle }) {
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50">
+            <div className="absolute right-0 mt-2 w-80 glass-strong rounded-2xl py-2 z-50">
               <div className="px-4 py-2 border-b border-gray-100 flex items-center justify-between">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">Notificaciones</h3>
                 {unreadCount > 0 && (
@@ -259,7 +259,7 @@ export function Navbar({ onMenuToggle }) {
           </button>
 
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50">
+            <div className="absolute right-0 mt-2 w-56 glass-strong rounded-2xl py-1.5 z-50">
               <div className="px-4 py-2 border-b border-gray-100 md:hidden">
                 <p className="text-xs font-bold text-gray-900">{profile?.full_name}</p>
                 <p className="text-[10px] text-gray-400 capitalize">{profile?.role}</p>

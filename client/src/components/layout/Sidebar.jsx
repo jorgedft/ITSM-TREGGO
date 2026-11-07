@@ -48,7 +48,7 @@ function NavSection({ title, items, collapsed, onNavigate }) {
                 <NavLink key={to} to={to} onClick={onNavigate}
                     className={({ isActive }) =>
                         `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                        ${isActive ? 'bg-brand-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`
+                        ${isActive ? 'bg-brand-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'}`
                     }
                     title={collapsed ? label : undefined}>
                     <Icon size={18} className="shrink-0" />
@@ -79,7 +79,7 @@ function AccordionSection({ title, items, collapsed, blocked, defaultOpen = true
                         <NavLink key={to} to={to} title={label} onClick={onNavigate}
                             className={({ isActive }) =>
                                 `flex items-center justify-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                                ${isActive ? 'bg-brand-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`
+                                ${isActive ? 'bg-brand-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'}`
                             }>
                             <Icon size={18} className="shrink-0" />
                         </NavLink>
@@ -117,7 +117,7 @@ function AccordionSection({ title, items, collapsed, blocked, defaultOpen = true
                             <NavLink key={to} to={to} onClick={onNavigate}
                                 className={({ isActive }) =>
                                     `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-150
-                                    ${isActive ? 'bg-brand-600 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white'}`
+                                    ${isActive ? 'bg-brand-600 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'}`
                                 }>
                                 <Icon size={18} className="shrink-0" />
                                 <span className="flex-1 truncate">{label}</span>
@@ -163,16 +163,16 @@ export function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose
             )}
 
             <aside className={`
-                flex flex-col bg-gray-900 text-white
+                glass-dark flex flex-col text-white
                 fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300
                 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}
-                lg:static lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:z-auto
+                lg:static lg:translate-x-0 lg:transition-[width] lg:duration-300 lg:z-auto lg:border-l-0 lg:border-t-0 lg:border-b-0 lg:rounded-none
                 ${collapsed ? 'lg:w-16' : 'lg:w-64'}
                 min-h-screen shrink-0
             `}>
 
                 {/* Logo y Encabezado */}
-                <div className="flex items-center justify-between px-4 py-4 border-b border-gray-700 shrink-0">
+                <div className="flex items-center justify-between px-4 py-4 border-b border-white/10 shrink-0">
                     <div className={collapsed ? 'lg:hidden' : ''}>
                         <span className="font-bold text-base">
                             <span className="text-brand-400">ITSM</span>
@@ -186,13 +186,13 @@ export function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose
 
                     {/* Colapsar a iconos (solo escritorio) */}
                     <button onClick={onToggle}
-                        className="hidden lg:block p-1.5 rounded-lg hover:bg-gray-700 transition-colors ml-auto">
+                        className="hidden lg:block p-1.5 rounded-lg hover:bg-white/10 transition-colors ml-auto">
                         <ChevronLeft size={16} className={`transition-transform duration-300 ${collapsed ? 'rotate-180' : ''}`} />
                     </button>
 
                     {/* Cerrar cajón (solo móvil) */}
                     <button onClick={onMobileClose}
-                        className="lg:hidden p-1.5 rounded-lg hover:bg-gray-700 transition-colors ml-auto">
+                        className="lg:hidden p-1.5 rounded-lg hover:bg-white/10 transition-colors ml-auto">
                         <X size={18} />
                     </button>
                 </div>
@@ -208,7 +208,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose
                 </div>
 
                 {/* User */}
-                <div className="border-t border-gray-700 px-3 py-4 space-y-2 shrink-0">
+                <div className="border-t border-white/10 px-3 py-4 space-y-2 shrink-0">
                     {profile && (
                         <div className={`px-1 pb-1 ${collapsed ? 'lg:hidden' : ''}`}>
                             <p className="text-sm font-semibold text-white truncate">{profile.full_name}</p>
