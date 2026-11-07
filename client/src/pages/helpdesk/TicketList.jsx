@@ -33,25 +33,25 @@ export default function TicketList() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mesa de Ayuda / Tickets</h1>
-          <p className="text-sm text-gray-500">Gestión de solicitudes de soporte técnico e incidencias.</p>
+          <h1 className="text-2xl font-bold text-slate-100">Mesa de Ayuda / Tickets</h1>
+          <p className="text-sm text-slate-400">Gestión de solicitudes de soporte técnico e incidencias.</p>
         </div>
         <button
           onClick={() => navigate('/tickets/new')}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
         >
           <Plus size={16} /> Crear Ticket
         </button>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Cargando tickets de soporte...</div>
+          <div className="p-8 text-center text-slate-500">Cargando tickets de soporte...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase">
+                <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
                   <th className="py-3 px-4">Folio / Asunto</th>
                   <th className="py-3 px-4">Solicitante</th>
                   <th className="py-3 px-4">Prioridad</th>
@@ -59,32 +59,32 @@ export default function TicketList() {
                   <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 text-sm">
+              <tbody className="divide-y divide-slate-700 text-sm">
                 {tickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-gray-50">
-                    <td className="py-3 px-4 font-semibold text-gray-800">
+                  <tr key={ticket.id} className="hover:bg-slate-700/40">
+                    <td className="py-3 px-4 font-semibold text-slate-100">
                       #{ticket.id.toString().slice(0, 8)} - {ticket.title}
                     </td>
-                    <td className="py-3 px-4 text-gray-600">
+                    <td className="py-3 px-4 text-slate-400">
                       {ticket.profiles?.full_name || 'Anónimo'}
                     </td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-0.5 rounded text-xs font-bold ${
-                        ticket.priority === 'HIGH' ? 'bg-red-100 text-red-700' :
-                        ticket.priority === 'MEDIUM' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'
+                        ticket.priority === 'HIGH' ? 'bg-red-950 text-red-400' :
+                        ticket.priority === 'MEDIUM' ? 'bg-amber-950 text-amber-400' : 'bg-slate-700 text-slate-300'
                       }`}>
                         {ticket.priority || 'NORMAL'}
                       </span>
                     </td>
                     <td className="py-3 px-4">
-                      <span className="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-semibold">
+                      <span className="px-2.5 py-1 bg-sky-950 text-sky-400 rounded-full text-xs font-semibold">
                         {ticket.status || 'OPEN'}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-right">
                       <button
                         onClick={() => navigate(`/tickets/${ticket.id}`)}
-                        className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
+                        className="text-sky-400 hover:text-sky-300 text-xs font-semibold"
                       >
                         Ver Detalle
                       </button>

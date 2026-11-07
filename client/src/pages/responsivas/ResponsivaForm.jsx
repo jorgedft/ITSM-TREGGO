@@ -48,21 +48,21 @@ export default function ResponsivaForm() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate('/responsivas')}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">Generar Carta Responsiva</h1>
+        <h1 className="text-2xl font-bold text-slate-100">Generar Carta Responsiva</h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+      <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-sm space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Empleado / Usuario</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Empleado / Usuario</label>
           <select
             required
             value={formData.user_id}
             onChange={(e) => setFormData({ ...formData, user_id: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-700 bg-slate-900 text-slate-100 rounded-lg focus:ring-2 focus:ring-sky-500"
           >
             <option value="">Selecciona un empleado...</option>
             {users.map((u) => (
@@ -72,28 +72,28 @@ export default function ResponsivaForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Observaciones o Términos Adicionales</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Observaciones o Términos Adicionales</label>
           <textarea
             rows="4"
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-slate-700 bg-slate-900 text-slate-100 rounded-lg focus:ring-2 focus:ring-sky-500"
             placeholder="Especifica detalles sobre la entrega del equipo o accesorios incluidos..."
           />
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
           <button
             type="button"
             onClick={() => navigate('/responsivas')}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Save size={16} /> {loading ? 'Generando...' : 'Generar Responsiva'}
           </button>
