@@ -284,10 +284,10 @@ export default function IpManagement() {
       {/* Encabezado con Botones Principales */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Network className="text-blue-600" /> Mapa de Red Local - Asignación de IP's
+          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
+            <Network className="text-sky-400" /> Mapa de Red Local - Asignación de IP's
           </h1>
-          <p className="text-sm text-gray-500">Plantilla dinámica de direccionamiento por segmento (1.1 al 1.254).</p>
+          <p className="text-sm text-slate-400">Plantilla dinámica de direccionamiento por segmento (1.1 al 1.254).</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -313,19 +313,19 @@ export default function IpManagement() {
       </div>
 
       {/* Selector de Segmento y Filtros */}
-      <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+      <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
         <form onSubmit={handleSegmentChange} className="flex items-center gap-2 w-full sm:w-auto">
-          <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">Red / Segmento:</label>
+          <label className="text-sm font-semibold text-slate-300 whitespace-nowrap">Red / Segmento:</label>
           <input
             type="text"
             value={segment}
             onChange={(e) => setSegment(e.target.value)}
             placeholder="Ej: 192.168.1"
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-mono w-36 focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-1.5 border border-slate-700 bg-slate-900 text-slate-100 rounded-lg text-sm font-mono w-36 focus:ring-2 focus:ring-sky-500"
           />
           <button
             type="submit"
-            className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
+            className="flex items-center gap-1.5 bg-sky-600 hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
           >
             <RefreshCw size={14} /> Cargar Segmento
           </button>
@@ -338,7 +338,7 @@ export default function IpManagement() {
                 key={s}
                 onClick={() => setFilter(s)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                  filter === s ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  filter === s ? 'bg-sky-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                 }`}
               >
                 {s === 'ALL' ? 'Todas (254)' : s === 'AVAILABLE' ? 'Disponibles' : s === 'ASSIGNED' ? 'En Uso' : 'Reservadas'}
@@ -346,14 +346,14 @@ export default function IpManagement() {
             ))}
           </div>
 
-          <div className="h-6 w-px bg-gray-200" />
+          <div className="h-6 w-px bg-slate-700" />
 
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+          <div className="flex gap-1 bg-slate-700 rounded-lg p-1">
             <button
               onClick={() => setView('grid')}
               title="Mapa de Red"
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                view === 'grid' ? 'bg-slate-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                view === 'grid' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <LayoutGrid size={14} /> Mapa
@@ -362,7 +362,7 @@ export default function IpManagement() {
               onClick={() => setView('table')}
               title="Vista de Tabla"
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
-                view === 'table' ? 'bg-slate-900 text-white shadow-sm' : 'text-gray-500 hover:text-gray-700'
+                view === 'table' ? 'bg-slate-950 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
               }`}
             >
               <Rows3 size={14} /> Tabla
@@ -373,13 +373,13 @@ export default function IpManagement() {
 
       {/* Buscador Rápido */}
       <div className="relative">
-        <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+        <Search className="absolute left-3 top-2.5 text-slate-500" size={18} />
         <input
           type="text"
           placeholder="Filtrar por IP, host, tipo de dispositivo, MAC o usuario..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm bg-white"
+          className="w-full pl-10 pr-4 py-2 border border-slate-700 rounded-lg text-sm bg-slate-800 text-slate-100"
         />
       </div>
 
@@ -458,13 +458,13 @@ export default function IpManagement() {
 
       {/* Tabla Interactiva de IPs (vista clásica) */}
       {view === 'table' && (
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Generando plantilla del segmento {segment}.X...</div>
+          <div className="p-8 text-center text-slate-500">Generando plantilla del segmento {segment}.X...</div>
         ) : (
           <div className="overflow-x-auto max-h-[600px]">
             <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 bg-gray-100 border-b border-gray-200 text-xs font-semibold text-gray-600 uppercase z-10">
+              <thead className="sticky top-0 bg-slate-900 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase z-10">
                 <tr>
                   <th className="py-3 px-4">Dirección IP</th>
                   <th className="py-3 px-4">Tipo Dispositivo</th>
@@ -474,17 +474,17 @@ export default function IpManagement() {
                   <th className="py-3 px-4 text-center">Acción</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 text-sm">
+              <tbody className="divide-y divide-slate-700 text-sm">
                 {filteredIps.map((row) => (
-                  <tr key={row.ip_address} className="hover:bg-blue-50/50">
-                    <td className="py-2 px-4 font-mono font-bold text-gray-900">{row.ip_address}</td>
+                  <tr key={row.ip_address} className="hover:bg-slate-700/40">
+                    <td className="py-2 px-4 font-mono font-bold text-slate-100">{row.ip_address}</td>
                     
                     <td className="py-2 px-4">
                       <select
                         value={row.device_type}
                         onChange={(e) => updateIpRow(row.ip_address, 'device_type', e.target.value)}
                         disabled={!canManageTI}
-                        className="px-2 py-1 border rounded text-xs bg-white disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="px-2 py-1 border border-slate-700 bg-slate-900 text-slate-100 rounded text-xs disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         <option value="PC">PC / Laptop</option>
                         <option value="SWITCH">Switch</option>
@@ -503,8 +503,8 @@ export default function IpManagement() {
                         onChange={(e) => updateIpRow(row.ip_address, 'status', e.target.value)}
                         disabled={!canManageTI}
                         className={`px-2 py-1 rounded text-xs font-bold border disabled:opacity-60 disabled:cursor-not-allowed ${
-                          row.status === 'AVAILABLE' ? 'bg-green-50 text-green-700 border-green-200' :
-                          row.status === 'ASSIGNED' ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-yellow-50 text-yellow-700 border-yellow-200'
+                          row.status === 'AVAILABLE' ? 'bg-emerald-950 text-emerald-400 border-emerald-800' :
+                          row.status === 'ASSIGNED' ? 'bg-cyan-950 text-cyan-400 border-cyan-800' : 'bg-amber-950 text-amber-400 border-amber-800'
                         }`}
                       >
                         <option value="AVAILABLE">Disponible</option>
@@ -520,7 +520,7 @@ export default function IpManagement() {
                         value={row.mac_address || ''}
                         onChange={(e) => updateIpRow(row.ip_address, 'mac_address', e.target.value)}
                         disabled={!canManageTI}
-                        className="px-2 py-1 border rounded text-xs font-mono w-32 focus:ring-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="px-2 py-1 border border-slate-700 bg-slate-900 text-slate-100 rounded text-xs font-mono w-32 focus:ring-1 focus:ring-sky-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       />
                     </td>
 
@@ -531,7 +531,7 @@ export default function IpManagement() {
                         value={row.assigned_to_text || ''}
                         onChange={(e) => updateIpRow(row.ip_address, 'assigned_to_text', e.target.value)}
                         disabled={!canManageTI}
-                        className="px-2 py-1 border rounded text-xs w-full max-w-xs focus:ring-1 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="px-2 py-1 border border-slate-700 bg-slate-900 text-slate-100 rounded text-xs w-full max-w-xs focus:ring-1 focus:ring-sky-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       />
                     </td>
 
@@ -539,7 +539,7 @@ export default function IpManagement() {
                       {canManageTI && (
                         <button
                           onClick={() => saveSingleRow(row)}
-                          className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                          className="p-1 text-sky-400 hover:bg-sky-950 rounded transition-colors"
                           title="Guardar este registro"
                         >
                           <Save size={16} />
@@ -668,7 +668,7 @@ export default function IpManagement() {
                       closeIpPanel();
                     }}
                     disabled={savingSelected}
-                    className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors disabled:opacity-50"
                   >
                     <Save size={15} /> {savingSelected ? 'Guardando...' : 'Guardar'}
                   </button>
@@ -682,7 +682,7 @@ export default function IpManagement() {
       {/* Modal de Gestión de Dominios */}
       {isDomainModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-slate-800 rounded-xl shadow-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-700">
             
             {/* Header Modal */}
             <div className="px-6 py-4 bg-indigo-600 text-white flex justify-between items-center">
@@ -700,75 +700,75 @@ export default function IpManagement() {
             <div className="p-6 overflow-y-auto space-y-6">
               {/* Formulario de Registro */}
               {canManageTI && (
-              <form onSubmit={handleAddDomain} className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4">
-                <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
+              <form onSubmit={handleAddDomain} className="bg-slate-900/60 p-4 rounded-lg border border-slate-700 space-y-4">
+                <h3 className="text-sm font-semibold text-slate-300 flex items-center gap-1.5">
                   <Plus size={16} className="text-indigo-600" /> Registrar Nuevo Dominio
                 </h3>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs text-gray-600 font-medium">Dominio / URL *</label>
+                    <label className="text-xs text-slate-400 font-medium">Dominio / URL *</label>
                     <input
                       type="text"
                       placeholder="ejemplo.com"
                       required
                       value={newDomain.domain_name}
                       onChange={(e) => setNewDomain({ ...newDomain, domain_name: e.target.value })}
-                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                      className="w-full mt-1 px-3 py-1.5 border border-slate-700 bg-slate-900 text-slate-100 rounded-md text-xs focus:ring-2 focus:ring-indigo-400"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs text-gray-600 font-medium">Proveedor Host</label>
+                    <label className="text-xs text-slate-400 font-medium">Proveedor Host</label>
                     <input
                       type="text"
                       placeholder="AWS, Hostinger, Vercel..."
                       value={newDomain.provider}
                       onChange={(e) => setNewDomain({ ...newDomain, provider: e.target.value })}
-                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                      className="w-full mt-1 px-3 py-1.5 border border-slate-700 bg-slate-900 text-slate-100 rounded-md text-xs focus:ring-2 focus:ring-indigo-400"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs text-gray-600 font-medium">DNS Provider</label>
+                    <label className="text-xs text-slate-400 font-medium">DNS Provider</label>
                     <input
                       type="text"
                       placeholder="Cloudflare, Route53..."
                       value={newDomain.dns_provider}
                       onChange={(e) => setNewDomain({ ...newDomain, dns_provider: e.target.value })}
-                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                      className="w-full mt-1 px-3 py-1.5 border border-slate-700 bg-slate-900 text-slate-100 rounded-md text-xs focus:ring-2 focus:ring-indigo-400"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs text-gray-600 font-medium">IP del Servidor / Apuntamineto</label>
+                    <label className="text-xs text-slate-400 font-medium">IP del Servidor / Apuntamineto</label>
                     <input
                       type="text"
                       placeholder="192.0.2.1"
                       value={newDomain.ip_address}
                       onChange={(e) => setNewDomain({ ...newDomain, ip_address: e.target.value })}
-                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs font-mono focus:ring-2 focus:ring-indigo-500"
+                      className="w-full mt-1 px-3 py-1.5 border border-slate-700 bg-slate-900 text-slate-100 rounded-md text-xs font-mono focus:ring-2 focus:ring-indigo-400"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs text-gray-600 font-medium">Fecha Vencimiento</label>
+                    <label className="text-xs text-slate-400 font-medium">Fecha Vencimiento</label>
                     <input
                       type="date"
                       value={newDomain.expiration_date}
                       onChange={(e) => setNewDomain({ ...newDomain, expiration_date: e.target.value })}
-                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                      className="w-full mt-1 px-3 py-1.5 border border-slate-700 bg-slate-900 text-slate-100 rounded-md text-xs focus:ring-2 focus:ring-indigo-400"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs text-gray-600 font-medium">Notas</label>
+                    <label className="text-xs text-slate-400 font-medium">Notas</label>
                     <input
                       type="text"
                       placeholder="Credenciales, SSL, etc."
                       value={newDomain.notes}
                       onChange={(e) => setNewDomain({ ...newDomain, notes: e.target.value })}
-                      className="w-full mt-1 px-3 py-1.5 border rounded-md text-xs focus:ring-2 focus:ring-indigo-500"
+                      className="w-full mt-1 px-3 py-1.5 border border-slate-700 bg-slate-900 text-slate-100 rounded-md text-xs focus:ring-2 focus:ring-indigo-400"
                     />
                   </div>
                 </div>
@@ -785,15 +785,15 @@ export default function IpManagement() {
               )}
 
               {/* Tabla de Dominios */}
-              <div className="border border-gray-200 rounded-lg overflow-hidden">
+              <div className="border border-slate-700 rounded-lg overflow-hidden">
                 {loadingDomains ? (
-                  <div className="p-6 text-center text-xs text-gray-500">Cargando dominios...</div>
+                  <div className="p-6 text-center text-xs text-slate-500">Cargando dominios...</div>
                 ) : domains.length === 0 ? (
-                  <div className="p-6 text-center text-xs text-gray-500">No hay dominios registrados actualmente.</div>
+                  <div className="p-6 text-center text-xs text-slate-500">No hay dominios registrados actualmente.</div>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
-                      <thead className="bg-gray-100 border-b border-gray-200 font-semibold text-gray-600">
+                      <thead className="bg-slate-900/60 border-b border-slate-700 font-semibold text-slate-400">
                         <tr>
                           <th className="py-2.5 px-3">Dominio</th>
                           <th className="py-2.5 px-3">Proveedor Host</th>
@@ -804,20 +804,20 @@ export default function IpManagement() {
                           <th className="py-2.5 px-3 text-center">Acciones</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-200">
+                      <tbody className="divide-y divide-slate-700">
                         {domains.map((d) => (
-                          <tr key={d.id} className="hover:bg-gray-50">
-                            <td className="py-2 px-3 font-semibold text-indigo-600">{d.domain_name}</td>
+                          <tr key={d.id} className="hover:bg-slate-700/40">
+                            <td className="py-2 px-3 font-semibold text-indigo-400">{d.domain_name}</td>
                             <td className="py-2 px-3">{d.provider || '-'}</td>
                             <td className="py-2 px-3">{d.dns_provider || '-'}</td>
                             <td className="py-2 px-3 font-mono">{d.ip_address || '-'}</td>
                             <td className="py-2 px-3">{d.expiration_date || '-'}</td>
-                            <td className="py-2 px-3 text-gray-500 max-w-xs truncate">{d.notes || '-'}</td>
+                            <td className="py-2 px-3 text-slate-500 max-w-xs truncate">{d.notes || '-'}</td>
                             <td className="py-2 px-3 text-center">
                               {canManageTI && (
                               <button
                                 onClick={() => handleDeleteDomain(d.id)}
-                                className="text-red-500 hover:text-red-700 p-1 rounded hover:bg-red-50 transition-colors"
+                                className="text-red-400 hover:text-red-300 p-1 rounded hover:bg-red-950 transition-colors"
                                 title="Eliminar Dominio"
                               >
                                 <Trash2 size={14} />
@@ -834,10 +834,10 @@ export default function IpManagement() {
             </div>
 
             {/* Footer Modal */}
-            <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-end">
+            <div className="px-6 py-3 bg-slate-900/60 border-t border-slate-700 flex justify-end">
               <button
                 onClick={() => setIsDomainModalOpen(false)}
-                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-md text-xs font-semibold transition-colors"
+                className="px-4 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-md text-xs font-semibold transition-colors"
               >
                 Cerrar
               </button>
