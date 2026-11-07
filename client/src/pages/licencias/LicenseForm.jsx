@@ -75,96 +75,96 @@ export default function LicenseForm() {
       <div className="flex items-center gap-4">
         <button
           onClick={() => navigate('/licenses')}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-slate-100">
           {isEdit ? 'Editar Licencia' : 'Nueva Licencia de Software'}
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+      <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-sm space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Nombre del Software / Servicio</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Nombre del Software / Servicio</label>
           <input
             type="text"
             required
             value={formData.software_name}
             onChange={(e) => setFormData({ ...formData, software_name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+            className="w-full px-3 py-2 border border-slate-700 rounded-lg bg-slate-900 focus:ring-2 focus:ring-sky-500 text-slate-100 placeholder-slate-500"
             placeholder="Microsoft 365, Adobe Creative Cloud, Antivirus..."
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Proveedor / Marca</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Proveedor / Marca</label>
           <input
             type="text"
             value={formData.provider}
             onChange={(e) => setFormData({ ...formData, provider: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+            className="w-full px-3 py-2 border border-slate-700 rounded-lg bg-slate-900 focus:ring-2 focus:ring-sky-500 text-slate-100 placeholder-slate-500"
             placeholder="Microsoft, Adobe, Fortinet..."
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Clave de Licencia / Product Key</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Clave de Licencia / Product Key</label>
           <input
             type="text"
             value={formData.license_key}
             onChange={(e) => setFormData({ ...formData, license_key: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400 font-mono"
+            className="w-full px-3 py-2 border border-slate-700 rounded-lg bg-slate-900 focus:ring-2 focus:ring-sky-500 text-slate-100 placeholder-slate-500 font-mono"
             placeholder="XXXXX-XXXXX-XXXXX-XXXXX"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Asientos / Usuarios Comprados</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Asientos / Usuarios Comprados</label>
             <input
               type="number"
               min="1"
               value={formData.seats_purchased}
               onChange={(e) => setFormData({ ...formData, seats_purchased: parseInt(e.target.value) || 1 })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-3 py-2 border border-slate-700 rounded-lg bg-slate-900 focus:ring-2 focus:ring-sky-500 text-slate-100"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de Expiración</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Fecha de Expiración</label>
             <input
               type="date"
               value={formData.expiration_date}
               onChange={(e) => setFormData({ ...formData, expiration_date: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-3 py-2 border border-slate-700 rounded-lg bg-slate-900 focus:ring-2 focus:ring-sky-500 text-slate-100"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notas / Observaciones</label>
+          <label className="block text-sm font-medium text-slate-400 mb-1">Notas / Observaciones</label>
           <textarea
             rows="3"
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-400"
+            className="w-full px-3 py-2 border border-slate-700 rounded-lg bg-slate-900 focus:ring-2 focus:ring-sky-500 text-slate-100 placeholder-slate-500"
             placeholder="Comentarios adicionales sobre la suscripción..."
           />
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
           <button
             type="button"
             onClick={() => navigate('/licenses')}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Save size={16} /> {loading ? 'Guardando...' : 'Guardar Licencia'}
           </button>

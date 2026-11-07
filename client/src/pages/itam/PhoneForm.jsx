@@ -4,7 +4,7 @@ import { supabase } from '../../services/supabase';
 import { ArrowLeft, Save } from 'lucide-react';
 
 const inputClass =
-  'w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 bg-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500';
+  'w-full px-3 py-2 border border-slate-700 rounded-lg text-slate-100 bg-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500';
 
 export default function PhoneForm() {
   const { id } = useParams();
@@ -115,19 +115,19 @@ export default function PhoneForm() {
         <button
           type="button"
           onClick={() => navigate('/phones')}
-          className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+          className="p-2 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors"
         >
           <ArrowLeft size={20} />
         </button>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-slate-100">
           {isEdit ? 'Editar Dispositivo' : 'Nuevo Dispositivo Móvil'}
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4">
+      <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-sm space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Marca</label>
             <input
               type="text"
               value={formData.brand}
@@ -137,7 +137,7 @@ export default function PhoneForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Modelo</label>
             <input
               type="text"
               value={formData.model}
@@ -150,7 +150,7 @@ export default function PhoneForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">IMEI</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">IMEI</label>
             <input
               type="text"
               value={formData.imei}
@@ -160,7 +160,7 @@ export default function PhoneForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Número Celular / Línea</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Número Celular / Línea</label>
             <input
               type="text"
               value={formData.phone_number}
@@ -173,7 +173,7 @@ export default function PhoneForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Asignado a</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Asignado a</label>
             <input
               type="text"
               list="assigned-users-list"
@@ -189,7 +189,7 @@ export default function PhoneForm() {
             </datalist>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Dpto. (Departamento)</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Dpto. (Departamento)</label>
             <input
               type="text"
               value={formData.department}
@@ -202,7 +202,7 @@ export default function PhoneForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Plan de Contrato</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Plan de Contrato</label>
             <input
               type="text"
               value={formData.contract_plan}
@@ -212,7 +212,7 @@ export default function PhoneForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">¿Es eSIM?</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">¿Es eSIM?</label>
             <select
               value={formData.esim}
               onChange={(e) => setFormData({ ...formData, esim: e.target.value })}
@@ -227,7 +227,7 @@ export default function PhoneForm() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio de Serv.</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Fecha Inicio de Serv.</label>
             <input
               type="date"
               value={formData.service_start_date}
@@ -236,7 +236,7 @@ export default function PhoneForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Fin de Serv.</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">Fecha Fin de Serv.</label>
             <input
               type="date"
               value={formData.service_end_date}
@@ -246,18 +246,18 @@ export default function PhoneForm() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
+        <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
           <button
             type="button"
             onClick={() => navigate('/phones')}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-slate-300 bg-slate-700 hover:bg-slate-600 rounded-lg transition-colors"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Save size={16} /> {loading ? 'Guardando...' : 'Guardar Dispositivo'}
           </button>

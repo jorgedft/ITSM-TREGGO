@@ -400,7 +400,7 @@ export default function AssetList() {
       {/* Cabecera y Botones */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-xl font-bold text-gray-900">Inventario de Equipos ({assets.length})</h1>
+          <h1 className="text-xl font-bold text-slate-100">Inventario de Equipos ({assets.length})</h1>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
@@ -474,11 +474,11 @@ export default function AssetList() {
       <div className="table-container overflow-x-auto">
         <table className="table-app w-full text-left">
           <thead>
-            <tr className="border-b bg-gray-50 text-xs font-semibold text-gray-600 uppercase">
+            <tr className="border-b border-slate-700">
               <th className="py-3 px-4">
                 <span className="inline-flex items-center gap-1.5">
                   Etiqueta de equipo
-                  <span className="hidden lg:inline-flex items-center gap-2 normal-case font-normal text-[10px] text-gray-400 ml-1">
+                  <span className="hidden lg:inline-flex items-center gap-2 normal-case font-normal text-[10px] text-slate-500 ml-1">
                     <span className="inline-flex items-center gap-0.5"><CheckCircle2 size={11} className="text-emerald-500" /> Completo</span>
                     <span className="inline-flex items-center gap-0.5"><AlertTriangle size={11} className="text-amber-500" /> Incompleto</span>
                     <span className="inline-flex items-center gap-0.5"><XCircle size={11} className="text-red-500" /> Sin datos</span>
@@ -493,23 +493,23 @@ export default function AssetList() {
               <th className="py-3 px-4 text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-sm">
+          <tbody className="divide-y divide-slate-700 text-sm">
             {loading ? (
               <tr>
-                <td colSpan="7" className="text-center py-6 text-gray-500">Cargando equipos...</td>
+                <td colSpan="7" className="text-center py-6 text-slate-500">Cargando equipos...</td>
               </tr>
             ) : assets.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center py-6 text-gray-500">No se encontraron equipos</td>
+                <td colSpan="7" className="text-center py-6 text-slate-500">No se encontraron equipos</td>
               </tr>
             ) : (
               assets.map((item) => {
                 const completeness = getCompleteness(item);
                 const { icon: CompletenessIcon, className: completenessClass, label: completenessLabel } = COMPLETENESS_META[completeness];
                 return (
-                <tr key={item.id} className="hover:bg-gray-50">
+                <tr key={item.id} className="hover:bg-slate-700/40">
                   {/* 1. Etiqueta de equipo */}
-                  <td className="py-3 px-4 font-semibold text-blue-600">
+                  <td className="py-3 px-4 font-semibold text-sky-400">
                     <span className="inline-flex items-center gap-1.5">
                       <CompletenessIcon size={15} className={`shrink-0 ${completenessClass}`} title={completenessLabel} />
                       {item.asset_tag || item.asset_code || '—'}
@@ -527,18 +527,18 @@ export default function AssetList() {
                   </td>
 
                   {/* 4. SN */}
-                  <td className="py-3 px-4 font-mono text-xs text-gray-700">
+                  <td className="py-3 px-4 font-mono text-xs text-slate-400">
                     {item.serial_number || '—'}
                   </td>
 
                   {/* 5. Ubicación / Área */}
-                  <td className="py-3 px-4 text-gray-700">
+                  <td className="py-3 px-4 text-slate-300">
                     {getLocationLabel(item.location)}
                   </td>
 
                   {/* 6. Estado */}
                   <td className="py-3 px-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-800">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-sky-950 text-sky-400 border border-sky-800">
                       {renderStatus(item)}
                     </span>
                   </td>
@@ -549,19 +549,19 @@ export default function AssetList() {
                       <>
                         <button
                           onClick={() => handleEdit(item)}
-                          className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                          className="text-sky-400 hover:text-sky-300 text-xs font-medium"
                         >
                           Editar
                         </button>
                         <button
                           onClick={() => handleDelete(item.id)}
-                          className="text-red-600 hover:text-red-800 text-xs font-medium"
+                          className="text-red-400 hover:text-red-300 text-xs font-medium"
                         >
                           Eliminar
                         </button>
                       </>
                     ) : (
-                      <span className="text-gray-300 text-xs">—</span>
+                      <span className="text-slate-600 text-xs">—</span>
                     )}
                   </td>
                 </tr>
@@ -575,8 +575,8 @@ export default function AssetList() {
       {/* Modal de Crear / Editar */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full p-6 animate-fade-in max-h-[90vh] overflow-y-auto">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-2xl w-full p-6 animate-fade-in max-h-[90vh] overflow-y-auto">
+            <h2 className="text-lg font-bold text-slate-100 mb-4">
               {editingAsset ? 'Editar Equipo' : 'Nuevo Equipo'}
             </h2>
             <AssetForm

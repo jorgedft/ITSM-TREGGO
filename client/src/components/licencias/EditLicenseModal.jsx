@@ -69,13 +69,13 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white w-full max-w-lg rounded-xl shadow-xl border border-gray-200 overflow-hidden animate-fade-in">
+      <div className="bg-slate-800 w-full max-w-lg rounded-xl shadow-xl border border-slate-700 overflow-hidden animate-fade-in">
         {/* Encabezado del Modal */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
-          <h2 className="text-lg font-semibold text-gray-800">Editar Licencia</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-900/60">
+          <h2 className="text-lg font-semibold text-slate-100">Editar Licencia</h2>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
+            className="p-1 text-slate-500 hover:text-slate-300 rounded-lg hover:bg-slate-700 transition-colors"
           >
             <X size={20} />
           </button>
@@ -84,13 +84,13 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
         {/* Formulario */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errorMsg && (
-            <div className="p-3 bg-red-50 text-red-700 text-xs rounded-lg border border-red-200">
+            <div className="p-3 bg-red-950 text-red-400 text-xs rounded-lg border border-red-800">
               {errorMsg}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
               Nombre del Software / Servicio
             </label>
             <input
@@ -99,12 +99,12 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
               required
               value={formData.software_name}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
               Proveedor / Marca
             </label>
             <input
@@ -112,12 +112,12 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
               name="provider"
               value={formData.provider}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
               Clave de Licencia / Product Key
             </label>
             <input
@@ -125,13 +125,13 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
               name="license_key"
               value={formData.license_key}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-slate-700 rounded-lg text-sm font-mono bg-slate-900 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
                 Asientos / Usuarios
               </label>
               <input
@@ -141,12 +141,12 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
                 required
                 value={formData.seats_purchased}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
+              <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
                 Fecha de Expiración
               </label>
               <input
@@ -154,13 +154,13 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
                 name="expiration_date"
                 value={formData.expiration_date}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700 uppercase mb-1">
+            <label className="block text-xs font-semibold text-slate-400 uppercase mb-1">
               Notas / Observaciones
             </label>
             <textarea
@@ -168,24 +168,24 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
               rows={3}
               value={formData.notes}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+              className="w-full px-3 py-2 border border-slate-700 rounded-lg text-sm bg-slate-900 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
             />
           </div>
 
           {/* Botones de Acción */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-700">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium bg-white rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-slate-700 text-slate-300 text-sm font-medium bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
             >
               {loading ? (
                 <>

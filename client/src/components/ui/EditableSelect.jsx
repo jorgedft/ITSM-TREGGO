@@ -40,7 +40,7 @@ export function EditableSelect({ name, value, onChange, options, placeholder = '
                 <button type="button" onClick={commitCustom} className="px-2 text-emerald-600 hover:text-emerald-700" title="Confirmar">
                     <Check size={18} />
                 </button>
-                <button type="button" onClick={() => setEditing(false)} className="px-2 text-gray-400 hover:text-gray-600" title="Cancelar">
+                <button type="button" onClick={() => setEditing(false)} className="px-2 text-slate-500 hover:text-slate-300" title="Cancelar">
                     <X size={18} />
                 </button>
             </div>

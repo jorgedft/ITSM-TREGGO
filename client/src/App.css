@@ -8,7 +8,7 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+    @apply bg-slate-600 rounded-full hover:bg-slate-500;
   }
 }
 
@@ -23,15 +23,15 @@
 
 /* Clases de utilidad para tablas de tickets e inventario */
 .table-container {
-  @apply w-full overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm;
+  @apply w-full overflow-x-auto rounded-lg border border-slate-700 bg-slate-800 shadow-sm;
 }
 
 .table-app {
-  @apply min-w-full divide-y divide-gray-200 text-left text-xs sm:text-sm;
+  @apply min-w-full divide-y divide-slate-700 text-left text-xs sm:text-sm;
 }
 
 .table-app thead {
-  @apply bg-gray-50 font-semibold text-gray-600 uppercase tracking-wider text-[11px];
+  @apply bg-slate-900/60 font-semibold text-slate-400 uppercase tracking-wider text-[11px];
 }
 
 .table-app th {
@@ -39,7 +39,7 @@
 }
 
 .table-app td {
-  @apply px-3 py-2.5 sm:px-4 sm:py-3 whitespace-nowrap text-gray-700 border-t border-gray-100;
+  @apply px-3 py-2.5 sm:px-4 sm:py-3 whitespace-nowrap text-slate-300 border-t border-slate-700;
 }
 
 /* Animación ligera para modales y flyouts */

@@ -34,11 +34,11 @@ export default function AssetDetail() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center text-gray-500">Cargando datos del equipo...</div>;
+    return <div className="p-8 text-center text-slate-500">Cargando datos del equipo...</div>;
   }
 
   if (!asset) {
-    return <div className="p-8 text-center text-red-500">Equipo no encontrado.</div>;
+    return <div className="p-8 text-center text-red-400">Equipo no encontrado.</div>;
   }
 
   return (
@@ -46,61 +46,61 @@ export default function AssetDetail() {
       <div className="flex justify-between items-center">
         <button
           onClick={() => navigate('/assets')}
-          className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+          className="flex items-center gap-2 text-slate-400 hover:text-slate-100"
         >
           <ArrowLeft size={18} /> Volver a Inventario
         </button>
         {canManageTI && (
           <button
             onClick={() => navigate(`/assets/${asset.id}/edit`)}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+            className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
           >
             <Edit size={16} /> Editar Equipo
           </button>
         )}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden p-6 space-y-6">
-        <div className="flex items-start justify-between border-b border-gray-100 pb-4">
+      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden p-6 space-y-6">
+        <div className="flex items-start justify-between border-b border-slate-700 pb-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-50 text-blue-600 rounded-lg">
+            <div className="p-3 bg-sky-950 text-sky-400 rounded-lg">
               <Laptop size={24} />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-gray-900">{asset.brand} {asset.model}</h1>
-              <p className="text-sm font-mono text-gray-500">Código: {asset.asset_code}</p>
+              <h1 className="text-xl font-bold text-slate-100">{asset.brand} {asset.model}</h1>
+              <p className="text-sm font-mono text-slate-400">Código: {asset.asset_code}</p>
             </div>
           </div>
-          <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-semibold">
+          <span className="px-3 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded-full text-xs font-semibold">
             {asset.status}
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase">Especificaciones</h3>
-            <p className="text-sm"><strong className="text-gray-700">Categoría:</strong> {asset.category}</p>
-            <p className="text-sm"><strong className="text-gray-700">Nº de Serie:</strong> {asset.serial_number}</p>
-            <p className="text-sm"><strong className="text-gray-700">Fecha de Registro:</strong> {new Date(asset.created_at).toLocaleDateString()}</p>
+            <h3 className="text-sm font-semibold text-slate-400 uppercase">Especificaciones</h3>
+            <p className="text-sm text-slate-300"><strong className="text-slate-200">Categoría:</strong> {asset.category}</p>
+            <p className="text-sm text-slate-300"><strong className="text-slate-200">Nº de Serie:</strong> {asset.serial_number}</p>
+            <p className="text-sm text-slate-300"><strong className="text-slate-200">Fecha de Registro:</strong> {new Date(asset.created_at).toLocaleDateString()}</p>
           </div>
 
           <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase">Asignación</h3>
-            <div className="flex items-center gap-2 text-sm text-gray-800">
-              <User size={16} className="text-gray-400" />
+            <h3 className="text-sm font-semibold text-slate-400 uppercase">Asignación</h3>
+            <div className="flex items-center gap-2 text-sm text-slate-200">
+              <User size={16} className="text-slate-500" />
               {asset.profiles?.full_name ? (
                 <span>{asset.profiles.full_name} ({asset.profiles.email})</span>
               ) : (
-                <span className="text-gray-400 italic">Equipo no asignado</span>
+                <span className="text-slate-500 italic">Equipo no asignado</span>
               )}
             </div>
           </div>
         </div>
 
         {asset.notes && (
-          <div className="pt-4 border-t border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Notas / Observaciones</h3>
-            <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-200">{asset.notes}</p>
+          <div className="pt-4 border-t border-slate-700">
+            <h3 className="text-sm font-semibold text-slate-400 uppercase mb-1">Notas / Observaciones</h3>
+            <p className="text-sm text-slate-300 bg-slate-900 p-3 rounded-lg border border-slate-700">{asset.notes}</p>
           </div>
         )}
       </div>

@@ -502,21 +502,21 @@ export default function PhoneList() {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Control de Telefonía</h1>
-          <p className="text-sm text-gray-500">Gestión de dispositivos móviles, líneas corporativas y SIM cards.</p>
+          <h1 className="text-2xl font-bold text-slate-100">Control de Telefonía</h1>
+          <p className="text-sm text-slate-400">Gestión de dispositivos móviles, líneas corporativas y SIM cards.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={handleExportCSV}
             disabled={exporting || loading || phones.length === 0}
-            className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 border border-slate-700 hover:bg-slate-700 bg-slate-800 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
             <FileSpreadsheet size={16} /> Exportar CSV
           </button>
           <button
             onClick={handleExportPDF}
             disabled={exporting || loading || phones.length === 0}
-            className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 border border-slate-700 hover:bg-slate-700 bg-slate-800 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
             <FileText size={16} /> Exportar PDF
           </button>
@@ -524,14 +524,14 @@ export default function PhoneList() {
             <>
               <button
                 onClick={handleDownloadTemplate}
-                className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center gap-2 border border-slate-700 hover:bg-slate-700 bg-slate-800 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 <Download size={16} /> Plantilla
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={importing}
-                className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 border border-slate-700 hover:bg-slate-700 bg-slate-800 text-slate-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
               >
                 <Upload size={16} /> {importing ? 'Importando...' : 'Importar CSV/XLSX'}
               </button>
@@ -540,14 +540,14 @@ export default function PhoneList() {
                 <button
                   onClick={handleDeleteSelected}
                   disabled={deleting}
-                  className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 bg-red-950 hover:bg-red-900 text-red-400 border border-red-800 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   <Trash2 size={16} /> {deleting ? 'Eliminando...' : `Eliminar (${selected.size})`}
                 </button>
               )}
               <button
                 onClick={() => navigate('/phones/new')}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
               >
                 <Plus size={16} /> Nuevo Teléfono
               </button>
@@ -556,28 +556,28 @@ export default function PhoneList() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Cargando inventario de teléfonos...</div>
+          <div className="p-8 text-center text-slate-500">Cargando inventario de teléfonos...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase whitespace-nowrap">
+                <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase whitespace-nowrap">
                   {canManageTI && (
                     <th className="py-3 px-4 w-10">
                       <input
                         type="checkbox"
                         checked={phones.length > 0 && selected.size === phones.length}
                         onChange={toggleSelectAll}
-                        className="rounded border-gray-300"
+                        className="rounded border-slate-600 bg-slate-900"
                       />
                     </th>
                   )}
                   <th className="py-3 px-4">
                     <span className="inline-flex items-center gap-1.5">
                       Dispositivo
-                      <span className="hidden lg:inline-flex items-center gap-2 normal-case font-normal text-[10px] text-gray-400 ml-1">
+                      <span className="hidden lg:inline-flex items-center gap-2 normal-case font-normal text-[10px] text-slate-500 ml-1">
                         <span className="inline-flex items-center gap-0.5"><CheckCircle2 size={11} className="text-emerald-500" /> Completo</span>
                         <span className="inline-flex items-center gap-0.5"><AlertTriangle size={11} className="text-amber-500" /> Incompleto</span>
                         <span className="inline-flex items-center gap-0.5"><XCircle size={11} className="text-red-500" /> Sin datos</span>
@@ -595,10 +595,10 @@ export default function PhoneList() {
                   <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 text-sm whitespace-nowrap">
+              <tbody className="divide-y divide-slate-700 text-sm whitespace-nowrap">
                 {phones.length === 0 ? (
                   <tr>
-                    <td colSpan={canManageTI ? 11 : 10} className="py-8 text-center text-gray-400">
+                    <td colSpan={canManageTI ? 11 : 10} className="py-8 text-center text-slate-500">
                       No hay teléfonos registrados.
                     </td>
                   </tr>
@@ -611,77 +611,77 @@ export default function PhoneList() {
                     const { icon: CompletenessIcon, className: completenessClass, label: completenessLabel } = COMPLETENESS_META[completeness];
 
                     return (
-                      <tr key={phone.id} className="hover:bg-gray-50">
+                      <tr key={phone.id} className="hover:bg-slate-700/40">
                         {canManageTI && (
                           <td className="py-3 px-4">
                             <input
                               type="checkbox"
                               checked={selected.has(phone.id)}
                               onChange={() => toggleSelect(phone.id)}
-                              className="rounded border-gray-300"
+                              className="rounded border-slate-600 bg-slate-900"
                             />
                           </td>
                         )}
-                        <td className="py-3 px-4 font-semibold text-gray-800">
+                        <td className="py-3 px-4 font-semibold text-slate-100">
                           <span className="inline-flex items-center gap-1.5">
                             <CompletenessIcon size={15} className={`shrink-0 ${completenessClass}`} title={completenessLabel} />
-                            {deviceName || <span className="text-gray-400 italic font-normal">Sin especificar</span>}
+                            {deviceName || <span className="text-slate-500 italic font-normal">Sin especificar</span>}
                           </span>
                         </td>
-                        <td className="py-3 px-4 font-mono text-xs text-blue-600">
-                          {phone.phone_number || <span className="text-gray-400 font-sans">Sin Línea</span>}
+                        <td className="py-3 px-4 font-mono text-xs text-sky-400">
+                          {phone.phone_number || <span className="text-slate-500 font-sans">Sin Línea</span>}
                         </td>
-                        <td className="py-3 px-4 font-mono text-xs text-gray-600">
-                          {imeiVal || <span className="text-gray-400 font-sans">-</span>}
+                        <td className="py-3 px-4 font-mono text-xs text-slate-400">
+                          {imeiVal || <span className="text-slate-500 font-sans">-</span>}
                         </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {phone.assigned_to || <span className="text-gray-400 italic">Sin asignar</span>}
+                        <td className="py-3 px-4 text-slate-300">
+                          {phone.assigned_to || <span className="text-slate-500 italic">Sin asignar</span>}
                         </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {phone.department || <span className="text-gray-400">-</span>}
+                        <td className="py-3 px-4 text-slate-300">
+                          {phone.department || <span className="text-slate-500">-</span>}
                         </td>
-                        <td className="py-3 px-4 text-gray-700">
-                          {contractPlan || <span className="text-gray-400">-</span>}
+                        <td className="py-3 px-4 text-slate-300">
+                          {contractPlan || <span className="text-slate-500">-</span>}
                         </td>
                         <td className="py-3 px-4">
                           {(phone.esim === true || phone.esim === 'true') && (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded-full">
+                            <span className="px-2 py-0.5 text-xs font-medium bg-purple-950 text-purple-300 rounded-full border border-purple-800">
                               eSIM
                             </span>
                           )}
                           {(phone.esim === false || phone.esim === 'false') && (
-                            <span className="px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">
+                            <span className="px-2 py-0.5 text-xs font-medium bg-slate-700 text-slate-300 rounded-full">
                               Física
                             </span>
                           )}
                           {(phone.esim === null || phone.esim === undefined || phone.esim === '') && (
-                            <span className="text-gray-400">-</span>
+                            <span className="text-slate-500">-</span>
                           )}
                         </td>
-                        <td className="py-3 px-4 text-xs text-gray-600">
-                          {phone.service_start_date || <span className="text-gray-400">-</span>}
+                        <td className="py-3 px-4 text-xs text-slate-400">
+                          {phone.service_start_date || <span className="text-slate-500">-</span>}
                         </td>
-                        <td className="py-3 px-4 text-xs text-gray-600">
-                          {phone.service_end_date || <span className="text-gray-400">-</span>}
+                        <td className="py-3 px-4 text-xs text-slate-400">
+                          {phone.service_end_date || <span className="text-slate-500">-</span>}
                         </td>
                         <td className="py-3 px-4 text-right whitespace-nowrap space-x-2">
                           {canManageTI ? (
                             <>
                               <button
                                 onClick={() => navigate(`/phones/${phone.id}/edit`)}
-                                className="text-blue-600 hover:text-blue-800 text-xs font-semibold"
+                                className="text-sky-400 hover:text-sky-300 text-xs font-semibold"
                               >
                                 Editar
                               </button>
                               <button
                                 onClick={() => handleDeleteOne(phone.id)}
-                                className="text-red-600 hover:text-red-800 text-xs font-semibold"
+                                className="text-red-400 hover:text-red-300 text-xs font-semibold"
                               >
                                 Eliminar
                               </button>
                             </>
                           ) : (
-                            <span className="text-gray-300 text-xs">—</span>
+                            <span className="text-slate-600 text-xs">—</span>
                           )}
                         </td>
                       </tr>

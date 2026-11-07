@@ -107,7 +107,7 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* SECCIÓN 1: INFORMACIÓN PRINCIPAL */}
       <div>
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
           Información Principal
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -197,7 +197,7 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
 
       {/* SECCIÓN 2: ASIGNACIÓN Y UBICACIÓN */}
       <div>
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
           Asignación y Ubicación
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -247,7 +247,7 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
 
       {/* SECCIÓN 3: GARANTÍA */}
       <div>
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+        <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
           Garantía
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -279,7 +279,7 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
       </div>
 
       {/* BOTONES DE ACCIÓN */}
-      <div className="flex justify-end gap-2 pt-4 border-t border-gray-100">
+      <div className="flex justify-end gap-2 pt-4 border-t border-slate-700">
         {onCancel && (
           <button type="button" onClick={onCancel} className="btn-secondary">
             Cancelar
