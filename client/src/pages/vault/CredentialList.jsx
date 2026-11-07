@@ -162,11 +162,11 @@ export default function CredentialList() {
       {/* Encabezado */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-slate-100 flex items-center gap-2">
             <Key size={24} className="text-brand-500" />
             Gestor de Accesos y Bóveda de Claves
           </h1>
-          <p className="text-xs text-gray-500">Administración centralizada de credenciales y accesos de TI</p>
+          <p className="text-xs text-slate-400">Administración centralizada de credenciales y accesos de TI</p>
         </div>
         {canManageTI && (
           <button onClick={() => handleOpenModal()} className="btn-primary flex items-center gap-2">
@@ -178,7 +178,7 @@ export default function CredentialList() {
       {/* Barra de Filtros y Búsqueda */}
       <div className="card py-3 flex flex-wrap gap-3 items-center">
         <div className="relative flex-1 min-w-48">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
             value={search}
@@ -195,7 +195,7 @@ export default function CredentialList() {
               className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                 selectedCategory === cat
                   ? "bg-brand-500 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  : "bg-slate-700 text-slate-300 hover:bg-slate-600"
               }`}
             >
               {cat}
@@ -226,20 +226,20 @@ export default function CredentialList() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Servicio / Recurso</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Categoría</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Usuario / ID</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Contraseña</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Responsable</th>
-                  <th className="text-right px-4 py-3 font-semibold text-gray-600">Acciones</th>
+                <tr className="bg-slate-900/60 border-b border-slate-700">
+                  <th className="text-left px-4 py-3 font-semibold text-slate-400">Servicio / Recurso</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-400">Categoría</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-400">Usuario / ID</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-400">Contraseña</th>
+                  <th className="text-left px-4 py-3 font-semibold text-slate-400">Responsable</th>
+                  <th className="text-right px-4 py-3 font-semibold text-slate-400">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-700">
                 {filteredCredentials.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50/50">
+                  <tr key={item.id} className="hover:bg-slate-700/40">
                     <td className="px-4 py-3">
-                      <div className="font-semibold text-gray-900 flex items-center gap-1.5">
+                      <div className="font-semibold text-slate-100 flex items-center gap-1.5">
                         {item.title}
                         {item.url_link && (
                           <a
@@ -253,20 +253,20 @@ export default function CredentialList() {
                           </a>
                         )}
                       </div>
-                      {item.notes && <div className="text-xs text-gray-400 truncate max-w-xs">{item.notes}</div>}
+                      {item.notes && <div className="text-xs text-slate-500 truncate max-w-xs">{item.notes}</div>}
                     </td>
                     <td className="px-4 py-3">
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-700 font-medium">
+                      <span className="px-2 py-0.5 text-xs rounded-full bg-slate-700 text-slate-300 font-medium">
                         {item.category}
                       </span>
                     </td>
-                    <td className="px-4 py-3 font-mono text-xs text-gray-800">
+                    <td className="px-4 py-3 font-mono text-xs text-slate-300">
                       <div className="flex items-center gap-2">
                         <span>{item.username || "—"}</span>
                         {item.username && (
                           <button
                             onClick={() => handleCopy(item.username, `user_${item.id}`)}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-slate-500 hover:text-slate-300"
                             title="Copiar usuario"
                           >
                             {copiedId === `user_${item.id}` ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
@@ -276,26 +276,26 @@ export default function CredentialList() {
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
                       <div className="flex items-center gap-2">
-                        <span className="bg-gray-100 px-2 py-1 rounded text-gray-800 min-w-[100px] inline-block">
+                        <span className="bg-slate-700 px-2 py-1 rounded text-slate-200 min-w-[100px] inline-block">
                           {showPassword[item.id] ? item.password_hash : "••••••••••••"}
                         </span>
                         <button
                           onClick={() => toggleShowPassword(item.id)}
-                          className="text-gray-400 hover:text-gray-600"
+                          className="text-slate-500 hover:text-slate-300"
                           title={showPassword[item.id] ? "Ocultar" : "Mostrar"}
                         >
                           {showPassword[item.id] ? <EyeOff size={14} /> : <Eye size={14} />}
                         </button>
                         <button
                           onClick={() => handleCopy(item.password_hash, `pass_${item.id}`)}
-                          className="text-gray-400 hover:text-gray-600"
+                          className="text-slate-500 hover:text-slate-300"
                           title="Copiar contraseña"
                         >
                           {copiedId === `pass_${item.id}` ? <Check size={14} className="text-green-500" /> : <Copy size={14} />}
                         </button>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-600">
+                    <td className="px-4 py-3 text-xs text-slate-400">
                       {item.employee?.full_name || "Sin asignar"}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -303,21 +303,21 @@ export default function CredentialList() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleOpenModal(item)}
-                            className="text-gray-400 hover:text-blue-600"
+                            className="text-slate-500 hover:text-sky-400"
                             title="Editar"
                           >
                             <Edit size={15} />
                           </button>
                           <button
                             onClick={() => handleDelete(item.id, item.title)}
-                            className="text-gray-400 hover:text-red-600"
+                            className="text-slate-500 hover:text-red-400"
                             title="Eliminar"
                           >
                             <Trash2 size={15} />
                           </button>
                         </div>
                       ) : (
-                        <span className="text-gray-300 text-xs">—</span>
+                        <span className="text-slate-600 text-xs">—</span>
                       )}
                     </td>
                   </tr>
@@ -331,18 +331,18 @@ export default function CredentialList() {
       {/* Modal para Crear / Editar Credencial */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
+          <div className="bg-slate-800 rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-700">
+            <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center">
+              <h3 className="font-bold text-slate-100 flex items-center gap-2">
                 <Key size={18} className="text-brand-500" />
                 {editingId ? "Editar Credencial" : "Nueva Credencial"}
               </h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+              <button onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-slate-300">✕</button>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Nombre del Servicio / Recurso *</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Nombre del Servicio / Recurso *</label>
                 <input
                   type="text"
                   required
@@ -355,7 +355,7 @@ export default function CredentialList() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Categoría</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1">Categoría</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -368,7 +368,7 @@ export default function CredentialList() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Usuario / ID / Email</label>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1">Usuario / ID / Email</label>
                   <input
                     type="text"
                     placeholder="admin / user@empresa.com"
@@ -381,7 +381,7 @@ export default function CredentialList() {
 
               <div>
                 <div className="flex justify-between items-center mb-1">
-                  <label className="block text-xs font-semibold text-gray-700">Contraseña / Token *</label>
+                  <label className="block text-xs font-semibold text-slate-400">Contraseña / Token *</label>
                   <button
                     type="button"
                     onClick={generatePassword}
@@ -401,7 +401,7 @@ export default function CredentialList() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">URL / Enlace / Dirección IP</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">URL / Enlace / Dirección IP</label>
                 <input
                   type="text"
                   placeholder="https://panel.empresa.com o 192.168.1.1"
@@ -412,7 +412,7 @@ export default function CredentialList() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Responsable / Asignado</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Responsable / Asignado</label>
                 <select
                   value={formData.assigned_to}
                   onChange={(e) => setFormData({ ...formData, assigned_to: e.target.value })}
@@ -426,7 +426,7 @@ export default function CredentialList() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Notas u Observaciones</label>
+                <label className="block text-xs font-semibold text-slate-400 mb-1">Notas u Observaciones</label>
                 <textarea
                   rows={2}
                   placeholder="Puerto, PIN de recuperación, reglas de acceso..."
@@ -436,7 +436,7 @@ export default function CredentialList() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+              <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
