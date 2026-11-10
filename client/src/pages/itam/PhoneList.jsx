@@ -94,6 +94,12 @@ const COMPLETENESS_PDF_FILL = {
   empty:    [254, 226, 226], // red-100
 };
 
+const COMPLETENESS_PDF_TEXT = {
+  complete: [6, 95, 70],    // emerald-800
+  partial:  [146, 64, 14],  // amber-800
+  empty:    [153, 27, 27],  // red-800
+};
+
 // Resumen estadístico del inventario de telefonía (respeta filtros activos).
 function computePhoneStats(phones) {
   const count = (pred) => phones.filter(pred).length;
@@ -449,18 +455,23 @@ export default function PhoneList() {
         columnStyles: {
           0: { cellWidth: 34, fontStyle: 'bold' },                 // Dispositivo
           1: { cellWidth: 28, font: 'courier', fontSize: 8.5 },    // Número
-          2: { cellWidth: 32, font: 'courier', fontSize: 8.5 },    // IMEI
+          2: { cellWidth: 30, font: 'courier', fontSize: 8.5 },    // IMEI
           3: { cellWidth: 'auto' },                                // Asignado
-          4: { cellWidth: 24 },                                    // Dpto.
-          5: { cellWidth: 32 },                                    // Plan
+          4: { cellWidth: 22 },                                    // Dpto.
+          5: { cellWidth: 29 },                                    // Plan
           6: { cellWidth: 20, halign: 'center' },                  // Tipo SIM
-          7: { cellWidth: 36, halign: 'center', fontSize: 8 },     // Vigencia
-          8: { cellWidth: 22, halign: 'center', fontStyle: 'bold' }, // Datos
+          7: { cellWidth: 32, halign: 'center', fontSize: 8 },     // Vigencia
+          8: { cellWidth: 26, halign: 'center', fontStyle: 'bold', fontSize: 8.5 }, // Datos
         },
         didParseCell: (data) => {
-          if (data.section === 'body') {
-            const fill = COMPLETENESS_PDF_FILL[getPhoneCompleteness(phones[data.row.index])];
+          // Solo la columna "Datos" lleva el tinte de color según completitud;
+          // el resto de la fila se mantiene en blanco/zebra para no saturar la vista.
+          if (data.section === 'body' && data.column.index === 8) {
+            const completeness = getPhoneCompleteness(phones[data.row.index]);
+            const fill = COMPLETENESS_PDF_FILL[completeness];
+            const textColor = COMPLETENESS_PDF_TEXT[completeness];
             if (fill) data.cell.styles.fillColor = fill;
+            if (textColor) data.cell.styles.textColor = textColor;
           }
           // Destacar eSIM vs SIM Física
           if (data.section === 'body' && data.column.index === 6) {
@@ -490,7 +501,7 @@ export default function PhoneList() {
           doc.setFontSize(8.5);
           doc.setTextColor(148, 163, 184);
 
-          doc.text('Sistemas & TI — Reporte de Telefonía Corporativa — Documento Confidencial', 14, 205);
+          doc.text('ITSM Sistema de Gestión de TI - Reporte de Equipos de Telefonía', 14, 205);
 
           const pageStr = `Página ${pageCount} de ${totalPagesExp}`;
           doc.text(pageStr, 283 - doc.getTextWidth(pageStr), 205);
