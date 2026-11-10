@@ -22,8 +22,8 @@ import { useAuth } from "../context/AuthContext";
 // Tarjeta de Estadística Reutilizable
 function StatCard({ label, value, icon: Icon, color, sub, to }) {
   const content = (
-    <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 hover:border-slate-600 hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-4">
-      <div className={`${color} p-3.5 rounded-xl text-white shrink-0 shadow-sm`}>
+    <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 hover:border-white/20 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 transition-all duration-200 flex items-center gap-4">
+      <div className={`${color} p-3.5 rounded-xl text-white shrink-0 shadow-lg shadow-black/20 ring-1 ring-white/10`}>
         <Icon size={24} />
       </div>
       <div className="min-w-0 flex-1">
@@ -120,9 +120,16 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="relative space-y-6 pb-8">
+      {/* Fondo decorativo ambiental (da profundidad al efecto glass) */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-sky-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/3 -right-24 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl" />
+      </div>
+
       {/* Saludo y Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-800/40 backdrop-blur-xl border border-white/10 p-6 rounded-2xl shadow-xl shadow-black/10">
         <div>
           <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
             Bienvenido, {profile?.full_name?.split(" ")[0] || "Usuario"} 👋
@@ -132,7 +139,7 @@ export default function Dashboard() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950 text-emerald-400 border border-emerald-800">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-950/60 backdrop-blur-sm text-emerald-400 border border-emerald-800/60">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             En Linea
           </span>
@@ -143,7 +150,7 @@ export default function Dashboard() {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-24 bg-slate-800 rounded-2xl animate-pulse" />
+            <div key={i} className="h-24 bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl animate-pulse" />
           ))}
         </div>
       ) : (
@@ -204,9 +211,9 @@ export default function Dashboard() {
             <Link
               key={to}
               to={to}
-              className={`bg-slate-800 border border-slate-700 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 transition-all duration-150 hover:-translate-y-0.5 group ${color}`}
+              className={`bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-xl p-3.5 flex flex-col items-center justify-center text-center gap-2 transition-all duration-150 hover:-translate-y-0.5 hover:border-white/20 hover:shadow-lg hover:shadow-black/20 group ${color}`}
             >
-              <div className="p-2 rounded-lg bg-slate-900 group-hover:bg-slate-950 transition-colors">
+              <div className="p-2 rounded-lg bg-black/20 backdrop-blur-sm group-hover:bg-black/30 transition-colors">
                 <Icon size={20} />
               </div>
               <span className="text-xs font-semibold text-slate-300 group-hover:text-slate-100 leading-tight">
@@ -221,8 +228,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Lista de Tickets Recientes (2 Columnas) */}
-        <div className="lg:col-span-2 bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-700 pb-3">
+        <div className="lg:col-span-2 bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 space-y-4 shadow-xl shadow-black/10">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
             <div className="flex items-center gap-2">
               <Ticket size={18} className="text-sky-400" />
               <h2 className="text-base font-bold text-slate-100">Tickets Recientes</h2>
@@ -302,34 +309,34 @@ export default function Dashboard() {
         </div>
 
         {/* Resumen de Estado / Alertas de Soporte (1 Columna) */}
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-5 space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-700 pb-3">
+        <div className="bg-slate-800/40 backdrop-blur-xl border border-white/10 rounded-2xl p-5 space-y-4 shadow-xl shadow-black/10">
+          <div className="flex items-center gap-2 border-b border-white/10 pb-3">
             <TrendingUp size={18} className="text-purple-400" />
             <h2 className="text-base font-bold text-slate-100">Resumen de Soporte</h2>
           </div>
 
           <div className="space-y-3">
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10 flex items-center justify-between">
               <span className="text-xs font-medium text-slate-400">Tickets Abiertos</span>
-              <span className="text-sm font-bold text-sky-400 bg-sky-950 px-2.5 py-0.5 rounded-full border border-sky-800">
+              <span className="text-sm font-bold text-sky-400 bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-800/60">
                 {stats.openTickets}
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10 flex items-center justify-between">
               <span className="text-xs font-medium text-slate-400">Licencias Vencidas</span>
               <span
                 className={`text-sm font-bold px-2.5 py-0.5 rounded-full border ${
                   stats.expiredLicenses > 0
-                    ? "text-red-400 bg-red-950 border-red-800"
-                    : "text-emerald-400 bg-emerald-950 border-emerald-800"
+                    ? "text-red-400 bg-red-950/60 border-red-800/60"
+                    : "text-emerald-400 bg-emerald-950/60 border-emerald-800/60"
                 }`}
               >
                 {stats.expiredLicenses}
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-between">
+            <div className="p-3.5 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10 flex items-center justify-between">
               <span className="text-xs font-medium text-slate-400">Equipos Asignados</span>
               <span className="text-sm font-bold text-slate-200">
                 {stats.totalAssets > 0
@@ -342,7 +349,7 @@ export default function Dashboard() {
           <div className="pt-2">
             <Link
               to="/maintenance"
-              className="w-full py-2.5 px-4 bg-purple-950/50 hover:bg-purple-950 text-purple-300 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors border border-purple-800"
+              className="w-full py-2.5 px-4 bg-purple-950/40 hover:bg-purple-950/70 backdrop-blur-sm text-purple-300 text-xs font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors border border-purple-800/60"
             >
               <Wrench size={14} /> Registrar Mantenimiento
             </Link>
