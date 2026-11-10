@@ -338,16 +338,17 @@ export default function PhoneList() {
     try {
       setExporting(true);
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+      const totalPagesExp = '{total_pages_count_string}';
 
-      // Configuración de colores
-      const navyColor = [15, 23, 42];     // #0f172a
+      // Configuración de colores (misma paleta que el resto de reportes del sistema)
+      const navyColor = [30, 41, 59];     // Slate 800
       const blueAccent = [37, 99, 235];   // #2563eb
-      const grayLight = [248, 250, 252];  // #f8fafc
       const textMuted = [100, 116, 139];  // #64748b
 
       // Métrica y Estadísticas Rápidas
       const stats = computePhoneStats(phones);
       const totalPhones = stats.total;
+      const nowStr = new Date().toLocaleString('es-MX');
 
       // 1. BANNER DE ENCABEZADO
       doc.setFillColor(...navyColor);
@@ -355,24 +356,19 @@ export default function PhoneList() {
 
       // Línea de acento inferior en el banner
       doc.setFillColor(...blueAccent);
-      doc.rect(0, 24, 297, 1.5, 'F');
+      doc.rect(0, 24, 297, 2, 'F');
 
       // Título y Subtítulo
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(16);
+      doc.setFontSize(17);
       doc.setTextColor(255, 255, 255);
-      doc.text('GESTION DE EQUIPOS DE TELEFONIA', 14, 12);
+      doc.text('GESTIÓN DE EQUIPOS DE TELEFONÍA', 14, 14);
 
+      // Metadata (debajo del título)
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(9);
-      doc.setTextColor(203, 213, 225);
-      doc.text('Reporte General de Dispositivos, Numeros y Asignaciones', 14, 18);
-
-      // Metadata (Derecha del Banner)
-      const dateStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-      doc.setFontSize(8);
-      doc.text(`Fecha: ${dateStr}`, 283, 12, { align: 'right' });
-      doc.text(`Total Registros: ${totalPhones}`, 283, 18, { align: 'right' });
+      doc.setFontSize(9.5);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Fecha de emisión: ${nowStr}  ·  Total de registros: ${totalPhones}`, 14, 32);
 
       // 2. TARJETAS DE RESUMEN DEL INVENTARIO
       const summaryCards = [
@@ -383,8 +379,8 @@ export default function PhoneList() {
         { label: 'SIM Física', value: stats.simFisica, fill: [224, 242, 254] },
         { label: 'Datos Completos', value: stats.datosCompletos, fill: [209, 250, 229] },
       ];
-      const cardY = 29;
-      const cardH = 14;
+      const cardY = 36;
+      const cardH = 15;
       const cardGap = 2;
       const cardW = (269 - cardGap * (summaryCards.length - 1)) / summaryCards.length;
       summaryCards.forEach((card, i) => {
@@ -392,17 +388,26 @@ export default function PhoneList() {
         doc.setFillColor(...card.fill);
         doc.roundedRect(x, cardY, cardW, cardH, 1.5, 1.5, 'F');
         doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
+        doc.setFontSize(13.5);
         doc.setTextColor(...navyColor);
-        doc.text(String(card.value), x + cardW / 2, cardY + 7, { align: 'center' });
+        doc.text(String(card.value), x + cardW / 2, cardY + 7.5, { align: 'center' });
         doc.setFont('helvetica', 'normal');
-        doc.setFontSize(6.5);
+        doc.setFontSize(7.5);
         doc.setTextColor(71, 85, 105);
-        doc.text(card.label, x + cardW / 2, cardY + 11.5, { align: 'center' });
+        doc.text(card.label, x + cardW / 2, cardY + 12.5, { align: 'center' });
       });
 
-      // 3. TABLA CON AUTOTABLE
-      const head = [['Dispositivo', 'Número / SIM', 'IMEI', 'Asignado a', 'Dpto.', 'Plan Contrato', 'Tipo SIM', 'Inicio Serv.', 'Fin Serv.', 'Datos']];
+      // 3. TABLA CON AUTOTABLE (se consolida Inicio/Fin de servicio en una sola columna
+      //    y se reparten los anchos para que cada celda tenga espacio suficiente y la
+      //    letra pueda crecer sin desbordar la hoja A4 horizontal).
+      const head = [['Dispositivo', 'Número / SIM', 'IMEI', 'Asignado a', 'Dpto.', 'Plan Contrato', 'Tipo SIM', 'Vigencia Servicio', 'Datos']];
+
+      const formatVigencia = (phone) => {
+        const ini = phone.service_start_date || null;
+        const fin = phone.service_end_date || null;
+        if (!ini && !fin) return '-';
+        return `${ini || '?'} a ${fin || '?'}`;
+      };
 
       const body = phones.map((phone) => [
         `${phone.brand || ''} ${phone.model || ''}`.trim() || 'Sin Especificar',
@@ -412,45 +417,45 @@ export default function PhoneList() {
         phone.department || '-',
         phone.contract_plan || phone.plan || '-',
         getEsimText(phone.esim),
-        phone.service_start_date || '-',
-        phone.service_end_date || '-',
+        formatVigencia(phone),
         COMPLETENESS_META[getPhoneCompleteness(phone)].label,
       ]);
 
-      const tableStartY = cardY + cardH + 4;
+      const tableStartY = cardY + cardH + 6;
       autoTable(doc, {
         startY: tableStartY,
         head: head,
         body: body,
         theme: 'grid',
+        styles: {
+          font: 'helvetica',
+          fontSize: 9,
+          cellPadding: 3,
+          textColor: [51, 65, 85], // Slate 700
+          lineColor: [226, 232, 240],
+          lineWidth: 0.1,
+          overflow: 'linebreak',
+        },
         headStyles: {
           fillColor: navyColor,
           textColor: [255, 255, 255],
-          fontSize: 7.5,
+          fontSize: 9.5,
           fontStyle: 'bold',
           halign: 'left',
-          cellPadding: 2.5,
-        },
-        bodyStyles: {
-          fontSize: 7.5,
-          textColor: [30, 41, 59],
-          cellPadding: 2,
-          overflow: 'linebreak',
         },
         alternateRowStyles: {
           fillColor: [248, 250, 252],
         },
         columnStyles: {
-          0: { cellWidth: 36, fontStyle: 'bold' }, // Dispositivo
-          1: { cellWidth: 25, font: 'courier', fontSize: 7 },   // Número
-          2: { cellWidth: 28, font: 'courier', fontSize: 7 },   // IMEI
-          3: { cellWidth: 32 },                   // Asignado
-          4: { cellWidth: 22 },                   // Dpto.
-          5: { cellWidth: 32 },                   // Plan
-          6: { cellWidth: 16, halign: 'center' },  // Tipo SIM
-          7: { cellWidth: 19, halign: 'center', fontSize: 7 },  // Inicio
-          8: { cellWidth: 19, halign: 'center', fontSize: 7 },  // Fin
-          9: { cellWidth: 18, halign: 'center', fontStyle: 'bold', fontSize: 7 }, // Datos
+          0: { cellWidth: 34, fontStyle: 'bold' },                 // Dispositivo
+          1: { cellWidth: 28, font: 'courier', fontSize: 8.5 },    // Número
+          2: { cellWidth: 32, font: 'courier', fontSize: 8.5 },    // IMEI
+          3: { cellWidth: 'auto' },                                // Asignado
+          4: { cellWidth: 24 },                                    // Dpto.
+          5: { cellWidth: 32 },                                    // Plan
+          6: { cellWidth: 20, halign: 'center' },                  // Tipo SIM
+          7: { cellWidth: 36, halign: 'center', fontSize: 8 },     // Vigencia
+          8: { cellWidth: 22, halign: 'center', fontStyle: 'bold' }, // Datos
         },
         didParseCell: (data) => {
           if (data.section === 'body') {
@@ -472,23 +477,29 @@ export default function PhoneList() {
             data.cell.styles.fontStyle = 'italic';
           }
         },
-        margin: { top: 20, left: 14, right: 14, bottom: 15 },
-        didDrawPage: (data) => {
+        margin: { top: 20, left: 14, right: 14, bottom: 18 },
+        didDrawPage: () => {
           // Pie de Página
-          const totalPages = doc.internal.getNumberOfPages();
-          const pageCurrent = data.pageNumber;
+          const pageCount = doc.internal.getNumberOfPages();
+
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.2);
+          doc.line(14, 200, 283, 200);
 
           doc.setFont('helvetica', 'normal');
-          doc.setFontSize(8);
-          doc.setTextColor(...textMuted);
+          doc.setFontSize(8.5);
+          doc.setTextColor(148, 163, 184);
 
-          // Texto a la izquierda
-          doc.text('Sistemas & TI — Reporte de Telefonía Corporativa', 14, 202);
+          doc.text('Sistemas & TI — Reporte de Telefonía Corporativa — Documento Confidencial', 14, 205);
 
-          // Paginación a la derecha
-          doc.text(`Página ${pageCurrent} de ${totalPages}`, 283, 202, { align: 'right' });
+          const pageStr = `Página ${pageCount} de ${totalPagesExp}`;
+          doc.text(pageStr, 283 - doc.getTextWidth(pageStr), 205);
         },
       });
+
+      if (typeof doc.putTotalPages === 'function') {
+        doc.putTotalPages(totalPagesExp);
+      }
 
       doc.save(`telefonia-${todayStr()}.pdf`);
     } catch (err) {
