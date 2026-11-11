@@ -23,6 +23,9 @@ const TABLE_LABELS = {
   hr_checador_map: 'Checador (mapeo)',
   tickets: 'Tickets',
   profiles: 'Usuarios / Perfiles',
+  purchase_requests: 'Solicitudes de Compra',
+  purchase_orders: 'Órdenes de Compra',
+  document_vault: 'Bóveda de Facturas',
 };
 
 const ACTION_META = {

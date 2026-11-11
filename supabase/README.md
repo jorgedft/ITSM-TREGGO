@@ -13,6 +13,7 @@ Corre los scripts **en orden** en el SQL Editor de Supabase (dashboard → SQL E
 9. `009_tabla_hr_reclutamiento.sql` — tablas `hr_job_openings` y `hr_candidates` + bucket `candidate-cvs` para los CV.
 10. `010_notificaciones.sql` — tablas `notifications` y `push_subscriptions`, triggers que avisan de tickets nuevos/asignados y solicitudes de vacaciones, y habilita Realtime en `notifications`. Después de correr este script, sigue la guía en `functions/send-push/README.md` para activar las notificaciones push reales (requiere Supabase CLI).
 11. `011_mantenimiento_programado.sql` — tabla `maintenance_schedules` (mantenimientos preventivos a futuro, con recurrencia mensual/trimestral/semestral/anual) y aviso automático al crear uno nuevo. Incluye una función opcional `notify_due_maintenance()` para recordatorios diarios de próximos/vencidos (requiere habilitar la extensión `pg_cron` y programarla, instrucciones dentro del script).
+12. `012_formatos_facturas.sql` — módulo **Formatos y Facturas** (dentro de Administración, solo admin/ti): tablas `purchase_requests` (Solicitud de Compra), `purchase_orders` (Orden de Compra) y `document_vault` (bóveda de facturas/cotizaciones) + bucket de almacenamiento `document-vault` para los archivos adjuntos.
 
 Los scripts 7, 8, 9, 10 y 11 dependen de que ya exista `public.audit_trigger_func()` (del script 6), así que ese debe ir antes. El 11 también usa `notify_roles()` (del script 10) si está disponible.
 
@@ -31,7 +32,7 @@ Roles válidos: `admin`, `ti`, `rh`.
 
 | Módulo | admin / ti | rh |
 |---|---|---|
-| Equipos, Teléfonos, Licencias, Red/IPs, Mantenimiento, Bóveda | Lectura + escritura | **Sin acceso** (bloqueado en UI y en base de datos) |
+| Equipos, Teléfonos, Licencias, Red/IPs, Mantenimiento, Bóveda, Formatos y Facturas | Lectura + escritura | **Sin acceso** (bloqueado en UI y en base de datos) |
 | Tickets | Lectura + escritura total | Lectura total, escritura solo en los propios |
 | Recursos Humanos (Colaboradores, y lo que se agregue después) | Lectura + escritura | Lectura + escritura |
 

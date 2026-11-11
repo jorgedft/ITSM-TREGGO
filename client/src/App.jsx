@@ -34,6 +34,7 @@ import Vacaciones from './pages/rh/Vacaciones';
 import Nominas from './pages/rh/Nominas';
 import Reclutamiento from './pages/rh/Reclutamiento';
 import Administracion from './pages/admin/Administracion';
+import FormatosFacturas from './pages/admin/FormatosFacturas';
 import { RoleRoute } from './components/layout/RoleRoute';
 
 import NotFound from './pages/NotFound';
@@ -81,6 +82,7 @@ export default function App() {
 <Route path="maintenance" element={<RoleRoute><MaintenanceList /></RoleRoute>} />
 
               <Route path="admin" element={<RoleRoute><Administracion /></RoleRoute>} />
+              <Route path="admin/formatos" element={<RoleRoute><FormatosFacturas /></RoleRoute>} />
             </Route>
           </Route>
 

@@ -33,6 +33,7 @@ const NAV_TI = [
 
 const NAV_ADMIN = [
     { to: '/admin', label: 'Administración', icon: Settings },
+    { to: '/admin/formatos', label: 'Formatos y Facturas', icon: FileText },
 ];
 
 // Sección simple, sin acordeón (Panel, Administración: pocos items, no necesitan plegarse).
