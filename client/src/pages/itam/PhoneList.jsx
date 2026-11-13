@@ -578,14 +578,14 @@ export default function PhoneList() {
         </div>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
+      <div className="glass-panel rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-slate-500">Cargando inventario de teléfonos...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase whitespace-nowrap">
+                <tr className="bg-black/20 border-b border-white/10 text-xs font-semibold text-slate-400 uppercase whitespace-nowrap">
                   {canManageTI && (
                     <th className="py-3 px-4 w-10">
                       <input
@@ -617,7 +617,7 @@ export default function PhoneList() {
                   <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700 text-sm whitespace-nowrap">
+              <tbody className="divide-y divide-white/5 text-sm whitespace-nowrap">
                 {phones.length === 0 ? (
                   <tr>
                     <td colSpan={canManageTI ? 11 : 10} className="py-8 text-center text-slate-500">
@@ -633,7 +633,7 @@ export default function PhoneList() {
                     const { icon: CompletenessIcon, className: completenessClass, label: completenessLabel } = COMPLETENESS_META[completeness];
 
                     return (
-                      <tr key={phone.id} className="hover:bg-slate-700/40">
+                      <tr key={phone.id} className="hover:bg-white/5 transition-colors">
                         {canManageTI && (
                           <td className="py-3 px-4">
                             <input

@@ -43,8 +43,8 @@ export default function TicketDetail() {
         <ArrowLeft size={18} /> Volver a Tickets
       </button>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm p-6 space-y-6">
-        <div className="flex items-start justify-between border-b border-slate-700 pb-4">
+      <div className="glass-panel rounded-xl p-6 space-y-6">
+        <div className="flex items-start justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-sky-950 text-sky-400 rounded-lg">
               <TicketIcon size={24} />

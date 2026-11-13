@@ -60,8 +60,8 @@ export default function AssetDetail() {
         )}
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden p-6 space-y-6">
-        <div className="flex items-start justify-between border-b border-slate-700 pb-4">
+      <div className="glass-panel rounded-xl overflow-hidden p-6 space-y-6">
+        <div className="flex items-start justify-between border-b border-white/10 pb-4">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-sky-950 text-sky-400 rounded-lg">
               <Laptop size={24} />
@@ -98,7 +98,7 @@ export default function AssetDetail() {
         </div>
 
         {asset.notes && (
-          <div className="pt-4 border-t border-slate-700">
+          <div className="pt-4 border-t border-white/10">
             <h3 className="text-sm font-semibold text-slate-400 uppercase mb-1">Notas / Observaciones</h3>
             <p className="text-sm text-slate-300 bg-slate-900 p-3 rounded-lg border border-slate-700">{asset.notes}</p>
           </div>

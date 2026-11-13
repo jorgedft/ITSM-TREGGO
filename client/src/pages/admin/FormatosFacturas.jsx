@@ -24,7 +24,7 @@ export default function FormatosFacturas() {
         </p>
       </div>
 
-      <div className="flex flex-wrap gap-1 border-b border-slate-700">
+      <div className="flex flex-wrap gap-1 border-b border-white/10">
         {TABS.map(({ key, label, icon: Icon }) => (
           <button
             key={key}

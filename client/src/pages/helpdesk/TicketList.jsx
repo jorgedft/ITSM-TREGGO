@@ -44,14 +44,14 @@ export default function TicketList() {
         </button>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
+      <div className="glass-panel rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-slate-500">Cargando tickets de soporte...</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
+                <tr className="bg-black/20 border-b border-white/10 text-xs font-semibold text-slate-400 uppercase">
                   <th className="py-3 px-4">Folio / Asunto</th>
                   <th className="py-3 px-4">Solicitante</th>
                   <th className="py-3 px-4">Prioridad</th>
@@ -59,9 +59,9 @@ export default function TicketList() {
                   <th className="py-3 px-4 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700 text-sm">
+              <tbody className="divide-y divide-white/5 text-sm">
                 {tickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-slate-700/40">
+                  <tr key={ticket.id} className="hover:bg-white/5 transition-colors">
                     <td className="py-3 px-4 font-semibold text-slate-100">
                       #{ticket.id.toString().slice(0, 8)} - {ticket.title}
                     </td>

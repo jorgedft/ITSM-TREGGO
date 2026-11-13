@@ -209,7 +209,7 @@ export default function DocumentVault() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-slate-900/60 border-b border-slate-700 text-[10px] font-semibold text-slate-400 uppercase">
+                <tr className="bg-black/20 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase">
                   <th className="py-2.5 px-3">Tipo</th>
                   <th className="py-2.5 px-3">Folio</th>
                   <th className="py-2.5 px-3">Proveedor / Cliente</th>
@@ -220,9 +220,9 @@ export default function DocumentVault() {
                   <th className="py-2.5 px-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody className="divide-y divide-white/5">
                 {filtered.map((doc) => (
-                  <tr key={doc.id} className="hover:bg-slate-700/40">
+                  <tr key={doc.id} className="hover:bg-white/5 transition-colors">
                     <td className="py-2.5 px-3">
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold border bg-slate-800 text-slate-300 border-slate-700">
                         {DOC_TYPE_LABELS[doc.doc_type] || doc.doc_type}
@@ -255,7 +255,7 @@ export default function DocumentVault() {
       {/* Modal de carga */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-lg w-full p-6">
+          <div className="glass-modal rounded-xl max-w-lg w-full p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
                 <Upload size={18} className="text-sky-400" /> Guardar Documento
@@ -316,7 +316,7 @@ export default function DocumentVault() {
                   className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-950 file:text-sky-400 hover:file:bg-sky-900 cursor-pointer"
                 />
               </div>
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
                 <button type="button" onClick={() => setModalOpen(false)} className="btn-secondary">Cancelar</button>
                 <button type="submit" disabled={uploading} className="btn-primary">{uploading ? 'Guardando...' : 'Guardar en Bóveda'}</button>
               </div>

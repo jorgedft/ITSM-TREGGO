@@ -207,12 +207,6 @@ export default function Dashboard() {
 
   return (
     <div className="relative space-y-6 pb-8">
-      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        <div className="dash-float absolute -top-24 -left-24 w-96 h-96 bg-sky-600/20 rounded-full blur-3xl" />
-        <div className="dash-float absolute top-1/3 -right-24 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" style={{ animationDelay: "-6s" }} />
-        <div className="dash-float absolute bottom-0 left-1/4 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl" style={{ animationDelay: "-11s" }} />
-      </div>
-
       {/* Encabezado */}
       <div className="dash-rise relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-sky-600/25 via-slate-800/40 to-purple-600/20 backdrop-blur-xl p-6 shadow-xl shadow-black/10">
         <div className="dash-sheen pointer-events-none absolute inset-0" />

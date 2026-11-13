@@ -265,7 +265,7 @@ export default function SolicitudCompraForm() {
                   <th className="py-2 px-2 w-8"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody className="divide-y divide-white/5">
                 {form.items.map((it, idx) => (
                   <tr key={idx}>
                     <td className="p-1.5">
@@ -320,7 +320,7 @@ export default function SolicitudCompraForm() {
             <span className="text-slate-400 w-32 text-right">Otro impuesto:</span>
             <input type="number" step="any" className="input-field text-xs py-1 w-28 text-right" value={form.other_tax} onChange={(e) => updateField('other_tax', e.target.value)} />
           </div>
-          <div className="flex items-center gap-3 pt-1 border-t border-slate-700">
+          <div className="flex items-center gap-3 pt-1 border-t border-white/10">
             <span className="text-slate-300 w-32 text-right font-bold">Total:</span>
             <span className="font-bold text-sky-400 w-28 text-right">{formatCurrency(total)}</span>
           </div>
@@ -337,7 +337,7 @@ export default function SolicitudCompraForm() {
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 pt-2 border-t border-slate-700">
+        <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
           <button type="button" onClick={() => setPreview({ ...form, iva, subtotal, total })} className="btn-secondary flex items-center gap-2">
             <Eye size={15} /> Vista previa
           </button>
@@ -349,7 +349,7 @@ export default function SolicitudCompraForm() {
 
       {/* Historial */}
       <div className="card p-0 overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-700 font-semibold text-sm text-slate-300">
+        <div className="px-4 py-3 border-b border-white/10 font-semibold text-sm text-slate-300">
           Historial de Solicitudes ({requests.length})
         </div>
         {loading ? (
@@ -360,7 +360,7 @@ export default function SolicitudCompraForm() {
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left">
               <thead>
-                <tr className="bg-slate-900/60 border-b border-slate-700 text-[10px] font-semibold text-slate-400 uppercase">
+                <tr className="bg-black/20 border-b border-white/10 text-[10px] font-semibold text-slate-400 uppercase">
                   <th className="py-2.5 px-3">Folio</th>
                   <th className="py-2.5 px-3">Fecha</th>
                   <th className="py-2.5 px-3">Solicitante</th>
@@ -370,9 +370,9 @@ export default function SolicitudCompraForm() {
                   <th className="py-2.5 px-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody className="divide-y divide-white/5">
                 {requests.map((req) => (
-                  <tr key={req.id} className="hover:bg-slate-700/40">
+                  <tr key={req.id} className="hover:bg-white/5 transition-colors">
                     <td className="py-2.5 px-3 font-mono text-slate-300">{req.folio || '—'}</td>
                     <td className="py-2.5 px-3 text-slate-400">{formatDateEs(req.request_date)}</td>
                     <td className="py-2.5 px-3 text-slate-200">{req.requester || '—'}</td>

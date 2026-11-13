@@ -279,7 +279,7 @@ export default function AssetForm({ assetToEdit, onSuccess, onCancel }) {
       </div>
 
       {/* BOTONES DE ACCIÓN */}
-      <div className="flex justify-end gap-2 pt-4 border-t border-slate-700">
+      <div className="flex justify-end gap-2 pt-4 border-t border-white/10">
         {onCancel && (
           <button type="button" onClick={onCancel} className="btn-secondary">
             Cancelar

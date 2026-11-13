@@ -319,7 +319,7 @@ export default function CredentialList() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-900/60 border-b border-slate-700">
+                <tr className="bg-black/20 border-b border-white/10">
                   <th className="text-left px-4 py-3 font-semibold text-slate-400">Servicio / Recurso</th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-400">Categoría</th>
                   <th className="text-left px-4 py-3 font-semibold text-slate-400">Usuario / ID</th>
@@ -328,9 +328,9 @@ export default function CredentialList() {
                   <th className="text-right px-4 py-3 font-semibold text-slate-400">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700">
+              <tbody className="divide-y divide-white/5">
                 {filteredCredentials.map((item) => (
-                  <tr key={item.id} className="hover:bg-slate-700/40">
+                  <tr key={item.id} className="hover:bg-white/5 transition-colors">
                     <td className="px-4 py-3">
                       <div className="font-semibold text-slate-100 flex items-center gap-1.5">
                         {item.title}
@@ -424,8 +424,8 @@ export default function CredentialList() {
       {/* Modal para Crear / Editar Credencial */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-          <div className="bg-slate-800 rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-700">
-            <div className="px-6 py-4 border-b border-slate-700 flex justify-between items-center">
+          <div className="glass-modal rounded-xl w-full max-w-lg overflow-hidden">
+            <div className="px-6 py-4 border-b border-white/10 flex justify-between items-center">
               <h3 className="font-bold text-slate-100 flex items-center gap-2">
                 <Key size={18} className="text-brand-500" />
                 {editingId ? "Editar Credencial" : "Nueva Credencial"}
@@ -529,7 +529,7 @@ export default function CredentialList() {
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
+              <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}

@@ -102,6 +102,10 @@
     from { opacity: 0; transform: translateY(14px); }
     to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes dash-pop {
+    from { opacity: 0; transform: translateY(10px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
 @keyframes dash-grow {
     from { transform: scaleX(0); }
     to   { transform: scaleX(1); }
@@ -122,5 +126,10 @@
     animation: dash-sheen 7s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
-    .dash-rise, .dash-grow, .dash-float, .dash-sheen { animation: none; }
+    .dash-rise, .dash-grow, .dash-float, .dash-sheen, .glass-modal { animation: none; }
 }
+
+/* Entrada de página: solo opacidad (un transform aquí rompería los modales fixed) */
+@keyframes page-fade { from { opacity: 0; } to { opacity: 1; } }
+.page-fade { animation: page-fade 0.35s ease-out; }
+@media (prefers-reduced-motion: reduce) { .page-fade { animation: none; } }

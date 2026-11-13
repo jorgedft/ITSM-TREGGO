@@ -474,7 +474,7 @@ export default function AssetList() {
       <div className="table-container overflow-x-auto">
         <table className="table-app w-full text-left">
           <thead>
-            <tr className="border-b border-slate-700">
+            <tr className="border-b border-white/10">
               <th className="py-3 px-4">
                 <span className="inline-flex items-center gap-1.5">
                   Etiqueta de equipo
@@ -493,7 +493,7 @@ export default function AssetList() {
               <th className="py-3 px-4 text-right">Acciones</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-700 text-sm">
+          <tbody className="divide-y divide-white/5 text-sm">
             {loading ? (
               <tr>
                 <td colSpan="7" className="text-center py-6 text-slate-500">Cargando equipos...</td>
@@ -507,7 +507,7 @@ export default function AssetList() {
                 const completeness = getCompleteness(item);
                 const { icon: CompletenessIcon, className: completenessClass, label: completenessLabel } = COMPLETENESS_META[completeness];
                 return (
-                <tr key={item.id} className="hover:bg-slate-700/40">
+                <tr key={item.id} className="hover:bg-white/5 transition-colors">
                   {/* 1. Etiqueta de equipo */}
                   <td className="py-3 px-4 font-semibold text-sky-400">
                     <span className="inline-flex items-center gap-1.5">
@@ -575,7 +575,7 @@ export default function AssetList() {
       {/* Modal de Crear / Editar */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-2xl w-full p-6 animate-fade-in max-h-[90vh] overflow-y-auto">
+          <div className="glass-modal rounded-xl max-w-2xl w-full p-6 animate-fade-in max-h-[90vh] overflow-y-auto">
             <h2 className="text-lg font-bold text-slate-100 mb-4">
               {editingAsset ? 'Editar Equipo' : 'Nuevo Equipo'}
             </h2>

@@ -39,7 +39,7 @@ function JobOpeningModal({ onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-md w-full p-6">
+      <div className="glass-modal rounded-xl max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-slate-100">Nueva Vacante</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
@@ -60,7 +60,7 @@ function JobOpeningModal({ onClose, onSaved }) {
             <textarea rows={2} className="input-field" value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
           </div>
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
+          <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
             <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Guardando...' : 'Crear Vacante'}</button>
           </div>
@@ -108,7 +108,7 @@ function CandidateModal({ jobOpeningId, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-md w-full p-6">
+      <div className="glass-modal rounded-xl max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-slate-100">Nuevo Candidato</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
@@ -141,7 +141,7 @@ function CandidateModal({ jobOpeningId, onClose, onSaved }) {
             <textarea rows={2} className="input-field" value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
           </div>
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
+          <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
             <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary">{saving ? 'Guardando...' : 'Agregar Candidato'}</button>
           </div>
@@ -274,11 +274,11 @@ export default function Reclutamiento() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Lista de Vacantes */}
-        <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden lg:col-span-1">
-          <div className="px-4 py-3 border-b border-slate-700 font-semibold text-sm text-slate-300">
+        <div className="glass-panel rounded-xl overflow-hidden lg:col-span-1">
+          <div className="px-4 py-3 border-b border-white/10 font-semibold text-sm text-slate-300">
             Vacantes ({openings.length})
           </div>
-          <div className="divide-y divide-slate-700 max-h-[560px] overflow-y-auto">
+          <div className="divide-y divide-white/5 max-h-[560px] overflow-y-auto">
             {loadingOpenings ? (
               <p className="p-4 text-sm text-slate-500">Cargando...</p>
             ) : openings.length === 0 ? (
@@ -288,7 +288,7 @@ export default function Reclutamiento() {
                 <button
                   key={job.id}
                   onClick={() => setSelectedId(job.id)}
-                  className={`w-full text-left px-4 py-3 transition-colors ${selectedId === job.id ? 'bg-sky-950/50' : 'hover:bg-slate-700/40'}`}
+                  className={`w-full text-left px-4 py-3 transition-colors ${selectedId === job.id ? 'bg-sky-950/50' : 'hover:bg-white/5 transition-colors'}`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p className="font-medium text-slate-100 text-sm truncate">{job.title}</p>
@@ -306,12 +306,12 @@ export default function Reclutamiento() {
         </div>
 
         {/* Candidatos de la vacante seleccionada */}
-        <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden lg:col-span-2">
+        <div className="glass-panel rounded-xl overflow-hidden lg:col-span-2">
           {!selectedJob ? (
             <p className="p-6 text-sm text-slate-500">Selecciona una vacante para ver sus candidatos.</p>
           ) : (
             <>
-              <div className="px-4 py-3 border-b border-slate-700 flex items-center justify-between gap-2 flex-wrap">
+              <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between gap-2 flex-wrap">
                 <div>
                   <p className="font-semibold text-slate-100">{selectedJob.title}</p>
                   <p className="text-xs text-slate-500">{selectedJob.department || 'Sin departamento'} · Abierta desde {selectedJob.opened_at}</p>
@@ -334,7 +334,7 @@ export default function Reclutamiento() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
+                    <tr className="bg-black/20 border-b border-white/10 text-xs font-semibold text-slate-400 uppercase">
                       <th className="py-2.5 px-4">Candidato</th>
                       <th className="py-2.5 px-4">Contacto</th>
                       <th className="py-2.5 px-4">Etapa</th>
@@ -342,14 +342,14 @@ export default function Reclutamiento() {
                       {canManageRH && <th className="py-2.5 px-4 text-right">Acciones</th>}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-700 text-sm">
+                  <tbody className="divide-y divide-white/5 text-sm">
                     {loadingCandidates ? (
                       <tr><td colSpan={5} className="text-center py-8 text-slate-500">Cargando...</td></tr>
                     ) : candidates.length === 0 ? (
                       <tr><td colSpan={5} className="text-center py-8 text-slate-500">Sin candidatos todavía.</td></tr>
                     ) : (
                       candidates.map((c) => (
-                        <tr key={c.id} className="hover:bg-slate-700/40">
+                        <tr key={c.id} className="hover:bg-white/5 transition-colors">
                           <td className="py-2.5 px-4 font-medium text-slate-100">{c.full_name}</td>
                           <td className="py-2.5 px-4 text-xs text-slate-400">
                             {c.email || '—'}

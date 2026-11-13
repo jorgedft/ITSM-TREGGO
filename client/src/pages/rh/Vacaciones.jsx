@@ -84,7 +84,7 @@ function RequestModal({ employees, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-lg w-full p-6">
+      <div className="glass-modal rounded-xl max-w-lg w-full p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-slate-100">Nueva Solicitud</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
@@ -143,7 +143,7 @@ function RequestModal({ employees, onClose, onSaved }) {
               onChange={(e) => setForm((f) => ({ ...f, reason: e.target.value }))} />
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
+          <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
             <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
             <button type="submit" disabled={saving} className="btn-primary">
               {saving ? 'Guardando...' : 'Enviar Solicitud'}
@@ -264,11 +264,11 @@ export default function Vacaciones() {
         </select>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
+      <div className="glass-panel rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
+              <tr className="bg-black/20 border-b border-white/10 text-xs font-semibold text-slate-400 uppercase">
                 <th className="py-3 px-4">Colaborador</th>
                 <th className="py-3 px-4">Tipo</th>
                 <th className="py-3 px-4">Fechas</th>
@@ -278,14 +278,14 @@ export default function Vacaciones() {
                 {canManageRH && <th className="py-3 px-4 text-right">Acciones</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700 text-sm">
+            <tbody className="divide-y divide-white/5 text-sm">
               {loading ? (
                 <tr><td colSpan={7} className="text-center py-8 text-slate-500">Cargando...</td></tr>
               ) : requests.length === 0 ? (
                 <tr><td colSpan={7} className="text-center py-8 text-slate-500">No hay solicitudes registradas.</td></tr>
               ) : (
                 requests.map((r) => (
-                  <tr key={r.id} className="hover:bg-slate-700/40">
+                  <tr key={r.id} className="hover:bg-white/5 transition-colors">
                     <td className="py-3 px-4 font-medium text-slate-100">{r.employee?.full_name || '—'}</td>
                     <td className="py-3 px-4">
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${TYPE_META[r.type]?.color || ''}`}>

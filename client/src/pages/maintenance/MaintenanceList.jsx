@@ -540,38 +540,38 @@ export default function MaintenanceList() {
 
       {/* Tarjetas del Dashboard / Métricas */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-        <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <div className="glass-panel p-4 rounded-xl">
           <span className="text-xs text-slate-400 font-semibold uppercase">Total Intervenciones</span>
           <div className="text-2xl font-bold text-slate-100">{maintenances.length}</div>
         </div>
-        <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <div className="glass-panel p-4 rounded-xl">
           <span className="text-xs text-slate-400 font-semibold uppercase">Preventivos</span>
           <div className="text-2xl font-bold text-sky-400">
             {maintenances.filter(m => m.maintenance_type === "Preventivo").length}
           </div>
         </div>
-        <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <div className="glass-panel p-4 rounded-xl">
           <span className="text-xs text-slate-400 font-semibold uppercase">Correctivos</span>
           <div className="text-2xl font-bold text-amber-400">
             {maintenances.filter(m => m.maintenance_type === "Correctivo").length}
           </div>
         </div>
-        <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <div className="glass-panel p-4 rounded-xl">
           <span className="text-xs text-purple-400 font-semibold uppercase">Guías en Bóveda</span>
           <div className="text-2xl font-bold text-purple-300">{workflows.length}</div>
         </div>
-        <div className="bg-slate-800 border border-slate-700 p-4 rounded-xl">
+        <div className="glass-panel p-4 rounded-xl">
           <span className="text-xs text-sky-400 font-semibold uppercase">Programados</span>
           <div className="text-2xl font-bold text-sky-300">{pendingSchedules.length}</div>
         </div>
-        <div className="bg-slate-800 border border-red-900/60 p-4 rounded-xl">
+        <div className="bg-slate-800/40 backdrop-blur-xl border border-red-900/60 p-4 rounded-xl">
           <span className="text-xs text-red-400 font-semibold uppercase">Vencidos</span>
           <div className="text-2xl font-bold text-red-400">{overdueSchedulesCount}</div>
         </div>
       </div>
 
       {/* Mantenimientos Programados */}
-      <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl mb-6">
+      <div className="glass-panel p-5 rounded-xl mb-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
             <CalendarClock className="w-5 h-5 text-sky-400" /> Mantenimientos Programados
@@ -580,7 +580,7 @@ export default function MaintenanceList() {
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm border-collapse">
             <thead>
-              <tr className="border-b border-slate-700 text-slate-400 uppercase text-xs">
+              <tr className="border-b border-white/10 text-slate-400 uppercase text-xs">
                 <th className="py-2.5 px-3">Fecha</th>
                 <th className="py-2.5 px-3">Equipo</th>
                 <th className="py-2.5 px-3">Título</th>
@@ -589,7 +589,7 @@ export default function MaintenanceList() {
                 {canManageTI && <th className="py-2.5 px-3 text-right">Acciones</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700 text-slate-300">
+            <tbody className="divide-y divide-white/5 text-slate-300">
               {schedules.length === 0 ? (
                 <tr><td colSpan={6} className="py-6 text-center text-slate-500">No hay mantenimientos programados.</td></tr>
               ) : (
@@ -641,7 +641,7 @@ export default function MaintenanceList() {
 
         {/* Formulario de Registro / Edición */}
         {canManageTI ? (
-        <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl h-fit">
+        <div className="glass-panel p-5 rounded-xl h-fit">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
               {editingMaintenanceId ? <Edit className="w-5 h-5 text-amber-400" /> : <Plus className="w-5 h-5 text-sky-400" />}
@@ -723,13 +723,13 @@ export default function MaintenanceList() {
           </form>
         </div>
         ) : (
-        <div className="bg-slate-800 border border-slate-700 p-5 rounded-xl h-fit flex items-center justify-center text-center text-sm text-slate-400">
+        <div className="glass-panel p-5 rounded-xl h-fit flex items-center justify-center text-center text-sm text-slate-400">
           Solo lectura: tu rol no tiene permiso para registrar mantenimientos.
         </div>
         )}
 
         {/* Tabla de Registros */}
-        <div className="lg:col-span-2 bg-slate-800 border border-slate-700 p-5 rounded-xl">
+        <div className="lg:col-span-2 glass-panel p-5 rounded-xl">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
             <h2 className="text-lg font-semibold text-slate-200">Historial de Intervenciones</h2>
             
@@ -798,7 +798,7 @@ export default function MaintenanceList() {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm border-collapse">
               <thead>
-                <tr className="border-b border-slate-700 text-slate-400 uppercase text-xs">
+                <tr className="border-b border-white/10 text-slate-400 uppercase text-xs">
                   <th className="py-3 px-3">Fecha</th>
                   <th className="py-3 px-3">Equipo</th>
                   <th className="py-3 px-3">Tipo</th>
@@ -806,7 +806,7 @@ export default function MaintenanceList() {
                   <th className="py-3 px-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700 text-slate-300">
+              <tbody className="divide-y divide-white/5 text-slate-300">
                 {filteredMaintenances.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="py-8 text-center text-slate-500">
@@ -870,8 +870,8 @@ export default function MaintenanceList() {
       {/* Modal Programar Mantenimiento */}
       {showScheduleModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-md p-6 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+          <div className="glass-panel rounded-xl w-full max-w-md p-6 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-4">
               <h3 className="text-lg font-bold text-sky-400 flex items-center gap-2">
                 <CalendarClock className="w-5 h-5" /> Programar Mantenimiento
               </h3>
@@ -973,8 +973,8 @@ export default function MaintenanceList() {
       {/* Modal Bóveda de Workflows / Guías */}
       {showWorkflowModal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-700 pb-3 mb-4">
+          <div className="glass-panel rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-white/10 pb-3 mb-4">
               <h3 className="text-xl font-bold text-purple-400 flex items-center gap-2">
                 <BookOpen className="w-6 h-6" /> Bóveda de Guías & Workflows
               </h3>
@@ -1096,8 +1096,8 @@ export default function MaintenanceList() {
       {/* Visor interno de archivos adjuntos */}
       {viewer.open && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex justify-center items-center z-[60] p-4">
-          <div className="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl">
-            <div className="flex justify-between items-center border-b border-slate-700 px-5 py-3 shrink-0">
+          <div className="glass-panel rounded-xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl">
+            <div className="flex justify-between items-center border-b border-white/10 px-5 py-3 shrink-0">
               <h3 className="text-sm font-semibold text-slate-200 truncate pr-4">{viewer.fileName}</h3>
               <button onClick={closeViewer} className="text-slate-400 hover:text-white shrink-0">
                 <X className="w-5 h-5" />

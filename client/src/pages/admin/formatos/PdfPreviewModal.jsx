@@ -21,7 +21,7 @@ export default function PdfPreviewModal({ title, filename, buildDoc, onExportExc
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6" onClick={onClose}>
       <div
-        className="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl w-full max-w-4xl h-[92vh] flex flex-col overflow-hidden"
+        className="glass-modal rounded-xl w-full max-w-4xl h-[92vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-slate-700">

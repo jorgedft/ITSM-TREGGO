@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 
 function StatCard({ label, icon: Icon, color, sub }) {
     return (
-        <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4 flex items-center gap-4">
+        <div className="glass-panel rounded-2xl p-4 flex items-center gap-4">
             <div className={`${color} p-3.5 rounded-xl text-white shrink-0 shadow-sm`}>
                 <Icon size={24} />
             </div>
@@ -21,7 +21,7 @@ export default function DashboardRH() {
 
     return (
         <div className="space-y-6 pb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-800 border border-slate-700 p-6 rounded-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 glass-panel p-6 rounded-2xl">
                 <div>
                     <h1 className="text-2xl font-bold text-slate-100 tracking-tight">
                         Bienvenido, {profile?.full_name?.split(' ')[0] || 'Usuario'} 👋
@@ -43,7 +43,7 @@ export default function DashboardRH() {
                 <StatCard label="Pre-nómina" icon={Receipt} color="bg-purple-600" sub="Próximamente" />
             </div>
 
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center">
+            <div className="glass-panel rounded-2xl p-6 text-center">
                 <p className="text-sm text-slate-400">
                     Los módulos de Recursos Humanos están en construcción. Las métricas aparecerán aquí
                     conforme se vayan habilitando Colaboradores, Asistencia, Vacaciones, Nómina y Reclutamiento.

@@ -58,7 +58,7 @@ function AuditRow({ entry }) {
 
   return (
     <>
-      <tr className="hover:bg-slate-700/40 cursor-pointer" onClick={() => setOpen((o) => !o)}>
+      <tr className="hover:bg-white/5 transition-colors cursor-pointer" onClick={() => setOpen((o) => !o)}>
         <td className="py-2.5 px-4 text-xs text-slate-500 whitespace-nowrap">
           {new Date(entry.created_at).toLocaleString('es-MX')}
         </td>
@@ -204,11 +204,11 @@ export default function Administracion() {
         </select>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
+      <div className="glass-panel rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
+              <tr className="bg-black/20 border-b border-white/10 text-xs font-semibold text-slate-400 uppercase">
                 <th className="py-3 px-4">Fecha</th>
                 <th className="py-3 px-4">Usuario</th>
                 <th className="py-3 px-4">Módulo</th>
@@ -218,7 +218,7 @@ export default function Administracion() {
                 <th className="py-3 px-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-700 text-sm">
+            <tbody className="divide-y divide-white/5 text-sm">
               {loading && logs.length === 0 ? (
                 <tr><td colSpan={7} className="text-center py-8 text-slate-500">Cargando bitácora...</td></tr>
               ) : filteredLogs.length === 0 ? (
@@ -231,7 +231,7 @@ export default function Administracion() {
         </div>
 
         {hasMore && !loading && filteredLogs.length > 0 && (
-          <div className="p-3 border-t border-slate-700 text-center">
+          <div className="p-3 border-t border-white/10 text-center">
             <button
               onClick={() => { const next = page + 1; setPage(next); loadLogs(next); }}
               className="text-sm font-medium text-sky-400 hover:text-sky-300"

@@ -313,7 +313,7 @@ export default function IpManagement() {
       </div>
 
       {/* Selector de Segmento y Filtros */}
-      <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4 justify-between items-center">
+      <div className="glass-panel p-4 rounded-xl flex flex-col sm:flex-row gap-4 justify-between items-center">
         <form onSubmit={handleSegmentChange} className="flex items-center gap-2 w-full sm:w-auto">
           <label className="text-sm font-semibold text-slate-300 whitespace-nowrap">Red / Segmento:</label>
           <input
@@ -458,13 +458,13 @@ export default function IpManagement() {
 
       {/* Tabla Interactiva de IPs (vista clásica) */}
       {view === 'table' && (
-      <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
+      <div className="glass-panel rounded-xl overflow-hidden">
         {loading ? (
           <div className="p-8 text-center text-slate-500">Generando plantilla del segmento {segment}.X...</div>
         ) : (
           <div className="overflow-x-auto max-h-[600px]">
             <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 bg-slate-900 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase z-10">
+              <thead className="sticky top-0 bg-slate-900 border-b border-white/10 text-xs font-semibold text-slate-400 uppercase z-10">
                 <tr>
                   <th className="py-3 px-4">Dirección IP</th>
                   <th className="py-3 px-4">Tipo Dispositivo</th>
@@ -474,9 +474,9 @@ export default function IpManagement() {
                   <th className="py-3 px-4 text-center">Acción</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-700 text-sm">
+              <tbody className="divide-y divide-white/5 text-sm">
                 {filteredIps.map((row) => (
-                  <tr key={row.ip_address} className="hover:bg-slate-700/40">
+                  <tr key={row.ip_address} className="hover:bg-white/5 transition-colors">
                     <td className="py-2 px-4 font-mono font-bold text-slate-100">{row.ip_address}</td>
                     
                     <td className="py-2 px-4">
@@ -682,7 +682,7 @@ export default function IpManagement() {
       {/* Modal de Gestión de Dominios */}
       {isDomainModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="bg-slate-800 rounded-xl shadow-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-700">
+          <div className="glass-modal rounded-xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
             
             {/* Header Modal */}
             <div className="px-6 py-4 bg-indigo-600 text-white flex justify-between items-center">
@@ -793,7 +793,7 @@ export default function IpManagement() {
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse text-xs">
-                      <thead className="bg-slate-900/60 border-b border-slate-700 font-semibold text-slate-400">
+                      <thead className="bg-black/20 border-b border-white/10 font-semibold text-slate-400">
                         <tr>
                           <th className="py-2.5 px-3">Dominio</th>
                           <th className="py-2.5 px-3">Proveedor Host</th>
@@ -804,9 +804,9 @@ export default function IpManagement() {
                           <th className="py-2.5 px-3 text-center">Acciones</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-slate-700">
+                      <tbody className="divide-y divide-white/5">
                         {domains.map((d) => (
-                          <tr key={d.id} className="hover:bg-slate-700/40">
+                          <tr key={d.id} className="hover:bg-white/5 transition-colors">
                             <td className="py-2 px-3 font-semibold text-indigo-400">{d.domain_name}</td>
                             <td className="py-2 px-3">{d.provider || '-'}</td>
                             <td className="py-2 px-3">{d.dns_provider || '-'}</td>
@@ -834,7 +834,7 @@ export default function IpManagement() {
             </div>
 
             {/* Footer Modal */}
-            <div className="px-6 py-3 bg-slate-900/60 border-t border-slate-700 flex justify-end">
+            <div className="px-6 py-3 bg-slate-900/60 border-t border-white/10 flex justify-end">
               <button
                 onClick={() => setIsDomainModalOpen(false)}
                 className="px-4 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-md text-xs font-semibold transition-colors"

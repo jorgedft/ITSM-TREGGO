@@ -84,7 +84,7 @@ export default function LicenseForm() {
         </h1>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-xl border border-slate-700 shadow-sm space-y-4">
+      <form onSubmit={handleSubmit} className="glass-panel p-6 rounded-xl space-y-4">
         <div>
           <label className="block text-sm font-medium text-slate-400 mb-1">Nombre del Software / Servicio</label>
           <input
@@ -153,7 +153,7 @@ export default function LicenseForm() {
           />
         </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-700">
+        <div className="flex justify-end gap-3 pt-4 border-t border-white/10">
           <button
             type="button"
             onClick={() => navigate('/licenses')}

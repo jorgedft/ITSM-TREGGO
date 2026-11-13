@@ -23,15 +23,15 @@
 
 /* Clases de utilidad para tablas de tickets e inventario */
 .table-container {
-  @apply w-full overflow-x-auto rounded-lg border border-slate-700 bg-slate-800 shadow-sm;
+  @apply w-full overflow-x-auto rounded-lg border border-white/10 bg-slate-800/40 backdrop-blur-xl shadow-xl shadow-black/10;
 }
 
 .table-app {
-  @apply min-w-full divide-y divide-slate-700 text-left text-xs sm:text-sm;
+  @apply min-w-full divide-y divide-white/5 text-left text-xs sm:text-sm;
 }
 
 .table-app thead {
-  @apply bg-slate-900/60 font-semibold text-slate-400 uppercase tracking-wider text-[11px];
+  @apply bg-black/20 font-semibold text-slate-400 uppercase tracking-wider text-[11px];
 }
 
 .table-app th {
@@ -39,7 +39,7 @@
 }
 
 .table-app td {
-  @apply px-3 py-2.5 sm:px-4 sm:py-3 whitespace-nowrap text-slate-300 border-t border-slate-700;
+  @apply px-3 py-2.5 sm:px-4 sm:py-3 whitespace-nowrap text-slate-300 border-t border-white/5;
 }
 
 /* Animación ligera para modales y flyouts */

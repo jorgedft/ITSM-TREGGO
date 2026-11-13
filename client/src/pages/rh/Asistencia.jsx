@@ -98,7 +98,7 @@ function MappingModal({ pending, employees, onCancel, onConfirm }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div className="glass-modal rounded-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center gap-2 mb-2">
                     <AlertTriangle className="text-amber-500" size={20} />
                     <h2 className="text-lg font-bold text-slate-100">Vincular colaboradores nuevos</h2>
@@ -129,7 +129,7 @@ function MappingModal({ pending, employees, onCancel, onConfirm }) {
                     ))}
                 </div>
 
-                <div className="flex justify-end gap-2 pt-5 border-t border-slate-700 mt-5">
+                <div className="flex justify-end gap-2 pt-5 border-t border-white/10 mt-5">
                     <button onClick={onCancel} className="btn-secondary">Cancelar</button>
                     <button onClick={() => onConfirm(choices)} className="btn-primary">Confirmar y continuar</button>
                 </div>
@@ -172,7 +172,7 @@ function ManualEntryModal({ employees, onClose, onSaved }) {
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-slate-800 border border-slate-700 rounded-xl shadow-lg max-w-lg w-full p-6">
+            <div className="glass-modal rounded-xl max-w-lg w-full p-6">
                 <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-bold text-slate-100">Registrar Incidencia</h2>
                     <button onClick={onClose} className="text-slate-500 hover:text-slate-300"><X size={20} /></button>
@@ -223,7 +223,7 @@ function ManualEntryModal({ employees, onClose, onSaved }) {
                         <textarea rows={2} className="input-field" value={form.notes}
                             onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))} />
                     </div>
-                    <div className="flex justify-end gap-2 pt-3 border-t border-slate-700">
+                    <div className="flex justify-end gap-2 pt-3 border-t border-white/10">
                         <button type="button" onClick={onClose} className="btn-secondary">Cancelar</button>
                         <button type="submit" disabled={saving} className="btn-primary">
                             {saving ? 'Guardando...' : 'Guardar'}
@@ -459,11 +459,11 @@ export default function Asistencia() {
                 </div>
             )}
 
-            <div className="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden">
+            <div className="glass-panel rounded-xl overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-slate-900/60 border-b border-slate-700 text-xs font-semibold text-slate-400 uppercase">
+                            <tr className="bg-black/20 border-b border-white/10 text-xs font-semibold text-slate-400 uppercase">
                                 <th className="py-3 px-4">Fecha</th>
                                 <th className="py-3 px-4">Colaborador</th>
                                 <th className="py-3 px-4">Entrada</th>
@@ -474,14 +474,14 @@ export default function Asistencia() {
                                 {canManageRH && <th className="py-3 px-4 text-right">Acciones</th>}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-700 text-sm">
+                        <tbody className="divide-y divide-white/5 text-sm">
                             {loading ? (
                                 <tr><td colSpan={8} className="text-center py-8 text-slate-500">Cargando...</td></tr>
                             ) : records.length === 0 ? (
                                 <tr><td colSpan={8} className="text-center py-8 text-slate-500">Sin registros en este rango.</td></tr>
                             ) : (
                                 records.map((r) => (
-                                    <tr key={r.id} className="hover:bg-slate-700/40">
+                                    <tr key={r.id} className="hover:bg-white/5 transition-colors">
                                         <td className="py-3 px-4 text-xs text-slate-400">{r.date}</td>
                                         <td className="py-3 px-4 font-medium text-slate-100">{r.employee?.full_name || '—'}</td>
                                         <td className="py-3 px-4 font-mono text-xs">{r.check_in || '—'}</td>

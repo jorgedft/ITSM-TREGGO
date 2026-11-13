@@ -69,9 +69,9 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-slate-800 w-full max-w-lg rounded-xl shadow-xl border border-slate-700 overflow-hidden animate-fade-in">
+      <div className="glass-modal w-full max-w-lg rounded-xl overflow-hidden animate-fade-in">
         {/* Encabezado del Modal */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700 bg-slate-900/60">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-slate-900/60">
           <h2 className="text-lg font-semibold text-slate-100">Editar Licencia</h2>
           <button
             onClick={onClose}
@@ -173,7 +173,7 @@ export function EditLicenseModal({ license, isOpen, onClose, onSuccess }) {
           </div>
 
           {/* Botones de Acción */}
-          <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-700">
+          <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
             <button
               type="button"
               onClick={onClose}
