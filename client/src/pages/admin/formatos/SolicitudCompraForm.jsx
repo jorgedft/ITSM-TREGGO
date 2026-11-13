@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Plus, Trash2, Save, FileDown, FileSpreadsheet, Printer, Pencil, X, ClipboardList,
+  Plus, Trash2, Save, FileDown, FileSpreadsheet, Printer, Pencil, X, ClipboardList, Eye,
 } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
 import { useAuth } from '../../../context/AuthContext';
 import { Spinner } from '../../../components/ui/Spinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { renderSolicitudCompraPDF, printPdf, formatCurrency, formatDateEs, PAYMENT_METHOD_LABELS } from './pdfTemplates';
-import { exportSolicitudCompraFromTemplate } from './xlsxTemplateSolicitud';
+import { exportSolicitudCompraExcel, MAX_TEMPLATE_ITEMS } from './xlsxTemplates';
+import PdfPreviewModal from './PdfPreviewModal';
 
 const PAYMENT_METHODS = Object.entries(PAYMENT_METHOD_LABELS);
 
@@ -49,6 +50,7 @@ export default function SolicitudCompraForm() {
   const [saving, setSaving] = useState(false);
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [preview, setPreview] = useState(null);
 
   const loadRequests = useCallback(async () => {
     setLoading(true);
@@ -161,10 +163,15 @@ export default function SolicitudCompraForm() {
 
   const handleExportPDF = (req) => renderSolicitudCompraPDF(req).save(`solicitud-compra-${req.folio || req.id.slice(0, 8)}.pdf`);
   const handlePrint = (req) => printPdf(renderSolicitudCompraPDF(req));
+  const fileBase = (req) => `solicitud-compra-${req.folio || (req.id ? req.id.slice(0, 8) : 'borrador')}`;
   const handleExportExcel = (req) => {
-    exportSolicitudCompraFromTemplate(req, `solicitud-compra-${req.folio || req.id.slice(0, 8)}.xlsx`)
+    if ((req.items || []).length > MAX_TEMPLATE_ITEMS) {
+      alert(`El formato de Excel admite máximo ${MAX_TEMPLATE_ITEMS} partidas; las adicionales no se incluirán (el PDF sí las muestra todas).`);
+    }
+    exportSolicitudCompraExcel(req, `${fileBase(req)}.xlsx`)
       .catch((err) => alert('Error al exportar Excel: ' + err.message));
   };
+  const buildPreviewDoc = useCallback(() => renderSolicitudCompraPDF(preview), [preview]);
 
   return (
     <div className="space-y-6">
@@ -331,6 +338,9 @@ export default function SolicitudCompraForm() {
         </div>
 
         <div className="flex justify-end gap-2 pt-2 border-t border-slate-700">
+          <button type="button" onClick={() => setPreview({ ...form, iva, subtotal, total })} className="btn-secondary flex items-center gap-2">
+            <Eye size={15} /> Vista previa
+          </button>
           <button type="submit" disabled={saving} className="btn-primary flex items-center gap-2">
             <Save size={15} /> {saving ? 'Guardando...' : editingId ? 'Guardar cambios' : 'Guardar solicitud'}
           </button>
@@ -375,6 +385,7 @@ export default function SolicitudCompraForm() {
                     </td>
                     <td className="py-2.5 px-3">
                       <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => setPreview(req)} title="Vista previa" className="text-slate-500 hover:text-sky-400"><Eye size={14} /></button>
                         <button onClick={() => handleEdit(req)} title="Editar" className="text-slate-500 hover:text-sky-400"><Pencil size={14} /></button>
                         <button onClick={() => handleExportPDF(req)} title="Exportar PDF" className="text-slate-500 hover:text-red-400"><FileDown size={14} /></button>
                         <button onClick={() => handleExportExcel(req)} title="Exportar Excel" className="text-slate-500 hover:text-emerald-400"><FileSpreadsheet size={14} /></button>
@@ -389,6 +400,16 @@ export default function SolicitudCompraForm() {
           </div>
         )}
       </div>
+
+      {preview && (
+        <PdfPreviewModal
+          title="Solicitud de Compra"
+          filename={fileBase(preview)}
+          buildDoc={buildPreviewDoc}
+          onExportExcel={() => handleExportExcel(preview)}
+          onClose={() => setPreview(null)}
+        />
+      )}
     </div>
   );
 }

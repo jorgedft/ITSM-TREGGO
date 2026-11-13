@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  Plus, Trash2, Save, FileDown, FileSpreadsheet, Printer, Pencil, X, FileText,
+  Plus, Trash2, Save, FileDown, FileSpreadsheet, Printer, Pencil, X, FileText, Eye,
 } from 'lucide-react';
 import { supabase } from '../../../services/supabase';
 import { Spinner } from '../../../components/ui/Spinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { renderOrdenCompraPDF, printPdf, formatCurrency, formatDateEs } from './pdfTemplates';
-import { exportOrdenCompraExcel } from './excelTemplates';
+import { exportOrdenCompraExcel, MAX_TEMPLATE_ITEMS } from './xlsxTemplates';
+import PdfPreviewModal from './PdfPreviewModal';
 
 const STATUS_META = {
   pendiente: 'bg-amber-950 text-amber-400 border-amber-800',
@@ -46,6 +47,7 @@ export default function OrdenCompraForm() {
   const [saving, setSaving] = useState(false);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [preview, setPreview] = useState(null);
 
   const loadOrders = useCallback(async () => {
     setLoading(true);
@@ -162,7 +164,15 @@ export default function OrdenCompraForm() {
 
   const handleExportPDF = (ord) => renderOrdenCompraPDF(ord).save(`orden-compra-${ord.order_number || ord.folio || ord.id.slice(0, 8)}.pdf`);
   const handlePrint = (ord) => printPdf(renderOrdenCompraPDF(ord));
-  const handleExportExcel = (ord) => exportOrdenCompraExcel(ord, `orden-compra-${ord.order_number || ord.folio || ord.id.slice(0, 8)}.xlsx`);
+  const fileBase = (ord) => `orden-compra-${ord.order_number || ord.folio || (ord.id ? ord.id.slice(0, 8) : 'borrador')}`;
+  const handleExportExcel = (ord) => {
+    if ((ord.items || []).length > MAX_TEMPLATE_ITEMS) {
+      alert(`El formato de Excel admite máximo ${MAX_TEMPLATE_ITEMS} partidas; las adicionales no se incluirán (el PDF sí las muestra todas).`);
+    }
+    exportOrdenCompraExcel(ord, `${fileBase(ord)}.xlsx`)
+      .catch((err) => alert('Error al exportar Excel: ' + err.message));
+  };
+  const buildPreviewDoc = useCallback(() => renderOrdenCompraPDF(preview), [preview]);
 
   return (
     <div className="space-y-6">
@@ -324,6 +334,9 @@ export default function OrdenCompraForm() {
         </div>
 
         <div className="flex justify-end gap-2 pt-2 border-t border-slate-700">
+          <button type="button" onClick={() => setPreview({ ...form, subtotal, iva, total })} className="btn-secondary flex items-center gap-2">
+            <Eye size={15} /> Vista previa
+          </button>
           <button type="submit" disabled={saving} className="btn-primary flex items-center gap-2">
             <Save size={15} /> {saving ? 'Guardando...' : editingId ? 'Guardar cambios' : 'Guardar orden'}
           </button>
@@ -368,6 +381,7 @@ export default function OrdenCompraForm() {
                     </td>
                     <td className="py-2.5 px-3">
                       <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => setPreview(ord)} title="Vista previa" className="text-slate-500 hover:text-sky-400"><Eye size={14} /></button>
                         <button onClick={() => handleEdit(ord)} title="Editar" className="text-slate-500 hover:text-sky-400"><Pencil size={14} /></button>
                         <button onClick={() => handleExportPDF(ord)} title="Exportar PDF" className="text-slate-500 hover:text-red-400"><FileDown size={14} /></button>
                         <button onClick={() => handleExportExcel(ord)} title="Exportar Excel" className="text-slate-500 hover:text-emerald-400"><FileSpreadsheet size={14} /></button>
@@ -382,6 +396,16 @@ export default function OrdenCompraForm() {
           </div>
         )}
       </div>
+
+      {preview && (
+        <PdfPreviewModal
+          title="Orden de Compra"
+          filename={fileBase(preview)}
+          buildDoc={buildPreviewDoc}
+          onExportExcel={() => handleExportExcel(preview)}
+          onClose={() => setPreview(null)}
+        />
+      )}
     </div>
   );
 }
