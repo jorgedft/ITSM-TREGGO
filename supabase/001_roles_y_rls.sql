@@ -116,6 +116,16 @@ begin
 end $$;
 
 
+-- 3.5 Asegura que exista tu fila en profiles (por si el trigger de
+--     auth.users -> profiles no llegó a correr a tiempo al registrarte)
+--     y te asigna el rol de admin. Ajusta el correo si no es el tuyo.
+insert into public.profiles (id, full_name, email, role)
+select id, coalesce(raw_user_meta_data->>'full_name', email), email, 'admin'
+from auth.users
+where email = 'jorge.daniel@treggo.mx'
+on conflict (id) do update set role = 'admin';
+
+
 -- 4. Helpdesk (tickets): módulo compartido, no exclusivo de TI.
 --    Cualquier autenticado puede crear tickets y ver/comentar los suyos;
 --    admin y ti pueden gestionar todos.

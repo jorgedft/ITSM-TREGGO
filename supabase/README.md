@@ -1,7 +1,15 @@
 # Scripts SQL — Supabase
 
+> 📄 **¿Necesitas reconstruir el proyecto desde cero** (perdiste acceso a la cuenta de
+> Supabase original)? Lee primero [`SCHEMA.md`](./SCHEMA.md) — documenta toda la
+> estructura de la base de datos (incluidas las tablas que nunca tuvieron un script
+> aquí) y señala un par de inconsistencias encontradas en el código que conviene
+> conocer antes de reconstruir. El script `000_schema_bootstrap.sql` recrea esas
+> tablas "sin migración"; corre ese primero, y solo si estás partiendo de cero.
+
 Corre los scripts **en orden** en el SQL Editor de Supabase (dashboard → SQL Editor → New query):
 
+0. `000_schema_bootstrap.sql` — **solo si reconstruyes el proyecto desde cero**: recrea `profiles`, `assets`, `phones`, `licenses`, `network_devices`, `ip_addresses`, `domains`, `maintenance_logs`, `maintenance_workflows`, `responsivas`, `credentials`, `tickets`, `ticket_comments` y el bucket `workflow-attachments` (todo esto se creó originalmente a mano en el Table Editor y nunca tuvo script en este repo). Si tu base de datos original sigue intacta, **no lo corras ahí**. Dos de sus bloques dependen de 001 y 003 respectivamente y se auto-omiten con un aviso si los corres antes — vuelve a correr este script una vez más (es idempotente) después de llegar al 003 para completarlos.
 1. `001_roles_y_rls.sql` — crea la función `current_user_role()` y las políticas RLS base.
 2. `002_ajustar_check_de_role.sql` — amplía el CHECK de `profiles.role` para aceptar `admin`/`ti`/`rh` (solo hace falta una vez, ya corrido).
 3. `003_tabla_employees.sql` — agrega los campos del módulo Colaboradores a la tabla `employees`.
