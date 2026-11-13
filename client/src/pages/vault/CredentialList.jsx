@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
-import { 
-  Key, Plus, Search, Eye, EyeOff, Copy, Check, 
-  ExternalLink, Trash2, Edit, ShieldCheck, RefreshCw 
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Key, Plus, Search, Eye, EyeOff, Copy, Check,
+  ExternalLink, Trash2, Edit, ShieldCheck, RefreshCw, DownloadCloud, UploadCloud
 } from "lucide-react";
 import { supabase } from "../../services/supabase";
 import { useRole } from "../../hooks/useRole";
@@ -9,6 +9,17 @@ import { Spinner } from "../../components/ui/Spinner";
 import { EmptyState } from "../../components/ui/EmptyState";
 
 const CATEGORIES = ["Todas", "Servidores", "Cuentas Web", "Redes / Routers", "Software / Licencias", "Bases de Datos", "General"];
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
 
 export default function CredentialList() {
   const { canManageTI } = useRole();
@@ -21,6 +32,11 @@ export default function CredentialList() {
   // Estado para visibilidad de contraseñas individuales
   const [showPassword, setShowPassword] = useState({});
   const [copiedId, setCopiedId] = useState(null);
+
+  // Respaldo / restauración de la bóveda completa
+  const [backingUp, setBackingUp] = useState(false);
+  const [restoring, setRestoring] = useState(false);
+  const backupInputRef = useRef(null);
 
   // Estados del Modal (Crear / Editar)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,6 +78,64 @@ export default function CredentialList() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Respaldo completo de la bóveda: descarga TODAS las credenciales (sin
+  // filtros de búsqueda/categoría) en un .json que puede volver a importarse
+  // tal cual con "Restaurar respaldo". Guarda este archivo en un lugar seguro
+  // (gestor de contraseñas, disco cifrado) — contiene las claves en texto.
+  const handleBackup = async () => {
+    setBackingUp(true);
+    try {
+      const { data, error } = await supabase
+        .from("credentials")
+        .select("id, title, category, username, password_hash, url_link, assigned_to, notes, is_encrypted, created_at")
+        .order("title", { ascending: true });
+      if (error) throw error;
+
+      const payload = {
+        type: "itsm-treggo-bovedas-backup",
+        generated_at: new Date().toISOString(),
+        count: data.length,
+        credentials: data,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      downloadBlob(blob, `respaldo-bovedas-${new Date().toISOString().slice(0, 10)}.json`);
+    } catch (err) {
+      alert("Error al generar el respaldo: " + err.message);
+    } finally {
+      setBackingUp(false);
+    }
+  };
+
+  // Restaura un respaldo generado con "Descargar respaldo". Usa upsert por
+  // "id", así que restaurar el mismo archivo varias veces no duplica nada:
+  // si la credencial ya existe la actualiza, si no, la vuelve a crear.
+  const handleRestoreFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setRestoring(true);
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      const rows = Array.isArray(parsed) ? parsed : parsed.credentials;
+      if (!Array.isArray(rows) || rows.length === 0) {
+        alert("El archivo no tiene credenciales reconocibles.");
+        return;
+      }
+      if (!window.confirm(`¿Restaurar ${rows.length} credencial(es) desde este respaldo? Las que ya existan (mismo id) se sobrescribirán.`)) return;
+
+      const { error } = await supabase.from("credentials").upsert(rows, { onConflict: "id" });
+      if (error) throw error;
+
+      alert(`Respaldo restaurado: ${rows.length} credencial(es).`);
+      loadData();
+    } catch (err) {
+      alert("Error al restaurar el respaldo: " + err.message);
+    } finally {
+      setRestoring(false);
+      if (backupInputRef.current) backupInputRef.current.value = "";
+    }
+  };
 
   // Copiar al portapapeles
   const handleCopy = (text, id) => {
@@ -169,9 +243,28 @@ export default function CredentialList() {
           <p className="text-xs text-slate-400">Administración centralizada de credenciales y accesos de TI</p>
         </div>
         {canManageTI && (
-          <button onClick={() => handleOpenModal()} className="btn-primary flex items-center gap-2">
-            <Plus size={16} /> Nueva Credencial
-          </button>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={handleBackup}
+              disabled={backingUp}
+              title="Descarga un .json con todas las credenciales, para guardarlo en un lugar seguro fuera del sistema"
+              className="btn-secondary flex items-center gap-2 text-sm disabled:opacity-50"
+            >
+              <DownloadCloud size={16} /> {backingUp ? "Generando..." : "Descargar respaldo"}
+            </button>
+            <button
+              onClick={() => backupInputRef.current?.click()}
+              disabled={restoring}
+              title="Restaura credenciales desde un .json generado con 'Descargar respaldo'"
+              className="btn-secondary flex items-center gap-2 text-sm disabled:opacity-50"
+            >
+              <UploadCloud size={16} /> {restoring ? "Restaurando..." : "Restaurar respaldo"}
+            </button>
+            <input ref={backupInputRef} type="file" accept=".json" onChange={handleRestoreFile} className="hidden" />
+            <button onClick={() => handleOpenModal()} className="btn-primary flex items-center gap-2">
+              <Plus size={16} /> Nueva Credencial
+            </button>
+          </div>
         )}
       </div>
 
