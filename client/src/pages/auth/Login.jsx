@@ -22,28 +22,34 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center
-                        bg-gradient-to-br from-brand-50 via-white to-brand-100 px-4">
+        <div className="relative min-h-screen flex items-center justify-center bg-slate-900 px-4 overflow-hidden">
+            {/* Fondo decorativo ambiental (igual que el Dashboard) */}
+            <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
+                <div className="absolute -top-24 -left-24 w-96 h-96 bg-sky-600/20 rounded-full blur-3xl" />
+                <div className="absolute top-1/3 -right-24 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl" />
+            </div>
+
             <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+                <div className="bg-slate-800/40 backdrop-blur-xl rounded-2xl shadow-xl border border-white/10 p-8">
                     <div className="text-center mb-8">
                         {/* Contenedor del Logo de la Empresa */}
                         <div className="inline-flex items-center justify-center mb-4">
-                            <img 
-                                src="/logo.png" 
-                                alt="Logo Empresa" 
-                                className="h-16 w-auto object-contain" 
+                            <img
+                                src="/logo.png"
+                                alt="Logo Empresa"
+                                className="h-16 w-auto object-contain"
                             />
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-900">ITSM — Gestión TI</h1>
-                        <p className="text-gray-500 text-sm mt-1">
+                        <h1 className="text-2xl font-bold text-slate-100">ITSM — Gestión TI</h1>
+                        <p className="text-slate-400 text-sm mt-1">
                             Departamento de Tecnología
                         </p>
                     </div>
 
                     {apiError && (
-                        <div className="flex items-center gap-2 bg-red-50 border border-red-200
-                                        text-red-700 px-4 py-3 rounded-xl mb-5 text-sm">
+                        <div className="flex items-center gap-2 bg-red-950/60 border border-red-800
+                                        text-red-400 px-4 py-3 rounded-xl mb-5 text-sm">
                             <AlertCircle size={16} className="shrink-0" />
                             {apiError}
                         </div>
@@ -54,13 +60,13 @@ export default function Login() {
                             <label className="label">Correo electrónico</label>
                             <div className="relative">
                                 <Mail size={15}
-                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                                 <input type="email" className="input-field pl-9"
                                     placeholder="usuario@empresa.com"
                                     {...register('email', { required: 'Requerido' })} />
                             </div>
                             {errors.email && (
-                                <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+                                <p className="text-xs text-red-400 mt-1">{errors.email.message}</p>
                             )}
                         </div>
 
@@ -68,19 +74,19 @@ export default function Login() {
                             <label className="label">Contraseña</label>
                             <div className="relative">
                                 <Lock size={15}
-                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
                                 <input type="password" className="input-field pl-9"
                                     placeholder="••••••••"
                                     {...register('password', { required: 'Requerido' })} />
                             </div>
                             {errors.password && (
-                                <p className="text-xs text-red-500 mt-1">{errors.password.message}</p>
+                                <p className="text-xs text-red-400 mt-1">{errors.password.message}</p>
                             )}
                         </div>
 
                         <div className="flex justify-end">
                             <Link to="/reset-password"
-                                className="text-xs text-brand-600 hover:underline">
+                                className="text-xs text-sky-400 hover:text-sky-300 hover:underline">
                                 ¿Olvidaste tu contraseña?
                             </Link>
                         </div>
@@ -93,7 +99,7 @@ export default function Login() {
                         </button>
                     </form>
                 </div>
-                <p className="text-center text-xs text-gray-400 mt-6">
+                <p className="text-center text-xs text-slate-500 mt-6">
                     © {new Date().getFullYear()} Departamento de TI TREGGO — Todos los derechos reservados
                 </p>
             </div>
