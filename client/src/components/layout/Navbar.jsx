@@ -89,10 +89,19 @@ export function Navbar({ onMenuToggle }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Atajo de teclado para enfocar la búsqueda al presionar "/"
+  // Atajo de teclado para enfocar la búsqueda al presionar "/" — pero solo
+  // si no se está escribiendo ya en otro campo (input/textarea/select o
+  // contenteditable), para no robarle el foco a formularios en cualquier
+  // parte del sistema cada vez que alguien teclea "/".
   useEffect(() => {
     function handleKeyDown(e) {
-      if (e.key === "/" && document.activeElement !== searchInputRef.current) {
+      const target = e.target;
+      const isTypingElsewhere =
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT" ||
+        target?.isContentEditable;
+      if (e.key === "/" && !isTypingElsewhere && document.activeElement !== searchInputRef.current) {
         e.preventDefault();
         searchInputRef.current?.focus();
       }

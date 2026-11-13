@@ -34,7 +34,7 @@ function emptyForm(fullName) {
     bank_details: '',
     payment_date: '',
     items: [emptyItem()],
-    iva: 0,
+    apply_iva: true,
     other_tax: 0,
     required_date: '',
     justification: '',
@@ -83,7 +83,8 @@ export default function SolicitudCompraForm() {
   const removeItem = (idx) => setForm((f) => ({ ...f, items: f.items.filter((_, i) => i !== idx) }));
 
   const subtotal = form.items.reduce((s, it) => s + (Number(it.quantity) || 0) * (Number(it.unit_cost) || 0), 0);
-  const total = subtotal + (Number(form.iva) || 0) + (Number(form.other_tax) || 0);
+  const iva = form.apply_iva ? subtotal * 0.16 : 0;
+  const total = subtotal + iva + (Number(form.other_tax) || 0);
 
   const resetForm = () => {
     setForm(emptyForm(profile?.full_name));
@@ -94,11 +95,12 @@ export default function SolicitudCompraForm() {
     e.preventDefault();
     setSaving(true);
     try {
+      const { apply_iva, ...rest } = form;
       const payload = {
-        ...form,
+        ...rest,
         subtotal,
         total,
-        iva: Number(form.iva) || 0,
+        iva,
         other_tax: Number(form.other_tax) || 0,
         requesting_area: form.requesting_area || null,
         cost_center: form.cost_center || null,
@@ -136,7 +138,7 @@ export default function SolicitudCompraForm() {
       bank_details: req.bank_details || '',
       payment_date: req.payment_date || '',
       items: req.items?.length ? req.items : [emptyItem()],
-      iva: req.iva || 0,
+      apply_iva: Number(req.iva) > 0,
       other_tax: req.other_tax || 0,
       required_date: req.required_date || '',
       justification: req.justification || '',
@@ -293,8 +295,16 @@ export default function SolicitudCompraForm() {
             <span className="font-semibold text-slate-200 w-28 text-right">{formatCurrency(subtotal)}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-slate-400 w-32 text-right">IVA:</span>
-            <input type="number" step="any" className="input-field text-xs py-1 w-28 text-right" value={form.iva} onChange={(e) => updateField('iva', e.target.value)} />
+            <label className="text-slate-400 w-32 text-right flex items-center justify-end gap-1.5 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={form.apply_iva}
+                onChange={(e) => updateField('apply_iva', e.target.checked)}
+                className="accent-sky-500"
+              />
+              IVA (16%):
+            </label>
+            <span className="font-semibold text-slate-200 w-28 text-right">{formatCurrency(iva)}</span>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-slate-400 w-32 text-right">Otro impuesto:</span>
