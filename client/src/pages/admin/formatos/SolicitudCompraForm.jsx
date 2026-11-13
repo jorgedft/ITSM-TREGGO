@@ -7,7 +7,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { Spinner } from '../../../components/ui/Spinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { renderSolicitudCompraPDF, printPdf, formatCurrency, formatDateEs, PAYMENT_METHOD_LABELS } from './pdfTemplates';
-import { exportSolicitudCompraExcel } from './excelTemplates';
+import { exportSolicitudCompraFromTemplate } from './xlsxTemplateSolicitud';
 
 const PAYMENT_METHODS = Object.entries(PAYMENT_METHOD_LABELS);
 
@@ -161,7 +161,10 @@ export default function SolicitudCompraForm() {
 
   const handleExportPDF = (req) => renderSolicitudCompraPDF(req).save(`solicitud-compra-${req.folio || req.id.slice(0, 8)}.pdf`);
   const handlePrint = (req) => printPdf(renderSolicitudCompraPDF(req));
-  const handleExportExcel = (req) => exportSolicitudCompraExcel(req, `solicitud-compra-${req.folio || req.id.slice(0, 8)}.xlsx`);
+  const handleExportExcel = (req) => {
+    exportSolicitudCompraFromTemplate(req, `solicitud-compra-${req.folio || req.id.slice(0, 8)}.xlsx`)
+      .catch((err) => alert('Error al exportar Excel: ' + err.message));
+  };
 
   return (
     <div className="space-y-6">

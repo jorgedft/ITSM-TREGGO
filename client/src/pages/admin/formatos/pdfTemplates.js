@@ -1,5 +1,8 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { TREGGO_LOGO_PNG } from './logoBase64';
+
+const LOGO_ASPECT = 1583 / 114; // ancho/alto real del logo
 
 const NAVY = [30, 41, 59];
 const ACCENT = [37, 99, 235];
@@ -32,29 +35,31 @@ export function computeItemsSubtotal(items, qtyField, costField) {
 }
 
 function drawHeader(doc, title, folio) {
+  // Logo real (fondo transparente) sobre la banda blanca superior, antes del
+  // banner de color — el logo tiene texto oscuro, así que no se dibuja sobre
+  // fondo navy (quedaría ilegible).
+  const logoW = 55;
+  const logoH = logoW / LOGO_ASPECT;
+  doc.addImage(TREGGO_LOGO_PNG, 'PNG', 14, 3.5, logoW, logoH);
+
   doc.setFillColor(...NAVY);
-  doc.rect(0, 0, 210, 22, 'F');
+  doc.rect(0, 12, 210, 18, 'F');
   doc.setFillColor(...ACCENT);
-  doc.rect(0, 22, 210, 1.3, 'F');
+  doc.rect(0, 30, 210, 1.3, 'F');
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(15);
+  doc.setFontSize(13);
   doc.setTextColor(255, 255, 255);
-  doc.text('TREGGO', 14, 13);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10.5);
-  doc.setTextColor(203, 213, 225);
-  doc.text(`|  ${title}`, 38, 13);
+  doc.text(title, 14, 23);
 
   if (folio) {
     doc.setFontSize(8.5);
     doc.setTextColor(203, 213, 225);
-    doc.text(`Folio: ${folio}`, 196, 9, { align: 'right' });
+    doc.text(`Folio: ${folio}`, 196, 18, { align: 'right' });
   }
   const nowStr = new Date().toLocaleString('es-MX');
   doc.setFontSize(7.5);
-  doc.text(`Generado: ${nowStr}`, 196, 14, { align: 'right' });
+  doc.text(`Generado: ${nowStr}`, 196, 25, { align: 'right' });
 }
 
 function drawFooter(doc, text) {
@@ -161,7 +166,7 @@ export function renderSolicitudCompraPDF(data) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   drawHeader(doc, 'Solicitud de Compra', data.folio);
 
-  let y = drawFieldGrid(doc, 30, [
+  let y = drawFieldGrid(doc, 37, [
     ['Fecha de solicitud', formatDateEs(data.request_date)],
     ['Área solicitante', data.requesting_area],
     ['Solicitante', data.requester],
@@ -234,7 +239,7 @@ export function renderOrdenCompraPDF(data) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   drawHeader(doc, 'Orden de Compra', data.folio || data.order_number);
 
-  let y = drawFieldGrid(doc, 30, [
+  let y = drawFieldGrid(doc, 37, [
     ['Fecha de solicitud', formatDateEs(data.request_date)],
     ['Estatus', data.status],
     ['Solicitante', data.requester],
