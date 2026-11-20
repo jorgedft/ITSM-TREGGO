@@ -17,9 +17,6 @@ import TicketList from './pages/helpdesk/TicketList';
 import TicketForm from './pages/helpdesk/TicketForm';
 import TicketDetail from './pages/helpdesk/TicketDetail';
 
-import ResponsivaList from './pages/responsivas/ResponsivaList';
-import ResponsivaForm from './pages/responsivas/ResponsivaForm';
-
 import LicenseList from './pages/licencias/LicenseList';
 import LicenseForm from './pages/licencias/LicenseForm';
 import MaintenanceLog from './pages/licencias/MaintenanceLog';
@@ -35,6 +32,7 @@ import Nominas from './pages/rh/Nominas';
 import Reclutamiento from './pages/rh/Reclutamiento';
 import Administracion from './pages/admin/Administracion';
 import FormatosFacturas from './pages/admin/FormatosFacturas';
+import RegistrosTI from './pages/admin/RegistrosTI';
 import { RoleRoute } from './components/layout/RoleRoute';
 
 import NotFound from './pages/NotFound';
@@ -72,9 +70,6 @@ export default function App() {
               <Route path="tickets/new" element={<TicketForm />} />
               <Route path="tickets/:id" element={<TicketDetail />} />
 
-              <Route path="responsivas" element={<RoleRoute><ResponsivaList /></RoleRoute>} />
-              <Route path="responsivas/new" element={<RoleRoute><ResponsivaForm /></RoleRoute>} />
-
               <Route path="licenses" element={<RoleRoute><LicenseList /></RoleRoute>} />
 <Route path="licenses/new" element={<RoleRoute><LicenseForm /></RoleRoute>} />
 <Route path="network" element={<RoleRoute><IpManagement /></RoleRoute>} />
@@ -83,6 +78,7 @@ export default function App() {
 
               <Route path="admin" element={<RoleRoute><Administracion /></RoleRoute>} />
               <Route path="admin/formatos" element={<RoleRoute><FormatosFacturas /></RoleRoute>} />
+              <Route path="admin/registros-ti" element={<RoleRoute><RegistrosTI /></RoleRoute>} />
             </Route>
           </Route>
 

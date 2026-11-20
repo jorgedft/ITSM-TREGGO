@@ -26,6 +26,7 @@ const TABLE_LABELS = {
   purchase_requests: 'Solicitudes de Compra',
   purchase_orders: 'Órdenes de Compra',
   document_vault: 'Bóveda de Facturas',
+  it_records: 'Registros de TI',
 };
 
 const ACTION_META = {

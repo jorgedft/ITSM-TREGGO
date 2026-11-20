@@ -38,9 +38,9 @@ function drawHeader(doc, title, folio) {
   // Logo real (fondo transparente) sobre la banda blanca superior, antes del
   // banner de color — el logo tiene texto oscuro, así que no se dibuja sobre
   // fondo navy (quedaría ilegible).
-  const logoW = 55;
+  const logoW = 110;
   const logoH = logoW / LOGO_ASPECT;
-  doc.addImage(TREGGO_LOGO_PNG, 'PNG', 14, 3.5, logoW, logoH);
+  doc.addImage(TREGGO_LOGO_PNG, 'PNG', 14, 3.2, logoW, logoH);
 
   doc.setFillColor(...NAVY);
   doc.rect(0, 12, 210, 18, 'F');
@@ -302,6 +302,116 @@ export function renderOrdenCompraPDF(data) {
 
   drawSignatures(doc, y, [data.elaborated_by ? `Elaboró: ${data.elaborated_by}` : 'Elaboró (Compras)', data.authorized_by ? `Autorizó: ${data.authorized_by}` : 'Autorizó (Dirección)']);
   drawFooter(doc, 'ITSM Sistema de Gestión de TI - Formato de Orden de Compra');
+  return doc;
+}
+
+// ---------- Formatos genéricos de gestión de TI (Registros de TI) ----------
+
+const PAGE_LIMIT = 262; // y máximo antes de saltar de página (el pie está en 283)
+
+function drawSignaturesN(doc, y, labels) {
+  const slot = 182 / labels.length;
+  doc.setDrawColor(148, 163, 184);
+  doc.setLineWidth(0.3);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...MUTED);
+  labels.forEach((label, i) => {
+    const x = 14 + i * slot;
+    doc.line(x, y, x + slot - 10, y);
+    doc.text(label, x, y + 4, { maxWidth: slot - 10 });
+  });
+}
+
+// Texto largo que continúa en la página siguiente cuando hace falta.
+function drawLongText(doc, state, label, text, width = 182) {
+  const { y: startY } = state;
+  let y = startY;
+  if (y + 16 > PAGE_LIMIT) { doc.addPage(); y = 20; }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...LABEL);
+  doc.text(label.toUpperCase(), 14, y);
+  y += 4.8;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.5);
+  doc.setTextColor(...INK);
+  const lines = doc.splitTextToSize(String(text || '-') || '-', width);
+  lines.forEach((line) => {
+    if (y > PAGE_LIMIT) { doc.addPage(); y = 20; }
+    doc.text(line, 14, y);
+    y += 4.4;
+  });
+  state.y = y + 4;
+}
+
+export function renderRecordPDF(format, record) {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const data = record.data || {};
+  const statusLabel = (format.statuses.find((s) => s.value === record.status) || {}).label || record.status || '-';
+  drawHeader(doc, format.pdfTitle, record.folio);
+
+  const state = { y: 37 };
+  const shortBuffer = [];
+  const flushShort = () => {
+    for (let i = 0; i < shortBuffer.length; i += 2) {
+      if (state.y + 18 > PAGE_LIMIT) { doc.addPage(); state.y = 20; }
+      state.y = drawFieldGrid(doc, state.y, shortBuffer.slice(i, i + 2));
+    }
+    shortBuffer.length = 0;
+  };
+
+  shortBuffer.push([format.dateLabel, formatDateEs(record.record_date)], ['Estatus', statusLabel]);
+
+  format.fields.forEach((field) => {
+    if (field.type === 'textarea') {
+      flushShort();
+      drawLongText(doc, state, field.label, data[field.name]);
+    } else if (field.type === 'checklist') {
+      flushShort();
+      if (state.y + 30 > PAGE_LIMIT) { doc.addPage(); state.y = 20; }
+      state.y = drawSectionTitle(doc, state.y, field.label);
+      const items = Array.isArray(data[field.name]) ? data[field.name] : [];
+      autoTable(doc, {
+        startY: state.y,
+        body: items.map((it) => [it.done ? '[ X ]' : '[   ]', it.label]),
+        theme: 'grid',
+        styles: { font: 'helvetica', fontSize: 9, cellPadding: 2, textColor: INK, lineColor: [226, 232, 240], lineWidth: 0.1 },
+        columnStyles: { 0: { cellWidth: 16, halign: 'center', fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
+        margin: { left: 14, right: 14, bottom: 20 },
+      });
+      state.y = doc.lastAutoTable.finalY + 6;
+    } else if (field.type === 'date') {
+      shortBuffer.push([field.label, formatDateEs(data[field.name])]);
+    } else if (field.type === 'asset' || field.type === 'phone') {
+      shortBuffer.push([field.label, data[`${field.name}_label`] || '-']);
+    } else {
+      shortBuffer.push([field.label, data[field.name] || '-']);
+    }
+  });
+  flushShort();
+
+  if (format.clauses?.length) {
+    if (state.y + 40 > PAGE_LIMIT) { doc.addPage(); state.y = 20; }
+    state.y = drawSectionTitle(doc, state.y, 'Compromisos del usuario');
+    format.clauses.forEach((clause, i) => {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...INK);
+      const lines = doc.splitTextToSize(`${i + 1}. ${clause}`, 182);
+      lines.forEach((line) => {
+        if (state.y > PAGE_LIMIT) { doc.addPage(); state.y = 20; }
+        doc.text(line, 14, state.y);
+        state.y += 4.3;
+      });
+      state.y += 1.5;
+    });
+    state.y += 2;
+  }
+
+  if (state.y + 30 > PAGE_LIMIT) { doc.addPage(); state.y = 20; }
+  drawSignaturesN(doc, state.y + 18, format.signatures);
+  drawFooter(doc, `ITSM Sistema de Gestión de TI - ${format.pdfTitle}`);
   return doc;
 }
 
