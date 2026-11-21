@@ -11,7 +11,9 @@ function prepareLogo(file) {
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
-      const scale = Math.min(1, MAX_LOGO_WIDTH / img.width);
+      // Los SVG no tienen resolución propia (suelen medir ~150 px): se rasterizan al ancho máximo para que no se vean borrosos.
+      const isSvg = file.type === 'image/svg+xml';
+      const scale = isSvg ? MAX_LOGO_WIDTH / img.width : Math.min(1, MAX_LOGO_WIDTH / img.width);
       const canvas = document.createElement('canvas');
       canvas.width = Math.round(img.width * scale);
       canvas.height = Math.round(img.height * scale);
