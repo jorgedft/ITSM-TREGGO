@@ -76,23 +76,31 @@ function drawBrand(doc, settings, businessName) {
   }
 
   if (textX) {
+    // Nombre del negocio junto al logo: se parte en líneas según el ancho libre (a la derecha va
+    // "COTIZACIÓN") y reduce la letra si es muy largo; el bloque queda centrado respecto al logo.
+    const maxW = 190 - textX - 52;
+    let size = 15;
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(15);
-    doc.setTextColor(...C.white);
-    doc.text(businessName, textX, top + 8.5, { maxWidth: 190 - textX - 52 });
-    const sub = clean(settings.website) || clean(settings.email);
-    if (sub) {
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(8.5);
-      doc.setTextColor(...C.e300);
-      doc.text(sub, textX, top + 14.5, { maxWidth: 190 - textX - 52 });
+    doc.setFontSize(size);
+    let lines = doc.splitTextToSize(businessName, maxW);
+    if (lines.length > 2) {
+      size = 12;
+      doc.setFontSize(size);
+      lines = doc.splitTextToSize(businessName, maxW);
     }
+    lines = lines.slice(0, 2);
+    const lineH = size * 0.44;
     const legal = clean(settings.legal_name);
-    if (legal && legal !== businessName) {
+    const showLegal = legal && legal !== businessName;
+    const blockH = lines.length * lineH + (showLegal ? 5 : 0);
+    let y = top + iconH / 2 - blockH / 2 + lineH * 0.78;
+    doc.setTextColor(...C.white);
+    lines.forEach((line) => { doc.text(line, textX, y); y += lineH; });
+    if (showLegal) {
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7.5);
+      doc.setFontSize(8);
       doc.setTextColor(...C.g300);
-      doc.text(legal, textX, top + 19.5, { maxWidth: 190 - textX - 52 });
+      doc.text(legal, textX, y + 0.8, { maxWidth: maxW });
     }
   }
 }
@@ -345,7 +353,7 @@ export function renderQuotePDF(quote, settings = {}) {
 
   // ---- Pie de página en todas las hojas
   const pages = doc.internal.getNumberOfPages();
-  const contact = [businessName, settings.email, settings.phone, settings.website].filter(clean).join('  ·  ');
+  const contact = [settings.email, settings.phone, settings.website].filter(clean).join('  ·  ') || businessName;
   for (let i = 1; i <= pages; i += 1) {
     doc.setPage(i);
     doc.setFillColor(...C.g950);
