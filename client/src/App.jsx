@@ -33,6 +33,7 @@ import Reclutamiento from './pages/rh/Reclutamiento';
 import Administracion from './pages/admin/Administracion';
 import FormatosFacturas from './pages/admin/FormatosFacturas';
 import RegistrosTI from './pages/admin/RegistrosTI';
+import Cotizaciones from './pages/admin/Cotizaciones';
 import { RoleRoute } from './components/layout/RoleRoute';
 
 import NotFound from './pages/NotFound';
@@ -79,6 +80,7 @@ export default function App() {
               <Route path="admin" element={<RoleRoute><Administracion /></RoleRoute>} />
               <Route path="admin/formatos" element={<RoleRoute><FormatosFacturas /></RoleRoute>} />
               <Route path="admin/registros-ti" element={<RoleRoute><RegistrosTI /></RoleRoute>} />
+              <Route path="admin/cotizaciones" element={<RoleRoute><Cotizaciones /></RoleRoute>} />
             </Route>
           </Route>
 

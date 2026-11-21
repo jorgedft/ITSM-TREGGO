@@ -4,7 +4,7 @@ import {
     LayoutDashboard, Monitor, Smartphone, FileText,
     Ticket, Shield, Network, Wrench, LogOut, ChevronLeft, Key,
     Users, CalendarCheck, Plane, Receipt, Briefcase, Settings, Lock,
-    ChevronDown, X, ClipboardCheck
+    ChevronDown, X, ClipboardCheck, FileSignature
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useRole } from '../../hooks/useRole';
@@ -35,6 +35,7 @@ const NAV_ADMIN = [
     { to: '/admin', label: 'Administración', icon: Settings },
     { to: '/admin/formatos', label: 'Formatos y Facturas', icon: FileText },
     { to: '/admin/registros-ti', label: 'Registros de TI', icon: ClipboardCheck },
+    { to: '/admin/cotizaciones', label: 'Cotizaciones', icon: FileSignature },
 ];
 
 // Sección simple, sin acordeón (Panel, Administración: pocos items, no necesitan plegarse).
