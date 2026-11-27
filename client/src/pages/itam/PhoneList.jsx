@@ -269,7 +269,6 @@ export default function PhoneList() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      console.log('Datos traídos de Supabase:', data); // Log de depuración
       setPhones(data || []);
     } catch (err) {
       console.error('Error al cargar la telefonía:', err.message);

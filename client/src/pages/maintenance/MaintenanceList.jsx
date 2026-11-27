@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { renderAsync as renderDocx } from "docx-preview";
 import * as XLSX from "xlsx";
+import DOMPurify from "dompurify";
 
 const WORKFLOW_BUCKET = "workflow-attachments";
 const ALLOWED_EXTENSIONS = [".pdf", ".docx", ".xlsx", ".txt"];
@@ -1129,7 +1130,7 @@ export default function MaintenanceList() {
               {!viewer.loading && !viewer.error && viewer.type === ".xlsx" && (
                 <div
                   className="xlsx-preview overflow-auto bg-white rounded p-2 text-black"
-                  dangerouslySetInnerHTML={{ __html: xlsxHtml }}
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(xlsxHtml) }}
                 />
               )}
 

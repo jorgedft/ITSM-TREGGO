@@ -26,6 +26,8 @@ Corre los scripts **en orden** en el SQL Editor de Supabase (dashboard → SQL E
 14. `014_registros_ti.sql` — módulo **Registros de TI** (Administración, solo admin/ti): tabla `it_records` para altas/bajas/cambios, solicitudes de acceso, incidentes, cartas responsivas, control de respaldos y visitas de proveedores, con folio automático por formato y año (ABC-2026-0001).
 15. `015_cotizaciones.sql` — módulo **Cotizaciones** (Administración, solo admin/ti): tablas `quote_settings` (datos y logo del emisor), `quote_clients`, `quote_catalog` (productos y servicios) y `quotes` (partidas en jsonb, IVA / IVA incluido / sin IVA, retenciones ISR e IVA) con folio automático por año (COT-2026-0001).
 
+16. `016_seguridad_boveda.sql` — **parche de seguridad + Bóveda cifrada**. (a) Las cuentas nuevas quedan **sin rol** (pendientes) hasta que un admin las apruebe, y un usuario ya no puede cambiarse a sí mismo el rol; (b) los módulos de TI (incluida la Bóveda) solo los lee admin/ti; (c) tickets exigen tener rol; (d) `audit_log` deja de guardar contraseñas y se redactan las ya guardadas; (e) crea `vault_config` y `vault_access_log` y un trigger que rechaza contraseñas en texto plano una vez configurada la bóveda. **Córrelo antes de desplegar la versión del frontend que trae la Bóveda cifrada** (si no, el módulo mostrará un aviso de error). Después, entra a Bóveda → "Configurar bóveda" y guarda la llave de recuperación **fuera del sistema**.
+
 Los scripts 7, 8, 9, 10 y 11 dependen de que ya exista `public.audit_trigger_func()` (del script 6), así que ese debe ir antes. El 11 también usa `notify_roles()` (del script 10) si está disponible.
 
 Cada script es idempotente: puedes volver a correrlo sin duplicar nada.
@@ -37,7 +39,7 @@ update public.profiles set role = 'admin' where email = 'jorge.daniel@treggo.mx'
 update public.profiles set role = 'rh'    where email = 'correo-de-rh@treggo.mx';
 ```
 
-Roles válidos: `admin`, `ti`, `rh`.
+Roles válidos: `admin`, `ti`, `rh`. Una cuenta sin rol (`role is null`) o con `is_active = false` no puede leer nada: la app le muestra "Cuenta pendiente de aprobación". Para aprobar una cuenta nueva, corre el `update` de arriba (el registro público está desactivado; las cuentas se crean desde Authentication → Users).
 
 ## Qué queda protegido
 

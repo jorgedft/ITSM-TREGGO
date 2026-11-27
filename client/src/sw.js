@@ -8,7 +8,8 @@ precacheAndRoute(self.__WB_MANIFEST);
 
 // Mismo cacheo de la API de Supabase que ya se tenía con generateSW.
 registerRoute(
-    ({ url }) => /\.supabase\.co\/rest\/v1\//.test(url.href),
+    // La bóveda (credenciales / vault_*) nunca se guarda en el caché del navegador.
+    ({ url }) => /\.supabase\.co\/rest\/v1\//.test(url.href) && !/\/rest\/v1\/(credentials|vault_)/.test(url.pathname),
     new NetworkFirst({
         cacheName: 'supabase-api',
         networkTimeoutSeconds: 10,
